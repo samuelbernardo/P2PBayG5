@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.util.Random;
 import java.util.Scanner;
 
 import net.tomp2p.futures.FutureDHT;
@@ -20,7 +21,7 @@ public class P2PBay {
 
     public P2PBay(int peerId) throws Exception {
         /* new peer creation */
-        peer = new PeerMaker(Number160.createHash(peerId)).setPorts(4000).makeAndListen();
+        peer = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress())).setPorts(4000).makeAndListen();
 
         // TODO not the best place to do this
         System.out.println("Insert the ip of a peer");
