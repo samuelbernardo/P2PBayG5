@@ -19,7 +19,7 @@ public class P2PBay {
     static String id;
     static String password;
 
-    public P2PBay(int peerId) throws Exception {
+    public P2PBay() throws Exception {
         /* new peer creation */
         peer = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress())).setPorts(4000).makeAndListen();
 
@@ -41,7 +41,7 @@ public class P2PBay {
 
     public static void main(String[] args) throws NumberFormatException, Exception {
         showMenu();
-        P2PBay p2pbay = new P2PBay(Integer.parseInt(id));
+        P2PBay p2pbay = new P2PBay();
         while (true) {
             switch (option) {
                 case "1":
