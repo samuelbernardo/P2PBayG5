@@ -65,7 +65,7 @@ public class P2PBay {
     }
 
     private static void showMenu() {
-        System.out.println("\n-----P2PBay-----\n\n1 - Login\n2 - Criar uma conta");
+        System.out.println("\n-----P2PBay-----\n\n1 - Login\n2 - Criar uma conta\n\nexit - Para sair\n");
         option = in.nextLine();
         if (option.equals("exit")) {
             in.close();
