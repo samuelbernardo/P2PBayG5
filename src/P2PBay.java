@@ -23,6 +23,7 @@ public class P2PBay {
         peer = new PeerMaker(Number160.createHash(peerId)).setPorts(4000).makeAndListen();
 
         // TODO not the best place to do this
+        System.out.println("Insert the ip of a peer");
         String ip = in.nextLine();
         /* Connects this peer to this other peer */
         InetAddress address = Inet4Address.getByName(ip);
