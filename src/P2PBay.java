@@ -19,18 +19,15 @@ public class P2PBay {
     static String id;
     static String password;
 
-    public P2PBay() throws Exception {
-        /* new peer creation */
+    public P2PBay(String ip) throws Exception {
+        /* Creation of a peer. */
         peer = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress())).setPorts(4000).makeAndListen();
 
-        // TODO not the best place to do this
-        System.out.println("Insert the ip of a peer");
-        String ip = in.nextLine();
-        /* Connects this peer to this other peer */
+        /* Connects the new peer to an existing peer. */
         InetAddress address = Inet4Address.getByName(ip);
         FutureDiscover futureDiscover = peer.discover().setInetAddress( address ).setPorts(4000).start();
         futureDiscover.awaitUninterruptibly();
-        //FutureBootstrap fb = peer.bootstrap().setBroadcast().setPorts(4001).start();
+
         FutureBootstrap fb = peer.bootstrap().setInetAddress(address).setPorts(4000).start();
 
         fb.awaitUninterruptibly();
@@ -40,8 +37,10 @@ public class P2PBay {
     }
 
     public static void main(String[] args) throws NumberFormatException, Exception {
+        System.out.println("Insira o IP de um peer:");
+        String ip = in.nextLine();
+        P2PBay p2pbay = new P2PBay(ip);
         showMenu();
-        P2PBay p2pbay = new P2PBay();
         while (true) {
             switch (option) {
                 case "1":
@@ -65,7 +64,7 @@ public class P2PBay {
     }
 
     private static void showMenu() {
-        System.out.println("\n-----P2PBay-----\n\n1 - Login\n2 - Criar uma conta\n\nexit - Para sair\n");
+        System.out.println("\n-----P2PBay-----\n\n1 - Login\n2 - Criar uma conta\n\n'exit' para sair\n");
         option = in.nextLine();
         if (option.equals("exit")) {
             in.close();
