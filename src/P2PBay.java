@@ -5,11 +5,18 @@ import java.util.Scanner;
 
 import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.futures.FutureBootstrap;
+import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerMaker;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
+import p2pbay.P2PBayBootstrap;
+
+import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.util.Scanner;
 public class P2PBay {
 
     final private Peer peer;
@@ -19,25 +26,33 @@ public class P2PBay {
     static String password;
     final int port = 4001;
 
-    public P2PBay() throws Exception {
+    public P2PBay(P2PBayBootstrap boostrap) throws Exception {
         /* Creation of a peer. */
         peer = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress())).setPorts(port).makeAndListen();
 
-        /* Connects the new peer to an existing peer. */
-        InetAddress address = Inet4Address.getLocalHost();
-        FutureDiscover futureDiscover = peer.discover().setInetAddress(address).setPorts(port).start();
-        futureDiscover.awaitUninterruptibly();
-
-        FutureBootstrap fb = peer.bootstrap().setInetAddress(address).setPorts(port).start();
-
-        fb.awaitUninterruptibly();
-        if (fb.getBootstrapTo() != null) {
-            peer.discover().setPeerAddress(fb.getBootstrapTo().iterator().next()).start().awaitUninterruptibly();
+        /* Connects THIS to an existing peer. */
+        for(InetAddress address:boostrap.getNodes()) {
+            System.out.println("address = " + address);
+            FutureDiscover futureDiscover = peer.discover().setInetAddress(address).setPorts(4000).start();
+            futureDiscover.awaitUninterruptibly();
+            FutureBootstrap fb = peer.bootstrap().setInetAddress(address).setPorts(4000).start();
+            fb = peer.bootstrap().setInetAddress(address).setPorts(4000).start();
+            fb.awaitUninterruptibly();
+            if (fb.getBootstrapTo() != null) {
+                System.out.println("fb.getBootstrapTo() = " + fb.getBootstrapTo());
+                peer.discover().setPeerAddress(fb.getBootstrapTo().iterator().next()).start().awaitUninterruptibly();
+                break;
+            }
         }
     }
 
     public static void main(String[] args) throws NumberFormatException, Exception {
-        P2PBay p2pbay = new P2PBay();
+        P2PBayBootstrap bootstrap = new P2PBayBootstrap();
+        bootstrap.loadConfig();
+
+        //System.out.println("Insira o IP de um peer:");
+        //String ip = in.nextLine();
+        P2PBay p2pbay = new P2PBay(bootstrap);
         showMenu();
         while (true) {
             switch (option) {
