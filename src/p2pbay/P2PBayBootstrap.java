@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 /**
  * Classe para ligacao a rede p2pbay
@@ -23,14 +25,19 @@ public class P2PBayBootstrap {
 
     /**
      * Le e o ficheiro de configuracao
-     * @return
+     * @return true se nao ocorreu nenhum erro, falso se nao ocoreu nenhum erro
      */
     public boolean loadConfig() {
         try (BufferedReader reader = new BufferedReader(new FileReader(configFile))) {
-            String line;
-            while((line = reader.readLine()) != null) {
-                nodes.add(Inet4Address.getByName(line));
+            String address;
+            // Para cada linha adiciona um endereco a lista de dos
+            while((address = reader.readLine()) != null) {
+                nodes.add(Inet4Address.getByName(address));
             }
+
+            // Baralha a lista de nos, apenas para nao estar
+            // sempre a tentar ligar aos mesmos nos
+            Collections.shuffle(nodes);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -38,7 +45,9 @@ public class P2PBayBootstrap {
         return false;
     }
 
-
+    /**
+     * @return Lista de nos
+     */
     public ArrayList<InetAddress> getNodes() {
         return nodes;
     }
