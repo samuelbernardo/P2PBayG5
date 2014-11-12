@@ -45,27 +45,28 @@ public class P2PBay {
         P2PBayBootstrap bootstrap = new P2PBayBootstrap();
         bootstrap.loadConfig();
         P2PBay p2pbay = new P2PBay(bootstrap);
-        showMenu();
-        while (true) {
-            switch (option) {
-                case "1":
-                    String storedPassword = p2pbay.get(id);
-                    if(storedPassword.equals(password)){
-                        System.out.println("\nSucesso!");
-                    }
-                    else
-                        System.out.println("\nO login falhou! A sair do menu de login...");
-                    break;
-
-                case "2":
-                    p2pbay.store(id, password);
-                    System.out.println("\nA conta foi criada com sucesso!");
-                    break;
-                default:
-                    System.out.println("Opcao invalida!");
-            }
-            showMenu();
-        }
+        Thread.sleep(10000);
+//        showMenu();
+//        while (true) {
+//            switch (option) {
+//                case "1":
+//                    String storedPassword = p2pbay.get(id);
+//                    if(storedPassword.equals(password)){
+//                        System.out.println("\nSucesso!");
+//                    }
+//                    else
+//                        System.out.println("\nO login falhou! A sair do menu de login...");
+//                    break;
+//
+//                case "2":
+//                    p2pbay.store(id, password);
+//                    System.out.println("\nA conta foi criada com sucesso!");
+//                    break;
+//                default:
+//                    System.out.println("Opcao invalida!");
+//            }
+//            showMenu();
+//        }
     }
 
     private static void showMenu() {
