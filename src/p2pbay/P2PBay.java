@@ -7,92 +7,221 @@ import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerMaker;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
+import p2pbay.core.Bid;
+import p2pbay.core.Item;
+import p2pbay.core.User;
 
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 public class P2PBay {
-
-    final private Peer peer;
     static Scanner in = new Scanner(System.in);
-    static String option;
-    static String id;
-    static String password;
-    final int port = 4001;
+    static TomP2P tomp2p;
+    static Login login;
+    static User user;
 
-    public P2PBay(P2PBayBootstrap boostrap) throws Exception {
-        /* Creation of a peer. */
-        peer = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress())).setPorts(port).makeAndListen();
-        System.out.println("peer = " + peer.getPeerAddress());
-        /* Connects THIS to an existing peer. */
-        System.out.println("Connecting...");
-        // Procura por todos os nos dados pelo objecto P2PBayBoostrap
-        for(InetAddress address:boostrap.getNodes()) {
-            System.out.println("Trying " + address.getHostName());
-            FutureDiscover futureDiscover = peer.discover().setInetAddress(address).setPorts(port).start();
-            futureDiscover.awaitUninterruptibly();
-            FutureBootstrap fb = peer.bootstrap().setInetAddress(address).setPorts(port).start();
-            fb.awaitUninterruptibly();
-            if (fb.getBootstrapTo() != null) {
-                System.out.println("Connected to " + fb.getBootstrapTo());
-                peer.discover().setPeerAddress(fb.getBootstrapTo().iterator().next()).start().awaitUninterruptibly();
-                break;
+    public P2PBay() throws Exception {
+    }
+
+    public static void main(String[] args) throws Exception {
+        String option;
+        tomp2p = new TomP2P();
+        login = new Login();
+        while (true) {
+            option=showMenu();
+            if(!(option.equals("exit"))) {
+                switch (option) {
+                    case "1":
+                        user = login.doLogin(tomp2p, in);
+                        if(user != null) {
+                            while(true) {
+                                if(!(option = showMainMenu()).equals("7")) {
+                                    doOperation(tomp2p, option);
+                                }
+                                else break;
+
+                            }
+
+                        }
+                        else
+                            System.out.println("\nO login falhou!");
+                        break;
+                    case "2":
+                        user = login.createUser(tomp2p, in);
+                        break;
+                    default:
+                        System.out.println("Opcao invalida!");
+                }
+            }
+            else {
+                in.close();
+                System.exit(0);
             }
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        P2PBayBootstrap bootstrap = new P2PBayBootstrap();
-        bootstrap.loadConfig();
-        P2PBay p2pbay = new P2PBay(bootstrap);
-        Thread.sleep(10000);
-//        showMenu();
-//        while (true) {
-//            switch (option) {
-//                case "1":
-//                    String storedPassword = p2pbay.get(id);
-//                    if(storedPassword.equals(password)){
-//                        System.out.println("\nSucesso!");
-//                    }
-//                    else
-//                        System.out.println("\nO login falhou! A sair do menu de login...");
-//                    break;
-//
-//                case "2":
-//                    p2pbay.store(id, password);
-//                    System.out.println("\nA conta foi criada com sucesso!");
-//                    break;
-//                default:
-//                    System.out.println("Opcao invalida!");
-//            }
-//            showMenu();
-//        }
+    private static String showMenu() {
+        System.out.println("\n"
+                + "-----P2PBay-----\n\n"
+                + "1 - Login\n"
+                + "2 - Criar uma conta\n\n"
+                + "'exit' para sair\n");
+        String option = in.nextLine();
+        return option;
     }
 
-    private static void showMenu() {
-        System.out.println("\n-----P2PBay-----\n\n1 - Login\n2 - Criar uma conta\n\n'exit' para sair\n");
-        option = in.nextLine();
-        if (option.equals("exit")) {
+    public static String showMainMenu() {
+        System.out.println("\n"
+                + "1 - Vender um item\n"
+                + "2 - Fechar leilao\n"
+                + "3 - Procurar um item para comprar\n"
+                + "4 - Licitar um item\n"
+                + "5 - Consultar os detalhes de um item\n"
+                + "6 - Consultar o meu historico\n"
+                + "7 - Logout\n\n"
+                + "'exit' para sair\n");
+        String option = in.nextLine();
+        return option;
+    }
+
+    public static void doOperation(TomP2P tomp2p, String option) {
+        String title;
+        String description;
+        Item item;
+        float value;
+        String result;
+
+        if(!(option.equals("exit"))) {
+            switch (option) {
+                case "1":
+                    System.out.println("Titulo do item:");
+                    title = in.nextLine();
+                    System.out.println("Descricao do item:");
+                    description = in.nextLine();
+                    item = new Item(login.getUsername(), title, description);
+                    sellItem(tomp2p, item);
+                    break;
+                case "2":
+                    System.out.println("Titulo do item:");
+                    title = in.nextLine();
+                    result = closeAuction(title);
+                    System.out.println(result);
+                    break;
+                case "3":
+                    break;
+                case "4":
+                    System.out.println("Titulo do item:");
+                    title = in.nextLine();
+                    System.out.println("Valor:");
+                    value = Integer.parseInt(in.nextLine());
+                    result = bidOnItem(title, value);
+                    System.out.println(result);
+                    break;
+                case "5":
+                    System.out.println("Titulo do item:");
+                    title = in.nextLine();
+                    result = getDetails(title);
+                    System.out.println(result);
+                    break;
+                case "6":
+                    result = getHistory();
+                    System.out.println(result);
+                    break;
+                default:
+                    System.out.println("Opcao invalida!");
+            }
+        }
+        else {
             in.close();
             System.exit(0);
         }
-        System.out.println("Introduza o id:");
-        id = in.nextLine();
-        System.out.println("Introduza a password:");
-        password = in.nextLine();
     }
 
-    private String get(String name) throws ClassNotFoundException, IOException {
-        FutureDHT futureDHT = peer.get(Number160.createHash(name)).start();
-        futureDHT.awaitUninterruptibly();
-        if (futureDHT.isSuccess()) {
-            return futureDHT.getData().getObject().toString();
+    public static void sellItem(TomP2P tomp2p, Item item) {
+        try {
+            tomp2p.storeItem(item);
+        } catch (IOException e) {
+            System.out.println("Ocorreu um erro na insercao do item no sistema...\n");
         }
-        return "Not found! :(";
+        System.out.println("\nO item foi inserido com sucesso!");
     }
 
-    private void store(String name, String ip) throws IOException {
-        peer.put(Number160.createHash(name)).setData(new Data(ip)).start().awaitUninterruptibly();
+    @SuppressWarnings("unchecked")
+    public static String closeAuction(String title) {
+        boolean isClosed = false;
+        List<Bid> bids = new ArrayList<Bid>();
+        float value = 0;
+        try {
+            isClosed = (boolean) tomp2p.get(title, "auctionStatus");
+            bids = (List<Bid>) tomp2p.get(title, "bids");
+            value = bids.get(bids.size()-1).getValue();
+            if (!isClosed)
+                tomp2p.closeAuction(title);
+            else
+                System.out.println("O leilao ja foi fechado anteriormente.");
+        }catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+        }
+        return "O leilao foi fechado com sucesso, o valor final do item e " + value;
     }
+
+    @SuppressWarnings("unchecked")
+    private static String bidOnItem(String title, float value) {
+        List<Bid> bids = new ArrayList<Bid>();
+        String result = null;
+        try {
+            bids = (List<Bid>) tomp2p.get(title, "bids");
+
+            int nBids = bids.size();
+            if (nBids==0 || value > (bids.get(nBids-1).getValue())) {
+                Bid bid = new Bid(title, user.getUsername(), value);
+                bids.add(bid);
+                try {
+                    tomp2p.storeNewBid(title, "bids", bids);
+                    tomp2p.storeNewBid(user.getUsername(), "bids", bids);
+                    user.getBids().add(bid);
+                    result = "A licitacao foi aceite!";
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else
+                result = "A licitacao foi rejeitada pois o valor do item e superior a sua oferta!";
+
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static String getDetails(String title) {
+        String description = null;
+        float value = 0;
+        List<Bid> bids = new ArrayList<Bid>();
+
+        try {
+            description = tomp2p.get(title, "description").toString();
+            bids = (List<Bid>) tomp2p.get(title, "bids");
+            int nBids = bids.size();
+            if (nBids != 0)
+                value = bids.get(nBids-1).getValue();
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+        }
+        return "Descricao: " + description + "\nValor: " + value;
+    }
+
+    public static String getHistory() {
+        List<Bid> bids = user.getBids();
+        String history = "Titulo:\t\tValor:\n";
+        for(Bid b : bids) {
+            history += b.getTitle() + "\t\t" + b.getValue() + "\n";
+        }
+        return history;
+    }
+
 }

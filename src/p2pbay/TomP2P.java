@@ -1,19 +1,19 @@
 package p2pbay;
 
-import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.util.List;
-
-import core.Bid;
-import core.Item;
-import core.User;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerMaker;
 import net.tomp2p.peers.Number160;
+import p2pbay.core.Bid;
+import p2pbay.core.Item;
+import p2pbay.core.User;
+
+import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.util.List;
 
 public class TomP2P {
     final private Peer peer;

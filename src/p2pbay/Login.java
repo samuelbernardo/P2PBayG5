@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
-import core.Bid;
-import core.User;
-import p2pbay.TomP2P;
+import p2pbay.core.Bid;
+import p2pbay.core.User;
 
 public class Login {
 

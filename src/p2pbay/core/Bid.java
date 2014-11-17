@@ -1,4 +1,4 @@
-package core;
+package p2pbay.core;
 
 import java.io.Serializable;
 
