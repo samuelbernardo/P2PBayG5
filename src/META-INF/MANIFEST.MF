@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: P2PBay
+Main-Class: p2pbay.P2PBay
 
