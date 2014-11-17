@@ -76,4 +76,15 @@ public class TomP2PHandler {
         Number160 key = Number160.createHash(locationKey);
         peer.put(key).setKeyObject(Number160.createHash("auctionStatus"), true).start();
     }
+
+    /**
+     * Guarda qualquer objecto na dht
+     * @param key String que deve ser usada como chave
+     * @param object Objecto a ser guardado na dht
+     * @throws IOException possivelmente se o objecto nao for serializavel
+     */
+    public void store(String key, Object object) throws IOException {
+        Number160 keyHash = Number160.createHash(key);
+        peer.put(keyHash).setObject(object);
+    }
 }
