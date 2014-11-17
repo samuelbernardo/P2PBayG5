@@ -1,4 +1,4 @@
-package p2pbay;
+package p2pbay.server;
 
 import java.io.*;
 import java.net.Inet4Address;

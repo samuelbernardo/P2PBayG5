@@ -1,4 +1,4 @@
-package p2pbay;
+package p2pbay.server;
 
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDHT;
@@ -15,11 +15,11 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.List;
 
-public class TomP2P {
+public class TomP2PHandler {
     final private Peer peer;
     final private int port = 4001;
 
-    public TomP2P() throws Exception {
+    public TomP2PHandler() throws Exception {
         peer = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress())).setPorts(port).makeAndListen();
 
         InetAddress address = Inet4Address.getLocalHost();
@@ -34,7 +34,7 @@ public class TomP2P {
         }
     }
 
-    Object get(String locationKey, String contentKey) throws ClassNotFoundException, IOException {
+    public Object get(String locationKey, String contentKey) throws ClassNotFoundException, IOException {
         Number160 hKey = Number160.createHash(locationKey);
         FutureDHT futureDHT = peer.get(hKey).setContentKey(Number160.createHash(contentKey)).start();
         futureDHT.awaitUninterruptibly();
@@ -44,13 +44,13 @@ public class TomP2P {
         return "Not found!";
     }
 
-    void storeUser(User user) throws IOException {
+    public void storeUser(User user) throws IOException {
         Number160 key = Number160.createHash(user.getUsername());
         peer.put(key).setKeyObject(Number160.createHash("pass"), user.getPassword()).start();
         peer.put(key).setKeyObject(Number160.createHash("bids"), user.getBids()).start();
     }
 
-    void storeItem(Item item) throws IOException {
+    public void storeItem(Item item) throws IOException {
         Number160 key = Number160.createHash(item.getTitle());
         peer.put(key).setKeyObject(Number160.createHash("title"), item.getTitle()).start();
         peer.put(key).setKeyObject(Number160.createHash("description"), item.getDescription()).start();
@@ -59,12 +59,12 @@ public class TomP2P {
         peer.put(key).setKeyObject(Number160.createHash("bids"), item.getBids()).start();
     }
 
-    void storeNewBid(String locationKey, String contentKey, List<Bid> bids) throws IOException {
+    public void storeNewBid(String locationKey, String contentKey, List<Bid> bids) throws IOException {
         Number160 key = Number160.createHash(locationKey);
         peer.put(key).setKeyObject(Number160.createHash(contentKey), bids).start();
     }
 
-    void closeAuction(String locationKey) throws IOException {
+    public void closeAuction(String locationKey) throws IOException {
         Number160 key = Number160.createHash(locationKey);
         peer.put(key).setKeyObject(Number160.createHash("auctionStatus"), true).start();
     }

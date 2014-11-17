@@ -1,4 +1,4 @@
-package p2pbay;
+package p2pbay.client;
 
 import java.io.IOException;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import p2pbay.core.Bid;
 import p2pbay.core.User;
+import p2pbay.server.TomP2PHandler;
 
 public class Login {
 
@@ -16,7 +17,7 @@ public class Login {
         return username;
     }
 
-    public User doLogin(TomP2P tomp2p, Scanner in) throws ClassNotFoundException, IOException {
+    public User doLogin(TomP2PHandler tomp2p, Scanner in) throws ClassNotFoundException, IOException {
         setCredentials(in);
         User user = null;
         String storedPassword = tomp2p.get(username, "pass").toString();
@@ -28,7 +29,7 @@ public class Login {
         return user;
     }
 
-    public User createUser(TomP2P tomp2p, Scanner in) {
+    public User createUser(TomP2PHandler tomp2p, Scanner in) {
         setCredentials(in);
         User user = new User(username, givenPassword);
         try {

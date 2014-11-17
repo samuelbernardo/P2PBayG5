@@ -1,25 +1,18 @@
 package p2pbay;
 
-import net.tomp2p.futures.FutureBootstrap;
-import net.tomp2p.futures.FutureDHT;
-import net.tomp2p.futures.FutureDiscover;
-import net.tomp2p.p2p.Peer;
-import net.tomp2p.p2p.PeerMaker;
-import net.tomp2p.peers.Number160;
-import net.tomp2p.storage.Data;
+import p2pbay.client.Login;
 import p2pbay.core.Bid;
 import p2pbay.core.Item;
 import p2pbay.core.User;
+import p2pbay.server.TomP2PHandler;
 
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 public class P2PBay {
     static Scanner in = new Scanner(System.in);
-    static TomP2P tomp2p;
+    static TomP2PHandler tomp2p;
     static Login login;
     static User user;
 
@@ -28,7 +21,7 @@ public class P2PBay {
 
     public static void main(String[] args) throws Exception {
         String option;
-        tomp2p = new TomP2P();
+        tomp2p = new TomP2PHandler();
         login = new Login();
         while (true) {
             option=showMenu();
@@ -87,7 +80,7 @@ public class P2PBay {
         return option;
     }
 
-    public static void doOperation(TomP2P tomp2p, String option) {
+    public static void doOperation(TomP2PHandler tomp2p, String option) {
         String title;
         String description;
         Item item;
@@ -140,13 +133,16 @@ public class P2PBay {
         }
     }
 
-    public static void sellItem(TomP2P tomp2p, Item item) {
+    public static void sellItem(TomP2PHandler tomp2p, Item item) {
         try {
             tomp2p.storeItem(item);
         } catch (IOException e) {
             System.out.println("Ocorreu um erro na insercao do item no sistema...\n");
         }
         System.out.println("\nO item foi inserido com sucesso!");
+    }
+
+    private static void storeItem(Item item) {
     }
 
     @SuppressWarnings("unchecked")
