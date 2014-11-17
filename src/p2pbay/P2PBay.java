@@ -4,6 +4,7 @@ import p2pbay.client.Login;
 import p2pbay.core.Bid;
 import p2pbay.core.Item;
 import p2pbay.core.User;
+import p2pbay.server.P2PBayBootstrap;
 import p2pbay.server.TomP2PHandler;
 
 import java.io.IOException;
@@ -21,7 +22,9 @@ public class P2PBay {
 
     public static void main(String[] args) throws Exception {
         String option;
-        tomp2p = new TomP2PHandler();
+        P2PBayBootstrap bootstrap = new P2PBayBootstrap();
+        bootstrap.loadConfig();
+        tomp2p = new TomP2PHandler(bootstrap);
         login = new Login();
         while (true) {
             option=showMenu();

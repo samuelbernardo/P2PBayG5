@@ -19,18 +19,26 @@ public class TomP2PHandler {
     final private Peer peer;
     final private int port = 4001;
 
-    public TomP2PHandler() throws Exception {
+    public TomP2PHandler(P2PBayBootstrap bootstrap) throws Exception {
+        /* Creation of a peer. */
         peer = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress())).setPorts(port).makeAndListen();
+        System.out.println("peer = " + peer.getPeerAddress());
 
-        InetAddress address = Inet4Address.getLocalHost();
-        FutureDiscover futureDiscover = peer.discover().setInetAddress(address).setPorts(port).start();
-        futureDiscover.awaitUninterruptibly();
+        /* Connects THIS to an existing peer. */
+        System.out.println("Connecting...");
 
-        FutureBootstrap fb = peer.bootstrap().setInetAddress(address).setPorts(port).start();
-
-        fb.awaitUninterruptibly();
-        if (fb.getBootstrapTo() != null) {
-            peer.discover().setPeerAddress(fb.getBootstrapTo().iterator().next()).start().awaitUninterruptibly();
+        // Procura por todos os nos dados pelo objecto P2PBayBoostrap
+        for(InetAddress address:bootstrap.getNodes()) {
+            System.out.println("Trying " + address.getHostName());
+            FutureDiscover futureDiscover = peer.discover().setInetAddress(address).setPorts(port).start();
+            futureDiscover.awaitUninterruptibly();
+            FutureBootstrap fb = peer.bootstrap().setInetAddress(address).setPorts(port).start();
+            fb.awaitUninterruptibly();
+            if (fb.getBootstrapTo() != null) {
+                System.out.println("Connected to " + fb.getBootstrapTo());
+                peer.discover().setPeerAddress(fb.getBootstrapTo().iterator().next()).start().awaitUninterruptibly();
+                break;
+            }
         }
     }
 
