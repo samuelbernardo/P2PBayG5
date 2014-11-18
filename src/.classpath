@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/ana/eclipse/jars/TomP2P-4.4/TomP2P-4.4.jar"/>
+	<classpathentry kind="lib" path="/home/ana/eclipse/jars/TomP2P-4.4/lib/netty-3.5.3.Patched.jar"/>
+	<classpathentry kind="lib" path="/home/ana/eclipse/jars/TomP2P-4.4/lib/slf4j-api-1.6.4.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
