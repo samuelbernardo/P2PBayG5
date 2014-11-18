@@ -6,14 +6,11 @@ import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerMaker;
 import net.tomp2p.peers.Number160;
-
-
-import p2pbay.core.Bid;
+import net.tomp2p.storage.Data;
 
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.util.List;
 
 public class TomP2PHandler {
     final private Peer peer;
@@ -42,56 +39,6 @@ public class TomP2PHandler {
         }
     }
 
-    /*public Object get(String locationKey, String contentKey) throws ClassNotFoundException, IOException {
-        Number160 hKey = Number160.createHash(locationKey);
-        FutureDHT futureDHT = peer.get(hKey).setContentKey(Number160.createHash(contentKey)).start();
-        futureDHT.awaitUninterruptibly();
-        if (futureDHT.isSuccess()) {
-            return futureDHT.getData().getObject();
-        }
-        return "Not found!";
-    }*/
-    
-    public Object get(String key) throws ClassNotFoundException, IOException {
-        Number160 hKey = Number160.createHash(key);
-        FutureDHT futureDHT = peer.get(hKey).start().awaitUninterruptibly();
-        if (futureDHT.isSuccess()) {
-            return futureDHT.getData().getObject();
-        }
-        return "Not found!";
-    }
-    
-    
-    /*public void storeUser(User user) throws IOException {
-        Number160 key = Number160.createHash(user.getUsername());
-        peer.put(key).setData(new Data(user)).start().awaitUninterruptibly();
-    }*/
-    
-    /*public void storeUser(User user) throws IOException {
-        Number160 key = Number160.createHash(user.getUsername());
-        peer.put(key).setKeyObject(Number160.createHash("pass"), user.getPassword()).start();
-        peer.put(key).setKeyObject(Number160.createHash("bids"), user.getBids()).start();
-    }*/
-    
-    /*public void storeItem(Item item) throws IOException {
-        Number160 key = Number160.createHash(item.getTitle());
-        peer.put(key).setKeyObject(Number160.createHash("title"), item.getTitle()).start();
-        peer.put(key).setKeyObject(Number160.createHash("description"), item.getDescription()).start();
-        peer.put(key).setKeyObject(Number160.createHash("owner"), item.getOwner()).start();
-        peer.put(key).setKeyObject(Number160.createHash("auctionStatus"), item.isAuctionClosed()).start();
-        peer.put(key).setKeyObject(Number160.createHash("bids"), item.getBids()).start();
-    }*/
-
-    public void storeNewBid(String locationKey, String contentKey, List<Bid> bids) throws IOException {
-        Number160 key = Number160.createHash(locationKey);
-        peer.put(key).setKeyObject(Number160.createHash(contentKey), bids).start();
-    }
-
-    public void closeAuction(String locationKey) throws IOException {
-        Number160 key = Number160.createHash(locationKey);
-        peer.put(key).setKeyObject(Number160.createHash("auctionStatus"), true).start();
-    }
-
     /**
      * Guarda qualquer objecto na dht
      * @param key String que deve ser usada como chave
@@ -99,7 +46,16 @@ public class TomP2PHandler {
      * @throws IOException possivelmente se o objecto nao for serializavel
      */
     public void store(String key, Object object) throws IOException {
-        Number160 keyHash = Number160.createHash(key);
-        peer.put(keyHash).setObject(object);
+        Number160 hKey = Number160.createHash(key);
+        peer.put(hKey).setData(new Data(object)).start().awaitUninterruptibly();
+    }
+    
+    public Object get(String key) throws IOException, ClassNotFoundException {
+        Number160 hKey = Number160.createHash(key);
+        FutureDHT futureDHT = peer.get(hKey).start().awaitUninterruptibly();
+        if (futureDHT.isSuccess()) {
+            return futureDHT.getData().getObject();
+        }
+        return "Not found!";
     }
 }

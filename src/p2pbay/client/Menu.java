@@ -33,58 +33,33 @@ public class Menu {
     }
 
     public void navigate(TomP2PHandler tomp2p, Scanner in, User user) {
-       /* String title;
-        String description;
-        Item item;
-        float value;
-        String result;*/
         String option;
-
-        option = showMainMenu(in);
-        switch (option) {
-            case "1":
-                /*System.out.println("Titulo do item:");
-                title = in.nextLine();
-                System.out.println("Descricao do item:");
-                description = in.nextLine();
-                item = new Item(login.getUsername(), title, description);*/
-                new ItemForSale(tomp2p);
-                break;
-            case "2":
-                /*System.out.println("Titulo do item:");
-                title = in.nextLine();
-                result = closeAuction(title);
-                System.out.println(result);*/
-                new AuctionToClose(tomp2p);
-                break;
-            case "3":
-                break;
-            case "4":
-                /*System.out.println("Titulo do item:");
-                title = in.nextLine();
-                System.out.println("Valor:");
-                value = Integer.parseInt(in.nextLine());
-                result = bidOnItem(title, value);
-                System.out.println(result);*/
-                new BidOnItem(tomp2p, user);
-                break;
-            case "5":
-                /*System.out.println("Titulo do item:");
-                title = in.nextLine();
-                result = getDetails(title);
-                System.out.println(result);*/
-                new DetailsOfItem(tomp2p);
-                break;
-            case "6":
-                /*result = getHistory();
-                System.out.println(result);*/
-                new HistoryCheck(tomp2p, user);
-                break;
-            case "exit":
-                in.close();
-                System.exit(0);
-            default:
-                System.out.println("Opcao invalida!");
+        while(true){
+            option = showMainMenu(in);
+            switch (option) {
+                case "1":
+                    new ItemForSale(tomp2p, in, user);
+                    break;
+                case "2":
+                    new AuctionToClose(tomp2p, in);
+                    break;
+                case "3":
+                    break;
+                case "4":
+                    new BidOnItem(tomp2p, in, user);
+                    break;
+                case "5":
+                    new DetailsOfItem(tomp2p, in);
+                    break;
+                case "6":
+                    new HistoryCheck(tomp2p, user);
+                    break;
+                case "exit":
+                    in.close();
+                    System.exit(0);
+                default:
+                    System.out.println("Opcao invalida!");
+            }
         }
     }
 }

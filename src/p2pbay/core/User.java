@@ -33,4 +33,8 @@ public class User implements Serializable {
     public List<Bid> getBids() {
         return this.bids;
     }
+    
+    public void addBid(Bid bid) {
+        this.bids.add(bid);
+    }
 }
