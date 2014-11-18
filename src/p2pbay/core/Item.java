@@ -1,9 +1,11 @@
 package p2pbay.core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Item {
+public class Item implements Serializable {
+    private static final long serialVersionUID = 6128016096756071380L;
     private String title;
     private String description;
     private String owner;
@@ -34,7 +36,7 @@ public class Item {
         this.auctionClosed = bool;
     }
     
-    public boolean isAuctionClosed() {
+    public boolean auctionIsClosed() {
         return this.auctionClosed;
     }
     

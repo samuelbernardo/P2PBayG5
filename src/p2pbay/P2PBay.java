@@ -1,6 +1,7 @@
 package p2pbay;
 
 import p2pbay.client.Login;
+import p2pbay.client.Menu;
 import p2pbay.core.Bid;
 import p2pbay.core.Item;
 import p2pbay.core.User;
@@ -12,78 +13,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 public class P2PBay {
-    static Scanner in = new Scanner(System.in);
-    static TomP2PHandler tomp2p;
-    static Login login;
-    static User user;
-
-    public P2PBay() throws Exception {
-    }
 
     public static void main(String[] args) throws Exception {
-        String option;
+        Scanner in = new Scanner(System.in);
         P2PBayBootstrap bootstrap = new P2PBayBootstrap();
         bootstrap.loadConfig();
-        tomp2p = new TomP2PHandler(bootstrap);
-        login = new Login();
+        TomP2PHandler tomp2p = new TomP2PHandler(bootstrap);
+        Menu menu = new Menu();
+        Login login = new Login();
+        User user;
+        String option;
+        
         while (true) {
-            option=showMenu();
-            if(!(option.equals("exit"))) {
-                switch (option) {
-                    case "1":
-                        user = login.doLogin(tomp2p, in);
-                        if(user != null) {
-                            while(true) {
-                                if(!(option = showMainMenu()).equals("7")) {
-                                    doOperation(tomp2p, option);
-                                }
-                                else break;
-
-                            }
-
-                        }
-                        else
-                            System.out.println("\nO login falhou!");
-                        break;
-                    case "2":
-                        user = login.createUser(tomp2p, in);
-                        break;
-                    default:
-                        System.out.println("Opcao invalida!");
-                }
+            option = menu.showLoginMenu(in);
+            switch (option) {
+                case "1":
+                    user = login.doLogin(tomp2p, in);
+                    if(user == null) break;
+                    else menu.navigate(tomp2p, in, user);
+                    break;
+                case "2":
+                    user = login.createUser(tomp2p, in);
+                    break;
+                case "exit":
+                    in.close();
+                    System.exit(0);
+                default:
+                    System.out.println("Opcao invalida!");
             }
-            else {
-                in.close();
-                System.exit(0);
-            }
+
         }
     }
 
-    private static String showMenu() {
-        System.out.println("\n"
-                + "-----P2PBay-----\n\n"
-                + "1 - Login\n"
-                + "2 - Criar uma conta\n\n"
-                + "'exit' para sair\n");
-        String option = in.nextLine();
-        return option;
-    }
 
-    public static String showMainMenu() {
-        System.out.println("\n"
-                + "1 - Vender um item\n"
-                + "2 - Fechar leilao\n"
-                + "3 - Procurar um item para comprar\n"
-                + "4 - Licitar um item\n"
-                + "5 - Consultar os detalhes de um item\n"
-                + "6 - Consultar o meu historico\n"
-                + "7 - Logout\n\n"
-                + "'exit' para sair\n");
-        String option = in.nextLine();
-        return option;
-    }
-
-    public static void doOperation(TomP2PHandler tomp2p, String option) {
+    /*public static void doOperation(TomP2PHandler tomp2p, String option) {
         String title;
         String description;
         Item item;
@@ -134,21 +97,18 @@ public class P2PBay {
             in.close();
             System.exit(0);
         }
-    }
+    }*/
 
-    public static void sellItem(TomP2PHandler tomp2p, Item item) {
+    /*public static void sellItem(TomP2PHandler tomp2p, Item item) {
         try {
             tomp2p.storeItem(item);
         } catch (IOException e) {
             System.out.println("Ocorreu um erro na insercao do item no sistema...\n");
         }
         System.out.println("\nO item foi inserido com sucesso!");
-    }
+    }*/
 
-    private static void storeItem(Item item) {
-    }
-
-    @SuppressWarnings("unchecked")
+    /*@SuppressWarnings("unchecked")
     public static String closeAuction(String title) {
         boolean isClosed = false;
         List<Bid> bids = new ArrayList<Bid>();
@@ -165,9 +125,9 @@ public class P2PBay {
             e.printStackTrace();
         }
         return "O leilao foi fechado com sucesso, o valor final do item e " + value;
-    }
+    }*/
 
-    @SuppressWarnings("unchecked")
+    /*@SuppressWarnings("unchecked")
     private static String bidOnItem(String title, float value) {
         List<Bid> bids = new ArrayList<Bid>();
         String result = null;
@@ -194,9 +154,9 @@ public class P2PBay {
             e.printStackTrace();
         }
         return result;
-    }
+    }*/
 
-    @SuppressWarnings("unchecked")
+    /*@SuppressWarnings("unchecked")
     public static String getDetails(String title) {
         String description = null;
         float value = 0;
@@ -212,15 +172,15 @@ public class P2PBay {
             e.printStackTrace();
         }
         return "Descricao: " + description + "\nValor: " + value;
-    }
+    }*/
 
-    public static String getHistory() {
+    /*public static String getHistory() {
         List<Bid> bids = user.getBids();
         String history = "Titulo:\t\tValor:\n";
         for(Bid b : bids) {
             history += b.getTitle() + "\t\t" + b.getValue() + "\n";
         }
         return history;
-    }
+    }*/
 
 }
