@@ -23,11 +23,7 @@ public class AuctionToClose {
 
     private void closeAuction() {
         Item item = null;
-        try {
-            item = (Item) this.tomp2p.get(title);
-        } catch (ClassNotFoundException | IOException e) {
-            System.out.println("Ocorreu um erro na obtencao do item...");
-        }
+        item = (Item) this.tomp2p.get(title);
         if(item.auctionIsClosed()) {
             System.out.println("O leilao ja estava fechado...");
         }

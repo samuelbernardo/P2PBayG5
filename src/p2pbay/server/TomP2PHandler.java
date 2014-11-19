@@ -50,12 +50,16 @@ public class TomP2PHandler {
         peer.put(hKey).setData(new Data(object)).start().awaitUninterruptibly();
     }
     
-    public Object get(String key) throws IOException, ClassNotFoundException {
+    public Object get(String key) {
         Number160 hKey = Number160.createHash(key);
         FutureDHT futureDHT = peer.get(hKey).start().awaitUninterruptibly();
         if (futureDHT.isSuccess()) {
-            return futureDHT.getData().getObject();
+            try {
+                return futureDHT.getData().getObject();
+            } catch (ClassNotFoundException | IOException e) {
+                e.printStackTrace();
+            }
         }
-        return "Not found!";
+        return null;
     }
 }

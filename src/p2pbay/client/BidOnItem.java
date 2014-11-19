@@ -32,9 +32,6 @@ public class BidOnItem {
         Item item = null;
         try {
             item = (Item) this.tomp2p.get(title);
-        } catch (ClassNotFoundException | IOException e) {
-            System.out.println("Ocorreu um erro na obtencao do item...");
-            return;
         } catch (ClassCastException e) {
             System.out.println("O item que pretende licitar nao existe...");
             return;

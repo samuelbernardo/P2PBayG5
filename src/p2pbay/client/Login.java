@@ -3,13 +3,21 @@ package p2pbay.client;
 import java.io.IOException;
 import java.util.Scanner;
 
+import p2pbay.P2PBay;
 import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
 
 public class Login {
+    public static String USERNAME = "Username";
+    public static String PASSWORD = "Password";
 
-    private static String username;
-    private static String givenPassword;
+    private String username;
+    private String givenPassword;
+
+    public Login(String username, String password) {
+        this.username = username;
+        this.givenPassword = password;
+    }
 
     public String getUsername() {
         return username;
@@ -23,17 +31,26 @@ public class Login {
     }
     
     // Por questoes de segurança nao se especifica porque falhou o login.
-    public User doLogin(TomP2PHandler tomp2p, Scanner in) throws ClassNotFoundException, IOException {
+    public User doLogin(TomP2PHandler tomp2p, Scanner in) throws IOException {
         setCredentials(in);
         User user = null;
-        try {
-            user = (User) tomp2p.get(username);
-            if(!givenPassword.equals(user.getPassword()))
-                System.out.println("O login falhou...");
-        }
-        catch(ClassNotFoundException | IOException e){
+        user = (User) tomp2p.get(username);
+        if(!givenPassword.equals(user.getPassword()))
             System.out.println("O login falhou...");
-        }
+        return user;
+    }
+
+    /**
+     *
+     * @return The user that logged on, or null if wrong credentials provided
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    public User doLogin() {
+        User user = null;
+        user = (User) P2PBay.P2PBAY.get(username);
+        if(!user.getPassword().equals(givenPassword))
+            return null;
         return user;
     }
 
