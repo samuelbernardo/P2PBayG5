@@ -1,5 +1,7 @@
 package p2pbay.client;
 
+import p2pbay.client.user.Login;
+import p2pbay.client.user.SignUp;
 import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
 
@@ -8,6 +10,7 @@ import java.util.Scanner;
 
 public class Client {
     public static User LOGGED = null;
+    public static Scanner input = new Scanner(System.in);
 
     private TomP2PHandler connectionHandler;
     private Scanner inputReader;
@@ -17,25 +20,6 @@ public class Client {
         inputReader = new Scanner(System.in);
     }
 
-    /**
-     * Used for a user to login onto the client application
-     * @return true if user login is successful, false otherwise
-     */
-    public boolean login() {
-        System.out.println("Login...");
-
-        String username = getUsername();
-        String password = getPassword();
-
-        //Check if exists user with such username
-        User user = (User) connectionHandler.get(username);
-        if(user != null)
-            if(user.getPassword().equals(password))
-                //User password matches
-                LOGGED = user;
-
-        return isLogged();
-    }
 
     private boolean signup() {
         System.out.println("Sign up...");
@@ -73,25 +57,39 @@ public class Client {
         return inputReader.nextLine();
     }
 
+    /**
+     * @param username
+     * @return User or null if not found
+     */
+    public User findUser(String username) {
+        return (User) connectionHandler.get(username);
+    }
+
+    public void setUser(User user) {
+        LOGGED = user;
+    }
+
+    public void store(User user) {
+        try {
+            connectionHandler.store(user.getUsername(), user);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void start() throws IOException, ClassNotFoundException {
         Scanner in = new Scanner(System.in);
-        Menu menu = new Menu(in);
+        Menu menu = new Menu(this);
         String option;
 
         while (!isLogged()) {
             option = menu.showLoginMenu();
             switch (option) {
                 case "1":
-                    if(login())
-                        System.out.println("Logged in as " + LOGGED.getUsername());
-                    else
-                        System.out.println("Login failed");
+                    new Login(this, in).run();
                     break;
                 case "2":
-                    if(signup())
-                        System.out.println("Sign up Successful");
-                    else
-                        System.out.println("Error Signing up");
+                    new SignUp(this, in).run();
                     break;
                 case "exit":
                     in.close();
@@ -101,6 +99,6 @@ public class Client {
             }
         }
 
-        menu.navigate(connectionHandler, LOGGED);
+        menu.navigate();
     }
 }

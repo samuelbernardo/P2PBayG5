@@ -7,10 +7,11 @@ import p2pbay.server.TomP2PHandler;
 public class P2PBay {
     public static TomP2PHandler P2PBAY;
 
+
     public static void main(String[] args) throws Exception {
         //Connect to the P2P network
         P2PBayBootstrap bootstrap = new P2PBayBootstrap();
-        bootstrap.loadConfig();
+        //bootstrap.loadConfig();
         P2PBAY = new TomP2PHandler(bootstrap);
 
         //If the program is running as a server, there is no menu

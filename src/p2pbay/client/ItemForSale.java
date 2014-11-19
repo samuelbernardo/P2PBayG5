@@ -7,7 +7,7 @@ import p2pbay.core.Item;
 import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
 
-public class ItemForSale {
+public class ItemForSale implements Runnable {
     TomP2PHandler tomp2p;
     private User user;
     private String title;
@@ -19,6 +19,9 @@ public class ItemForSale {
         this.user = user;
         setInfo(in);
         store();
+    }
+
+    public ItemForSale() {
     }
     
     private void setInfo(Scanner in) {
@@ -45,5 +48,10 @@ public class ItemForSale {
         } catch (IOException e) {
             System.out.println("Ocorreu um erro ao publicar o item...");
         }
+    }
+
+    @Override
+    public void run() {
+        String title = getTitle();
     }
 }

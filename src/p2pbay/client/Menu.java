@@ -7,10 +7,15 @@ import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
 
 public class Menu {
+    private Client client;
     Scanner input;
 
     public Menu(Scanner input) {
         this.input = input;
+    }
+
+    public Menu(Client client) {
+        this.client = client;
     }
 
     public String showLoginMenu() {
@@ -58,6 +63,38 @@ public class Menu {
                     break;
                 case "6":
                     new HistoryCheck(tomp2p, user);
+                    break;
+                case "exit":
+                    input.close();
+                    System.exit(0);
+                default:
+                    System.out.println("Opcao invalida!");
+            }
+        }
+    }
+
+    public void navigate() {
+        String option;
+        while(true){
+            option = showMainMenu();
+            switch (option) {
+                case "1":
+//                    new ItemForSale(tomp2p, input, Client.LOGGED);
+                    new ItemForSale().run();
+                    break;
+                case "2":
+//                    new AuctionToClose(tomp2p, input);
+                    break;
+                case "3":
+                    break;
+                case "4":
+//                    new BidOnItem(tomp2p, input, client.LOGGED);
+                    break;
+                case "5":
+//                    new DetailsOfItem(tomp2p, input);
+                    break;
+                case "6":
+//                    new HistoryCheck(tomp2p, client.LOGGED);
                     break;
                 case "exit":
                     input.close();
