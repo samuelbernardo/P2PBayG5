@@ -2,6 +2,7 @@ package p2pbay.client;
 
 import java.io.IOException;
 import java.util.Scanner;
+import java.io.Console;
 
 import p2pbay.P2PBay;
 import p2pbay.core.User;
@@ -24,10 +25,18 @@ public class Login {
     }
 
     public void setCredentials(Scanner in) {
-        System.out.println("\nUsername:");
-        username = in.nextLine();
-        System.out.println("Password:");
-        givenPassword = in.nextLine();
+        try {
+            // creates a console object
+            Console cnsl = System.console();
+            // if console is not null
+            if (cnsl != null) {
+                this.username = cnsl.readLine("Username: ");
+                this.givenPassword = new String(cnsl.readPassword("Password: "));
+            }
+        } catch(Exception e){
+            // if any error occurs
+            e.printStackTrace();
+        }
     }
     
     // Por questoes de segurança nao se especifica porque falhou o login.
