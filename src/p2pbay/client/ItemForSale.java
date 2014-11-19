@@ -58,23 +58,25 @@ public class ItemForSale {
 
     public void doIndex(String term) {
         Index index = null;
+        index = (Index) tomp2p.get(term);
+        if (index == null) {
+            index = new Index(term, getTitle());
+        }
+        else
+            index.addTitle(getTitle());
+
         try {
-            index = (Index) tomp2p.get(term);
-            if (index == null) 
-                index = new Index(term, getTitle());
-        } catch (ClassNotFoundException | IOException e) {
-            System.out.println("Ocorreu um erro na obtencao do item");
+            tomp2p.store(term, index);
+        } catch (IOException e) {
+            System.out.println("Ocorreu um erro na insercao do indice...");
         }
     }
-    
+
     public void printIndex() {
         for(String term : this.getTitle().split(" ")) {
-            try {
-                Index index = (Index) tomp2p.get(term);
-                System.out.println("Termo: " + index.getTerm() + "Titulo: " + index.getItems());
-            } catch (ClassNotFoundException | IOException e) {
-                System.out.println("POOP");
-            }
+            Index index = (Index) tomp2p.get(term);
+            if (index != null)
+                System.out.println("Termo: " + index.getTerm() + "Titulo: " + index.getTitles());
         }
     }
 }

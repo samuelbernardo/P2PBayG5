@@ -1,6 +1,5 @@
 package p2pbay.client;
 
-import java.io.IOException;
 import java.util.Scanner;
 import p2pbay.core.Item;
 import p2pbay.server.TomP2PHandler;

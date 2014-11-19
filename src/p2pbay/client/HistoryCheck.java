@@ -1,7 +1,5 @@
 package p2pbay.client;
 
-import java.io.IOException;
-
 import p2pbay.core.Bid;
 import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;

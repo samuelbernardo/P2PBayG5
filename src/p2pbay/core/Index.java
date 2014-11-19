@@ -1,27 +1,32 @@
 package p2pbay.core;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.util.TreeSet;
 
-public class Index {
+public class Index implements Serializable {
+    private static final long serialVersionUID = 6128016096756071380L;
     private String term;
-    private List<String> items;
+    private TreeSet<String> titles;
     
     public Index(String term, String title) {
         this.term = term;
-        this.items = new ArrayList<String>();
-        this.items.add(title);
+        this.titles = new TreeSet<String>();
+        this.titles.add(title);
     }
     
     public String getTerm() {
         return this.term;
     }
     
-    public List<String> getItems() {
-        return this.items;
+    public TreeSet<String> getTitles() {
+        return this.titles;
     }
     
     public void addTitle(String title) {
-        this.items.add(title);
+        this.titles.add(title);
+    }
+    
+    public void removeTitle(String title) {
+        titles.remove(title);
     }
 }

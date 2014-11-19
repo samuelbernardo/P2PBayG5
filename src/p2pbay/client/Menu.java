@@ -49,6 +49,7 @@ public class Menu {
                     new AuctionToClose(tomp2p, input);
                     break;
                 case "3":
+                    new Search(tomp2p, input);
                     break;
                 case "4":
                     new BidOnItem(tomp2p, input, user);
