@@ -38,7 +38,7 @@ public class Client {
     }
 
     private boolean signup() {
-        System.out.println("Signup...");
+        System.out.println("Sign up...");
 
         String username = getUsername();
         String password = getPassword();
@@ -89,9 +89,9 @@ public class Client {
                     break;
                 case "2":
                     if(signup())
-                        System.out.println("Signup Successeful");
+                        System.out.println("Sign up Successful");
                     else
-                        System.out.println("Error Signingup");
+                        System.out.println("Error Signing up");
                     break;
                 case "exit":
                     in.close();
