@@ -22,13 +22,9 @@ public class DetailsOfItem {
 
     private void getDetails() {
         Item item = null;
-        try {
-            item = (Item) this.tomp2p.get(title);
-            String description = item.getDescription();
-            float value = item.getValue();
-            System.out.println("Descricao: " + description + "\nValor: " + value + "€");
-        } catch (ClassNotFoundException | IOException e) {
-            System.out.println("Ocorreu um erro na obtencao do item...");
-        }
+        item = (Item) this.tomp2p.get(title);
+        String description = item.getDescription();
+        float value = item.getValue();
+        System.out.println("Descricao: " + description + "\nValor: " + value + "€");
     }
 }

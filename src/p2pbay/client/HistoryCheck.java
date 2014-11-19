@@ -19,15 +19,11 @@ public class HistoryCheck {
     
     public void getHistory() {
         User user = null;
-        try {
-            user = (User) this.tomp2p.get(this.user.getUsername());
-            String history = "Titulo:\t\tValor:\n";
-            for(Bid b : user.getBids()) {
-                history += b.getTitle() + "\t\t" + b.getValue() + "\n";
-            }
-            System.out.println(history);
-        } catch (ClassNotFoundException | IOException e) {
-            System.out.println("Ocorreu um erro na obtencao do item...");
+        user = (User) this.tomp2p.get(this.user.getUsername());
+        String history = "Titulo:\t\tValor:\n";
+        for(Bid b : user.getBids()) {
+            history += b.getTitle() + "\t\t" + b.getValue() + "\n";
         }
+        System.out.println(history);
     }
 }
