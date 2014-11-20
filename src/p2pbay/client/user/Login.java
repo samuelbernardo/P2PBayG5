@@ -6,13 +6,10 @@ import p2pbay.core.User;
 import java.util.Scanner;
 
 public class Login extends UserInfo implements Runnable {
-    private Client client;
 
-    public Login(Client client, Scanner input) {
-        super(input);
-        this.client = client;
+    public Login(Client client) {
+        super(client);
     }
-
     @Override
     public void run() {
         System.out.println("Login...");
@@ -21,11 +18,11 @@ public class Login extends UserInfo implements Runnable {
         String password = getPassword();
 
         //Check if exists user with such username
-        User user = client.findUser(username);
+        User user = getClient().findUser(username);
         if(user != null)
             if(user.getPassword().equals(password)) {
                 //User password matches
-                client.setUser(user);
+                getClient().setUser(user);
                 System.out.println("Login com sucesso");
                 return;
             }

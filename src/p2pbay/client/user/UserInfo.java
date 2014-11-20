@@ -1,25 +1,28 @@
 package p2pbay.client.user;
 
-import java.util.Scanner;
+import p2pbay.client.Client;
 
 public class UserInfo {
     public static String USERNAME = "Username:";
     public static String PASSWORD = "Password:";
 
-    private Scanner input;
+    private Client client;
 
+    public Client getClient() {
+        return client;
+    }
 
-    public UserInfo(Scanner input) {
-        this.input = input;
+    public UserInfo(Client client) {
+        this.client = client;
     }
 
     protected String getUsername() {
         System.out.print(USERNAME);
-        return input.nextLine();
+        return client.getInput();
     }
 
     protected String getPassword() {
         System.out.print(PASSWORD);
-        return input.nextLine();
+        return client.getInput();
     }
 }

@@ -7,11 +7,9 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class SignUp extends UserInfo implements Runnable {
-    private Client client;
 
-    public SignUp(Client client, Scanner input) {
-        super(input);
-        this.client = client;
+    public SignUp(Client client) {
+        super(client);
     }
 
     @Override
@@ -22,11 +20,11 @@ public class SignUp extends UserInfo implements Runnable {
         String password = getPassword();
 
         //Check if user exists
-        User user = client.findUser(username);
+        User user = getClient().findUser(username);
 
         if(user == null) {
             user = new User(username, password);
-            client.store(user);
+            getClient().store(user);
             System.out.println("User registado");
         }
         else

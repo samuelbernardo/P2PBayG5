@@ -89,4 +89,7 @@ local.properties
 # TeXlipse plugin
 .texlipse
 
+# Other eclipse stuff
 *.log
+build/
+RemoteSystemsTempFiles/

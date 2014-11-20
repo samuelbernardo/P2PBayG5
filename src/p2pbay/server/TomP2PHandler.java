@@ -62,4 +62,8 @@ public class TomP2PHandler {
         }
         return null;
     }
+
+    public void close() {
+        peer.shutdown();
+    }
 }
