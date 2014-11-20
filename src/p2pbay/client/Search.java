@@ -1,6 +1,6 @@
 package p2pbay.client;
 
-
+import java.lang.UnsupportedOperationException;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.TreeSet;
@@ -11,15 +11,16 @@ import p2pbay.server.TomP2PHandler;
 public class Search {
 
     private TomP2PHandler tomp2p;
-    //private List<String> booleanOperationsPermited;
     private String search;
-
+    private String[] splitSearch;
+    private int nWords;
+    private TreeSet<String> previousResult;
 
     public Search(TomP2PHandler tomp2p, Scanner input) {
         this.tomp2p = tomp2p;
-        //this.booleanOperationsPermited = new ArrayList<String>(Arrays.asList("AND", "OR", "NOT"));
         this.search = getBooleanSearch(input);
-        analyse();
+        doSearch();
+        printResults();
     }
 
     private String getBooleanSearch(Scanner input) {
@@ -27,41 +28,89 @@ public class Search {
         return input.nextLine();
     }
 
-    private void analyse() {
-        String[] splitSearch = this.search.split(" ");
-        int nWords = splitSearch.length;
-        TreeSet<String> previousResult = new TreeSet<String>();
+    private void doSearch() {
+        try {
+            this.splitSearch = this.search.split(" ");
+            this.previousResult = new TreeSet<String>();
+            this.nWords = splitSearch.length;
 
-        //if (isValid(expression)) {
-        Index indexWithTerm1 = (Index) tomp2p.get(splitSearch[nWords-2]);
-        TreeSet<String> titlesWithTerm1 = indexWithTerm1.getTitles();
-        Index indexWithTerm2 = (Index) tomp2p.get(splitSearch[nWords-1]);
-        TreeSet<String> titlesWithTerm2 = indexWithTerm2.getTitles();
-        previousResult = analyse(splitSearch[nWords-3], titlesWithTerm1, titlesWithTerm2);
-        nWords -= 3;
-        while(nWords > 0) {
-            indexWithTerm1 = (Index) tomp2p.get(splitSearch[nWords-1]);
-            titlesWithTerm1 = indexWithTerm1.getTitles();
-            previousResult = analyse(splitSearch[nWords-2], titlesWithTerm1, previousResult);
-            nWords -= 2;
+            // análise da primeira expressão mais à direita
+            if(!splitSearch[nWords-2].equals("NOT")) { 
+                this.previousResult = analyseWithoutNOT(nWords-3, 1);
+                this.nWords -= 3;
+            }
+            else {
+                this.previousResult = analyseWithNOT();
+                this.nWords -= 4;
+            }
+
+            // análise das restantes expressões, se houver
+            while(nWords > 0) {
+                if(!splitSearch[nWords-2].equals("NOT")) {
+                    this.previousResult = analyseWithoutNOT(nWords-2, 2);
+                    nWords -= 2;
+                }
+                else {
+                    this.previousResult = analyseWithNOT();
+                    nWords -= 3;
+                }
+            }
         }
-
-        Iterator<String> iterator = previousResult.iterator();
-        System.out.print("Resultados da pesquisa:\n");
-        while (iterator.hasNext()) {
-            System.out.print(iterator.next() + "\n");
+        catch(ArrayIndexOutOfBoundsException e) {
+            System.out.println("A expressao nao esta bem formada, por favor tente novamente.");
         }
     }
 
-    /*private boolean isValid(String[] expression) {
-    if (booleanOperationsPermited.contains(expression[0])
-            || !booleanOperationsPermited.contains(expression[1])
-            || !booleanOperationsPermited.contains(expression[2]))
-        return true;
-    else return false;
-}*/
+    // type = 1 significa que é a primeira análise da direita; type = 2 significa que é uma das análises mais à esquerda
+    private TreeSet<String> analyseWithoutNOT(int booleanOperatorPosition, int type) {
+        TreeSet<String> titles = new TreeSet<String>();
+        Index indexWithTerm1;
+        Index indexWithTerm2;
+        TreeSet<String> titlesWithTerm1 = new TreeSet<String>();
+        TreeSet<String> titlesWithTerm2 = new TreeSet<String>();;
 
-    private TreeSet<String> analyse(String operator, TreeSet<String> titlesWithTerm1, TreeSet<String> titlesWithTerm2) {
+        if(type==1) {
+            indexWithTerm1 = (Index) tomp2p.get(splitSearch[this.nWords-2]);
+            indexWithTerm2 = (Index) tomp2p.get(splitSearch[this.nWords-1]);
+            if(indexWithTerm1 != null)
+                titlesWithTerm1 = indexWithTerm1.getTitles();
+            if(indexWithTerm2 != null)
+                titlesWithTerm2 = indexWithTerm2.getTitles();
+        }
+        else {
+            indexWithTerm1 = (Index) tomp2p.get(splitSearch[this.nWords-1]);
+            titlesWithTerm1 = indexWithTerm1.getTitles();
+            titlesWithTerm2 = this.previousResult;
+        }
+        
+        try {
+            titles = doBooleanOperation(splitSearch[booleanOperatorPosition], titlesWithTerm1, titlesWithTerm2);
+        } catch(UnsupportedOperationException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return titles;
+    }
+
+    private TreeSet<String> analyseWithNOT() {
+        TreeSet<String> NOTresults = new TreeSet<String>();
+        TreeSet<String> titles = new TreeSet<String>();
+        Index indexWithTerm1 = (Index) tomp2p.get(this.splitSearch[nWords-3]);
+        TreeSet<String> titlesWithTerm1 = indexWithTerm1.getTitles();
+        Index indexWithTerm2 = (Index) tomp2p.get(this.splitSearch[nWords-1]);
+        TreeSet<String> titlesWithTerm2 = indexWithTerm2.getTitles();
+        NOTresults.addAll(titlesWithTerm1);
+        NOTresults.removeAll(titlesWithTerm2);
+        try {
+            titles = doBooleanOperation(this.splitSearch[this.nWords-4], titlesWithTerm1, NOTresults);
+        }
+        catch(UnsupportedOperationException e) {
+            System.out.println(e.getMessage());
+        }
+        return titles;
+    }
+
+    private TreeSet<String> doBooleanOperation(String operator, TreeSet<String> titlesWithTerm1, TreeSet<String> titlesWithTerm2) throws UnsupportedOperationException {
         TreeSet<String> titles = new TreeSet<String>();
 
         switch (operator) {
@@ -73,11 +122,20 @@ public class Search {
                 titles.addAll(titlesWithTerm1);
                 titles.addAll(titlesWithTerm2);
                 break;
-            case "NOT":
-                // removeAll
-                break;
+            default:
+                throw new UnsupportedOperationException("ERRO! Keyword booleana invalida: " + operator);
         }
-
         return titles;
+    }
+
+    private void printResults() {
+        if(!this.previousResult.isEmpty()) {
+            Iterator<String> iterator = this.previousResult.iterator();
+            System.out.print("Resultados da pesquisa:\n");
+            while (iterator.hasNext())
+                System.out.print("1: " + iterator.next() + ".\n");
+        }
+        else
+            System.out.println("Sem resultados... Por favor tente outras keywords.");
     }
 }
