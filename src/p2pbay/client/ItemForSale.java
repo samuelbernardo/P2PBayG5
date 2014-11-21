@@ -20,8 +20,15 @@ public class ItemForSale extends UserInteraction implements Runnable {
         this.title = getInput();
         System.out.println("Descricao:");
         this.description = getInput();
-        System.out.println("Base de licitacao:");
-        this.baseBid = getFloat();
+        while (true) {
+            try {
+                System.out.println("Base de licitacao:");
+                this.baseBid = getFloat();
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Numero invalido");
+            }
+        }
     }
 
     @Override

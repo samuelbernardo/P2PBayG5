@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Item implements Serializable {
+public class Item extends DHTObject implements Serializable {
     private static final long serialVersionUID = 6128016096756071380L;
     private String owner;
     private String title;
@@ -14,6 +14,7 @@ public class Item implements Serializable {
     private List<Bid> bids;
 
     public Item(String owner, String title, String description, float baseBid) {
+        super(title);
         this.owner = owner;
         this.title = title;
         this.description = description;

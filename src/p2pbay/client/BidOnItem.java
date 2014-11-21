@@ -42,8 +42,7 @@ public class BidOnItem {
             Bid newBid =  new Bid(this.title, this.user.getUsername(), this.proposedValue);
             item.addBid(newBid);
             user.addBid(newBid);
-            if(tomp2p.store(this.title, item) &&
-                tomp2p.store(this.user.getUsername(), this.user))
+            if(tomp2p.store(item) && tomp2p.store(user))
                 System.out.println("A licitacao foi aceite!");
             else
                 System.out.println("Ocorreu um erro ao actualizar o item...");

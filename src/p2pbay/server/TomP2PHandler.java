@@ -7,6 +7,7 @@ import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerMaker;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
+import p2pbay.core.DHTObject;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -52,6 +53,18 @@ public class TomP2PHandler {
             return true;
         } catch (IOException e) {
 //            e.printStackTrace();
+            System.err.println("Nao foi possivel guardar o objecto:");
+            System.err.println(object);
+            System.err.println("Expecao " + e);
+            return false;
+        }
+    }
+
+    public boolean store(DHTObject object) {
+        try {
+            peer.put(object.getHash()).setData(new Data(object)).start().awaitUninterruptibly();
+            return true;
+        } catch (IOException e) {
             System.err.println("Nao foi possivel guardar o objecto:");
             System.err.println(object);
             System.err.println("Expecao " + e);

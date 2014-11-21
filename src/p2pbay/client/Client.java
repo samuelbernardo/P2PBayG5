@@ -2,6 +2,7 @@ package p2pbay.client;
 
 import p2pbay.client.user.Login;
 import p2pbay.client.user.SignUp;
+import p2pbay.core.DHTObject;
 import p2pbay.core.Item;
 import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
@@ -36,12 +37,8 @@ public class Client {
         LOGGED = user;
     }
 
-    public boolean store(User user) {
-        return connectionHandler.store(user.getUsername(), user);
-    }
-
-    public boolean store(Item item) {
-        return connectionHandler.store(item.getTitle(), item);
+    public boolean store(DHTObject object) {
+        return connectionHandler.store(object);
     }
 
     public String getInput() {
