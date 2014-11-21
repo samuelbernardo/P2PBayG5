@@ -16,8 +16,7 @@ public class BidOnItem  extends UserInteraction{
     public void getInfo() {
         System.out.print("Titulo do item:");
         this.title = getInput();
-        System.out.print("Valor:");
-        this.proposedValue = getFloat();
+        this.proposedValue = getPositiveNumber(SysStrings.VALUE);
     }
 
     @Override
