@@ -40,8 +40,7 @@ public class Menu {
 
     public void navigate() {
         String option;
-        boolean running = true;
-        while(running){
+        while(true){
             option = showMainMenu();
             switch (option) {
                 case "1":
@@ -52,7 +51,6 @@ public class Menu {
                     break;
                 case "3":
                     new Search(client).run();
-//                    new SearchForItems().run();
                     break;
                 case "4":
                     new BidOnItem(client).run();
@@ -67,9 +65,7 @@ public class Menu {
                     client.logout();
                     return;
                 case "exit":
-                    client.close();
-                    running = false;
-                    break;
+                    return;
                 default:
                     System.out.println("Opcao invalida!");
             }
