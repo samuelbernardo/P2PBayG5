@@ -2,7 +2,7 @@ package p2pbay.client.user;
 
 import p2pbay.client.Client;
 
-public class UserInfo {
+public class UserInteraction {
     public static String USERNAME = "Username:";
     public static String PASSWORD = "Password:";
 
@@ -12,17 +12,25 @@ public class UserInfo {
         return client;
     }
 
-    public UserInfo(Client client) {
+    public UserInteraction(Client client) {
         this.client = client;
     }
 
-    protected String getUsername() {
+    public String getUsername() {
         System.out.print(USERNAME);
         return client.getInput();
     }
 
-    protected String getPassword() {
+    public String getPassword() {
         System.out.print(PASSWORD);
         return client.getInput();
+    }
+
+    public String getInput() {
+        return client.getInput();
+    }
+
+    public float getFloat() {
+        return client.getNumberInput();
     }
 }

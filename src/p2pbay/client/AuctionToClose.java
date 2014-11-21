@@ -30,12 +30,10 @@ public class AuctionToClose {
         else {
             item.setAuctionClosed(true);
             float value = item.getValue();
-            try {
-                tomp2p.store(title, item);
-            } catch (IOException e) {
+            if(tomp2p.store(title, item))
                 System.out.println("Ocorreu um erro ao actualizar o item...");
-            }
-            System.out.println("O leilao foi fechado com sucesso, o valor final do item e " + value + "€.");
+            else
+                System.out.println("O leilao foi fechado com sucesso, o valor final do item e " + value + "€.");
         }
     }
 }

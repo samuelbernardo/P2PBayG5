@@ -42,13 +42,11 @@ public class BidOnItem {
             Bid newBid =  new Bid(this.title, this.user.getUsername(), this.proposedValue);
             item.addBid(newBid);
             user.addBid(newBid);
-            try {
-                tomp2p.store(this.title, item);
-                tomp2p.store(this.user.getUsername(), this.user);
+            if(tomp2p.store(this.title, item) &&
+                tomp2p.store(this.user.getUsername(), this.user))
                 System.out.println("A licitacao foi aceite!");
-            } catch (IOException e) {
+            else
                 System.out.println("Ocorreu um erro ao actualizar o item...");
-            }
         }
         else
             System.out.println("A licitacao foi rejeitada pois o valor do item (" + itemsValue + "€) e igual ou superior a sua oferta!");

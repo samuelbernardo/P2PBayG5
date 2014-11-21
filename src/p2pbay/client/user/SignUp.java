@@ -3,10 +3,7 @@ package p2pbay.client.user;
 import p2pbay.client.Client;
 import p2pbay.core.User;
 
-import java.io.IOException;
-import java.util.Scanner;
-
-public class SignUp extends UserInfo implements Runnable {
+public class SignUp extends UserInteraction implements Runnable {
 
     public SignUp(Client client) {
         super(client);

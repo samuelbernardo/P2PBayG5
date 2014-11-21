@@ -45,9 +45,18 @@ public class TomP2PHandler {
      * @param object Objecto a ser guardado na dht
      * @throws IOException possivelmente se o objecto nao for serializavel
      */
-    public void store(String key, Object object) throws IOException {
-        Number160 hKey = Number160.createHash(key);
-        peer.put(hKey).setData(new Data(object)).start().awaitUninterruptibly();
+    public boolean store(String key, Object object) {
+        try {
+            Number160 hKey = Number160.createHash(key);
+            peer.put(hKey).setData(new Data(object)).start().awaitUninterruptibly();
+            return true;
+        } catch (IOException e) {
+//            e.printStackTrace();
+            System.err.println("Nao foi possivel guardar o objecto:");
+            System.err.println(object);
+            System.err.println("Expecao " + e);
+            return false;
+        }
     }
     
     public Object get(String key) {

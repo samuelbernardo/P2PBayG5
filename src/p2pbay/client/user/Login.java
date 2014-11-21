@@ -3,9 +3,7 @@ package p2pbay.client.user;
 import p2pbay.client.Client;
 import p2pbay.core.User;
 
-import java.util.Scanner;
-
-public class Login extends UserInfo implements Runnable {
+public class Login extends UserInteraction implements Runnable {
 
     public Login(Client client) {
         super(client);
@@ -14,6 +12,7 @@ public class Login extends UserInfo implements Runnable {
     public void run() {
         System.out.println("Login...");
 
+        //User Credentials
         String username = getUsername();
         String password = getPassword();
 

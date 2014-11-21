@@ -2,6 +2,7 @@ package p2pbay.client;
 
 import p2pbay.client.user.Login;
 import p2pbay.client.user.SignUp;
+import p2pbay.core.Item;
 import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
 
@@ -35,17 +36,26 @@ public class Client {
         LOGGED = user;
     }
 
-    public void store(User user) {
-        try {
-            connectionHandler.store(user.getUsername(), user);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public boolean store(User user) {
+        return connectionHandler.store(user.getUsername(), user);
+    }
+
+    public boolean store(Item item) {
+        return connectionHandler.store(item.getTitle(), item);
     }
 
     public String getInput() {
         return input.nextLine();
     }
+
+    public float getNumberInput() {
+        return Float.parseFloat(input.nextLine());
+    }
+
+    public User getUser() {
+        return LOGGED;
+    }
+
 
     public void start() throws IOException, ClassNotFoundException {
         Menu menu = new Menu(this);

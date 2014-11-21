@@ -1,57 +1,37 @@
 package p2pbay.client;
 
-import java.io.IOException;
-import java.util.Scanner;
-
+import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Item;
-import p2pbay.core.User;
-import p2pbay.server.TomP2PHandler;
 
-public class ItemForSale implements Runnable {
-    TomP2PHandler tomp2p;
-    private User user;
+public class ItemForSale extends UserInteraction implements Runnable {
     private String title;
     private String description;
-    private float baseBid;    
-    
-    public ItemForSale(TomP2PHandler tomp2p, Scanner in, User user) {
-        this.tomp2p = tomp2p;
-        this.user = user;
-        setInfo(in);
-        store();
+    private float baseBid;
+
+    public ItemForSale(Client client) {
+        super(client);
     }
 
-    public ItemForSale() {
-    }
-    
-    private void setInfo(Scanner in) {
+    /**
+     * This method blocks waiting for user input
+     */
+    private void setInfo() {
         System.out.println("\nTitulo:");
-        this.title = in.nextLine();
+        this.title = getInput();
         System.out.println("Descricao:");
-        this.description = in.nextLine();
+        this.description = getInput();
         System.out.println("Base de licitacao:");
-        this.baseBid = Float.parseFloat(in.nextLine());
-    }
-    
-    public String getTitle() {
-        return title;
-    }
-    
-    public String getDescription() {
-        return description;
-    }
-    
-    public void store() {
-        try {
-            tomp2p.store(title, new Item(user.getUsername(), this.title, this.description, this.baseBid));
-            System.out.println("O item foi publicado com sucesso!");
-        } catch (IOException e) {
-            System.out.println("Ocorreu um erro ao publicar o item...");
-        }
+        this.baseBid = getFloat();
     }
 
     @Override
     public void run() {
-        String title = getTitle();
+        setInfo();
+
+        Item item = new Item(getClient().getUser().getUsername(), title, description, baseBid);
+        if(getClient().store(item))
+            System.out.println("O item foi publicado com sucesso!");
+        else
+            System.out.println("Ocorreu um erro ao publicar o item...");
     }
 }

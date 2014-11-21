@@ -75,14 +75,13 @@ public class Menu {
             option = showMainMenu();
             switch (option) {
                 case "1":
-//                    new ItemForSale(tomp2p, input, Client.LOGGED);
-                    new ItemForSale().run();
+                    new ItemForSale(client).run();
                     break;
                 case "2":
 //                    new AuctionToClose(tomp2p, input);
                     break;
                 case "3":
-                    new SearchForItems().run();
+//                    new SearchForItems().run();
                     break;
                 case "4":
 //                    new BidOnItem(tomp2p, input, client.LOGGED);
