@@ -70,15 +70,15 @@ public class Search {
         TreeSet<String> titlesWithTerm2 = new TreeSet<String>();;
 
         if(type==1) {
-            indexWithTerm1 = (Index) tomp2p.get(splitSearch[this.nWords-2]);
-            indexWithTerm2 = (Index) tomp2p.get(splitSearch[this.nWords-1]);
+            indexWithTerm1 = (Index) tomp2p.get("index" + splitSearch[this.nWords-2]);
+            indexWithTerm2 = (Index) tomp2p.get("index" + splitSearch[this.nWords-1]);
             if(indexWithTerm1 != null)
                 titlesWithTerm1 = indexWithTerm1.getTitles();
             if(indexWithTerm2 != null)
                 titlesWithTerm2 = indexWithTerm2.getTitles();
         }
         else {
-            indexWithTerm1 = (Index) tomp2p.get(splitSearch[this.nWords-1]);
+            indexWithTerm1 = (Index) tomp2p.get("index" + splitSearch[this.nWords-1]);
             titlesWithTerm1 = indexWithTerm1.getTitles();
             titlesWithTerm2 = this.previousResult;
         }
@@ -95,9 +95,9 @@ public class Search {
     private TreeSet<String> analyseWithNOT() {
         TreeSet<String> NOTresults = new TreeSet<String>();
         TreeSet<String> titles = new TreeSet<String>();
-        Index indexWithTerm1 = (Index) tomp2p.get(this.splitSearch[nWords-3]);
+        Index indexWithTerm1 = (Index) tomp2p.get("index" + this.splitSearch[nWords-3]);
         TreeSet<String> titlesWithTerm1 = indexWithTerm1.getTitles();
-        Index indexWithTerm2 = (Index) tomp2p.get(this.splitSearch[nWords-1]);
+        Index indexWithTerm2 = (Index) tomp2p.get("index" + this.splitSearch[nWords-1]);
         TreeSet<String> titlesWithTerm2 = indexWithTerm2.getTitles();
         NOTresults.addAll(titlesWithTerm1);
         NOTresults.removeAll(titlesWithTerm2);
@@ -131,9 +131,9 @@ public class Search {
     private void printResults() {
         if(!this.previousResult.isEmpty()) {
             Iterator<String> iterator = this.previousResult.iterator();
-            System.out.print("Resultados da pesquisa:\n");
+            System.out.print("\nResultados da pesquisa:\n");
             while (iterator.hasNext())
-                System.out.print("1: " + iterator.next() + ".\n");
+                System.out.print(iterator.next() + "\n");
         }
         else
             System.out.println("Sem resultados... Por favor tente outras keywords.");

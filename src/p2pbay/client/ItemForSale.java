@@ -15,68 +15,72 @@ public class ItemForSale {
     private String description;
     private float baseBid;    
 
-    public ItemForSale(TomP2PHandler tomp2p, Scanner in, User user) {
+    public ItemForSale(TomP2PHandler tomp2p, Scanner input, User user) {
         this.tomp2p = tomp2p;
         this.user = user;
-        setInfo(in);
+        getInfo(input);
         store();
         indexItem();
-        printIndex();
-    }
-
-    private void setInfo(Scanner in) {
-        System.out.println("\nTitulo:");
-        this.title = in.nextLine();
-        System.out.println("Descricao:");
-        this.description = in.nextLine();
-        System.out.println("Base de licitacao:");
-        this.baseBid = Float.parseFloat(in.nextLine());
     }
 
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
-    public void store() {
+    private void getInfo(Scanner input) {
+        System.out.println("Titulo:");
+        this.title = input.nextLine();
+        System.out.println("Descricao:");
+        this.description = input.nextLine();
+        this.baseBid = getBaseBid(input);
+    }
+
+    private float getBaseBid(Scanner input) {
+        float bBid = -1;
+        do{
+            try {
+                System.out.println("Base de licitacao:");
+                bBid = Float.parseFloat(input.nextLine());
+                if (bBid <= 0) {
+                    System.err.println("O valor introduzido nao e valido.");
+                }
+            }
+            catch (NumberFormatException e) {
+                System.err.println("O valor introduzido nao e valido.");
+            }
+        } while (bBid <= 0);
+        return bBid;
+    }
+
+    private void store() {
         try {
-            tomp2p.store(title, new Item(user.getUsername(), this.title, this.description, this.baseBid));
+            tomp2p.store(this.title, new Item(this.user.getUsername(), this.title, this.description, this.baseBid));
             System.out.println("O item foi publicado com sucesso!");
         } catch (IOException e) {
-            System.out.println("Ocorreu um erro ao publicar o item...");
+            System.err.println("Ocorreu um erro ao publicar o item...");
         }
     }
 
     public void indexItem() {
-        for(String term : this.getTitle().split(" ")) {
+        for(String term : this.getTitle().split(" "))
             doIndex(term);
-        }
     }
 
     public void doIndex(String term) {
-        Index index = null;
-        index = (Index) tomp2p.get(term);
-        if (index == null) {
-            index = new Index(term, getTitle());
-        }
+        String key = "index" + term;
+        Index index = (Index) tomp2p.get(key);
+        if (index == null)
+            index = new Index(key, getTitle());
         else
             index.addTitle(getTitle());
-
         try {
-            tomp2p.store(term, index);
+            tomp2p.store(key, index);
         } catch (IOException e) {
-            System.out.println("Ocorreu um erro na insercao do indice...");
-        }
-    }
-
-    public void printIndex() {
-        for(String term : this.getTitle().split(" ")) {
-            Index index = (Index) tomp2p.get(term);
-            if (index != null)
-                System.out.println("Termo: " + index.getTerm() + "Titulo: " + index.getTitles());
+            System.err.println("Ocorreu um erro na insercao do indice...");
         }
     }
 }
