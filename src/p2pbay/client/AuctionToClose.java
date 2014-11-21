@@ -1,39 +1,39 @@
 package p2pbay.client;
 
-import java.io.IOException;
-import java.util.Scanner;
-
+import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Item;
-import p2pbay.server.TomP2PHandler;
 
-public class AuctionToClose {
+public class AuctionToClose extends UserInteraction{
     private String title;
-    private TomP2PHandler tomp2p;
 
-    public AuctionToClose(TomP2PHandler tomp2p, Scanner in) {
-        this.tomp2p = tomp2p;
-        setInfo(in);
-        closeAuction();
+    public AuctionToClose(Client client) {
+        super(client);
     }
 
-    private void setInfo(Scanner in) {
+    @Override
+    public void getInfo() {
         System.out.println("\nTitulo:");
-        title = in.nextLine();
+        title = getInput();
     }
 
-    private void closeAuction() {
-        Item item = null;
-        item = (Item) this.tomp2p.get(title);
+    @Override
+    public void storeObjects() {
+        Item item = getClient().getItem(title);
+        if(item == null) {
+            System.out.println("Item nao existe!");
+            return;
+        }
         if(item.auctionIsClosed()) {
-            System.out.println("O leilao ja estava fechado...");
+            System.out.println("O leilao ja esta fechado...");
         }
         else {
             item.setAuctionClosed(true);
             float value = item.getValue();
-            if(tomp2p.store(item))
-                System.out.println("Ocorreu um erro ao actualizar o item...");
-            else
+            if(getClient().store(item))
                 System.out.println("O leilao foi fechado com sucesso, o valor final do item e " + value + "€.");
+            else {
+                System.out.println("Ocorreu um erro ao actualizar o item...");
+            }
         }
     }
 }

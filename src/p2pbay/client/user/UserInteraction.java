@@ -2,7 +2,7 @@ package p2pbay.client.user;
 
 import p2pbay.client.Client;
 
-public class UserInteraction {
+public abstract class UserInteraction implements Runnable {
     public static String USERNAME = "Username:";
     public static String PASSWORD = "Password:";
 
@@ -32,5 +32,15 @@ public class UserInteraction {
 
     public float getFloat() {
         return client.getNumberInput();
+    }
+
+    public abstract void getInfo();
+
+    public abstract void storeObjects();
+
+    @Override
+    public void run() {
+        getInfo();
+        storeObjects();
     }
 }

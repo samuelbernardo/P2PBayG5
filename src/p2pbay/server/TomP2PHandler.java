@@ -71,7 +71,12 @@ public class TomP2PHandler {
             return false;
         }
     }
-    
+
+    /**
+     * Gets an object from the DHT
+     * @param key Object Key
+     * @return The Object or null if not found
+     */
     public Object get(String key) {
         Number160 hKey = Number160.createHash(key);
         FutureDHT futureDHT = peer.get(hKey).start().awaitUninterruptibly();

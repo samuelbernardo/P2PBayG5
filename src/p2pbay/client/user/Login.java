@@ -8,8 +8,9 @@ public class Login extends UserInteraction implements Runnable {
     public Login(Client client) {
         super(client);
     }
+
     @Override
-    public void run() {
+    public void getInfo() {
         System.out.println("Login...");
 
         //User Credentials
@@ -18,8 +19,8 @@ public class Login extends UserInteraction implements Runnable {
 
         //Check if exists user with such username
         User user = getClient().findUser(username);
-        if(user != null)
-            if(user.getPassword().equals(password)) {
+        if (user != null)
+            if (user.getPassword().equals(password)) {
                 //User password matches
                 getClient().setUser(user);
                 System.out.println("Login com sucesso");
@@ -27,4 +28,7 @@ public class Login extends UserInteraction implements Runnable {
             }
         System.out.println("Login falhou");
     }
+
+    @Override
+    public void storeObjects() {}
 }

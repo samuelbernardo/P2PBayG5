@@ -12,10 +12,8 @@ public class ItemForSale extends UserInteraction implements Runnable {
         super(client);
     }
 
-    /**
-     * This method blocks waiting for user input
-     */
-    private void setInfo() {
+    @Override
+    public void getInfo() {
         System.out.println("\nTitulo:");
         this.title = getInput();
         System.out.println("Descricao:");
@@ -32,9 +30,7 @@ public class ItemForSale extends UserInteraction implements Runnable {
     }
 
     @Override
-    public void run() {
-        setInfo();
-
+    public void storeObjects() {
         Item item = new Item(getClient().getUser().getUsername(), title, description, baseBid);
         if(getClient().store(item))
             System.out.println("O item foi publicado com sucesso!");

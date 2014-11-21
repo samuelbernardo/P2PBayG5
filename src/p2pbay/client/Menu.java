@@ -78,19 +78,19 @@ public class Menu {
                     new ItemForSale(client).run();
                     break;
                 case "2":
-//                    new AuctionToClose(tomp2p, input);
+                    new AuctionToClose(client).run();
                     break;
                 case "3":
 //                    new SearchForItems().run();
                     break;
                 case "4":
-//                    new BidOnItem(tomp2p, input, client.LOGGED);
+                    new BidOnItem(client).run();
                     break;
                 case "5":
-//                    new DetailsOfItem(tomp2p, input);
+                    new DetailsOfItem(client).run();
                     break;
                 case "6":
-//                    new HistoryCheck(tomp2p, client.LOGGED);
+                    new HistoryCheck(client).run();
                     break;
                 case "exit":
                     client.close();

@@ -8,10 +8,10 @@ public class Bid extends DHTObject implements Serializable {
     private float value;
     private String owner;
     
-    public Bid(String title, String owner, float value) {
-        super(title);
+    public Bid(String title, User owner, float value) {
+        super(title+owner);
         this.title = title;
-        this.owner = owner;
+        this.owner = owner.getUsername();
         this.value = value;
     }
     

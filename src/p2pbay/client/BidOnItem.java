@@ -1,53 +1,47 @@
 package p2pbay.client;
 
-import java.io.IOException;
-import java.util.Scanner;
-
+import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Bid;
 import p2pbay.core.Item;
-import p2pbay.core.User;
-import p2pbay.server.TomP2PHandler;
 
-public class BidOnItem {
-    private TomP2PHandler tomp2p;
-    private User user;
+public class BidOnItem  extends UserInteraction{
     private String title;
     private Float proposedValue;
 
-    public BidOnItem(TomP2PHandler tomp2p, Scanner in, User user) {
-        this.tomp2p = tomp2p;
-        this.user = user;
-        setInfo(in);
-        bidOnItem();
+    public BidOnItem(Client client) {
+        super(client);
     }
 
-    private void setInfo(Scanner in) {
-        System.out.println("Titulo do item:");
-        this.title = in.nextLine();
-        System.out.println("Valor:");
-        this.proposedValue = Float.parseFloat(in.nextLine());
+    @Override
+    public void getInfo() {
+        System.out.print("Titulo do item:");
+        this.title = getInput();
+        System.out.print("Valor:");
+        this.proposedValue = getFloat();
     }
 
-    private void bidOnItem() {
-        Item item = null;
-        try {
-            item = (Item) this.tomp2p.get(title);
-        } catch (ClassCastException e) {
+    @Override
+    public void storeObjects() {
+        Item item = getClient().getItem(title);
+        if(item == null) {
             System.out.println("O item que pretende licitar nao existe...");
             return;
         }
-        
-        float itemsValue = item.getValue();
-        if (proposedValue > itemsValue) {
-            Bid newBid =  new Bid(this.title, this.user.getUsername(), this.proposedValue);
+        if (proposedValue > item.getValue()) {
+            Bid newBid =  new Bid(title, getClient().getUser(), proposedValue);
             item.addBid(newBid);
-            user.addBid(newBid);
-            if(tomp2p.store(item) && tomp2p.store(user))
+
+            //Eu sei que se esta a guardar as bids no user por causa do historico
+            //Acho que e possivel modelar de maneira a so se ter de guardar um objecto
+            getClient().getUser().addBid(newBid);
+            if(getClient().store(item) && getClient().store(getClient().getUser()))
+                //TODO e se nao for so um aceite?
                 System.out.println("A licitacao foi aceite!");
             else
                 System.out.println("Ocorreu um erro ao actualizar o item...");
         }
         else
-            System.out.println("A licitacao foi rejeitada pois o valor do item (" + itemsValue + "€) e igual ou superior a sua oferta!");
+            System.out.println("A licitacao foi rejeitada pois o valor do item (" + item.getValue() + "€) e igual ou superior a sua oferta!");
+
     }
 }

@@ -48,15 +48,16 @@ public class Item extends DHTObject implements Serializable {
     }
 
     public float getValue() {
-        int nBids = bids.size();
-        float value = 0;
-        if (nBids==0)
-            value = this.baseBid;
+        if (bids.isEmpty())
+            return this.baseBid;
         else {
             Bid lastBid = bids.get(bids.size()-1);
-            value = lastBid.getValue();
+            return lastBid.getValue();
         }
-        return value;
+    }
+
+    public String getValueToString() {
+        return getValue() + "€";
     }
 
     public List<Bid> getBids() {

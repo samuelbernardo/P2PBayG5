@@ -53,6 +53,18 @@ public class Client {
         return LOGGED;
     }
 
+    /**
+     * Gets an user from the DHT
+     * @param username username of the user
+     * @return User or null of not found
+     */
+    public User getUser(String username) {
+        Object item = connectionHandler.get(username);
+        if(item != null && item instanceof User) {
+            return (User)item;
+        }
+        return null;    }
+
 
     public void start() throws IOException, ClassNotFoundException {
         Menu menu = new Menu(this);
@@ -81,5 +93,19 @@ public class Client {
     public void close() {
         input.close();
         connectionHandler.close();
+    }
+
+
+    /**
+     * Gets an item from the DHT
+     * @param title title of the item
+     * @return Item or null of not found
+     */
+    public Item getItem(String title) {
+        Object item = connectionHandler.get(title);
+        if(item != null && item instanceof Item) {
+            return (Item)item;
+        }
+        return null;
     }
 }
