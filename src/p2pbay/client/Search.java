@@ -5,22 +5,19 @@ import java.util.Iterator;
 import java.util.Scanner;
 import java.util.TreeSet;
 
+import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
 import p2pbay.server.TomP2PHandler;
 
-public class Search {
+public class Search extends UserInteraction {
 
-    private TomP2PHandler tomp2p;
     private String search;
     private String[] splitSearch;
     private int nWords;
     private TreeSet<String> previousResult;
 
-    public Search(TomP2PHandler tomp2p, Scanner input) {
-        this.tomp2p = tomp2p;
-        this.search = getBooleanSearch(input);
-        doSearch();
-        printResults();
+    public Search(Client client) {
+        super(client);
     }
 
     private String getBooleanSearch(Scanner input) {
@@ -70,15 +67,15 @@ public class Search {
         TreeSet<String> titlesWithTerm2 = new TreeSet<String>();;
 
         if(type==1) {
-            indexWithTerm1 = (Index) tomp2p.get("index" + splitSearch[this.nWords-2]);
-            indexWithTerm2 = (Index) tomp2p.get("index" + splitSearch[this.nWords-1]);
+            indexWithTerm1 = getClient().getIndex(splitSearch[this.nWords-2]);
+            indexWithTerm2 = getClient().getIndex(splitSearch[this.nWords - 1]);
             if(indexWithTerm1 != null)
                 titlesWithTerm1 = indexWithTerm1.getTitles();
             if(indexWithTerm2 != null)
                 titlesWithTerm2 = indexWithTerm2.getTitles();
         }
         else {
-            indexWithTerm1 = (Index) tomp2p.get("index" + splitSearch[this.nWords-1]);
+            indexWithTerm1 = getClient().getIndex(splitSearch[this.nWords - 1]);
             titlesWithTerm1 = indexWithTerm1.getTitles();
             titlesWithTerm2 = this.previousResult;
         }
@@ -95,9 +92,9 @@ public class Search {
     private TreeSet<String> analyseWithNOT() {
         TreeSet<String> NOTresults = new TreeSet<String>();
         TreeSet<String> titles = new TreeSet<String>();
-        Index indexWithTerm1 = (Index) tomp2p.get("index" + this.splitSearch[nWords-3]);
+        Index indexWithTerm1 = getClient().getIndex(this.splitSearch[nWords - 3]);
         TreeSet<String> titlesWithTerm1 = indexWithTerm1.getTitles();
-        Index indexWithTerm2 = (Index) tomp2p.get("index" + this.splitSearch[nWords-1]);
+        Index indexWithTerm2 = getClient().getIndex(this.splitSearch[nWords - 1]);
         TreeSet<String> titlesWithTerm2 = indexWithTerm2.getTitles();
         NOTresults.addAll(titlesWithTerm1);
         NOTresults.removeAll(titlesWithTerm2);
@@ -129,13 +126,26 @@ public class Search {
     }
 
     private void printResults() {
-        if(!this.previousResult.isEmpty()) {
-            Iterator<String> iterator = this.previousResult.iterator();
-            System.out.print("\nResultados da pesquisa:\n");
-            while (iterator.hasNext())
-                System.out.print(iterator.next() + "\n");
-        }
-        else
+        if(previousResult.isEmpty()) {
             System.out.println("Sem resultados... Por favor tente outras keywords.");
+            return;
+        }
+        System.out.println("\nResultados da pesquisa:");
+        for (String title : previousResult) {
+            System.out.println(" - " + title);
+        }
+    }
+
+    @Override
+    public void getInfo() {
+        System.out.print("Pesquisa:");
+        search = getClient().getInput();
+        doSearch();
+        printResults();
+    }
+
+    @Override
+    public void storeObjects() {
+
     }
 }

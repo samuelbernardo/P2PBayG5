@@ -1,6 +1,7 @@
 package p2pbay.client;
 
 import p2pbay.client.user.UserInteraction;
+import p2pbay.core.Index;
 import p2pbay.core.Item;
 
 public class ItemForSale extends UserInteraction implements Runnable {
@@ -14,19 +15,11 @@ public class ItemForSale extends UserInteraction implements Runnable {
 
     @Override
     public void getInfo() {
-        System.out.println("\nTitulo:");
+        System.out.print("\nTitulo:");
         this.title = getInput();
-        System.out.println("Descricao:");
+        System.out.print("Descricao:");
         this.description = getInput();
-        while (true) {
-            try {
-                System.out.println("Base de licitacao:");
-                this.baseBid = getFloat();
-                break;
-            } catch (NumberFormatException e) {
-                System.out.println("Numero invalido");
-            }
-        }
+        this.baseBid = getPositiveNumber("Base de licitacao:");
     }
 
     @Override
@@ -36,41 +29,27 @@ public class ItemForSale extends UserInteraction implements Runnable {
             System.out.println("O item foi publicado com sucesso!");
         else
             System.out.println("Ocorreu um erro ao publicar o item...");
+
+        indexItems();
     }
 
-    public void indexItem() {
-        for(String term : this.getTitle().split(" "))
-            doIndex(term);
+    public void indexItems() {
+        for(String term : title.split(" "))
+            indexTerm(term);
     }
 
-    public void doIndex(String term) {
-        String key = "index" + term;
-        Index index = (Index) tomp2p.get(key);
+    public void indexTerm(String term) {
+        String key = term;
+        Index index = getClient().getIndex(key);
+
         if (index == null)
-            index = new Index(key, getTitle());
+            index = new Index(key, title);
         else
-            index.addTitle(getTitle());
-        try {
-            tomp2p.store(key, index);
-        } catch (IOException e) {
-            System.err.println("Ocorreu um erro na insercao do indice...");
-        }
-    }
+            index.addTitle(title);
 
-    private float getBaseBid(Scanner input) {
-        float bBid = -1;
-        do{
-            try {
-                System.out.println("Base de licitacao:");
-                bBid = Float.parseFloat(input.nextLine());
-                if (bBid <= 0) {
-                    System.err.println("O valor introduzido nao e valido.");
-                }
-            }
-            catch (NumberFormatException e) {
-                System.err.println("O valor introduzido nao e valido.");
-            }
-        } while (bBid <= 0);
-        return bBid;
+        if(getClient().store(index))
+            System.out.println("Term:" + index.getTerm() + " actualizado");
+        else
+            System.err.println("Ocorreu um erro na insercao do indice...");
     }
 }

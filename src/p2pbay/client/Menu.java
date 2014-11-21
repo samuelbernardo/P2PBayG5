@@ -37,7 +37,7 @@ public class Menu {
         return option;
     }
 
-    public void navigate(TomP2PHandler tomp2p, User user) {
+    public void navigate() {
         String option;
         boolean running = true;
         while(running){
@@ -50,7 +50,7 @@ public class Menu {
                     new AuctionToClose(client).run();
                     break;
                 case "3":
-                    new Search(tomp2p, input);
+                    new Search(client).run();
 //                    new SearchForItems().run();
                     break;
                 case "4":

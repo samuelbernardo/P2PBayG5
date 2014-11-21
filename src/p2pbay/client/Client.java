@@ -3,6 +3,7 @@ package p2pbay.client;
 import p2pbay.client.user.Login;
 import p2pbay.client.user.SignUp;
 import p2pbay.core.DHTObject;
+import p2pbay.core.Index;
 import p2pbay.core.Item;
 import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
@@ -105,6 +106,19 @@ public class Client {
         Object item = connectionHandler.get(title);
         if(item != null && item instanceof Item) {
             return (Item)item;
+        }
+        return null;
+    }
+
+    /**
+     * Gets an Index from the DHT
+     * @param term term of the Index
+     * @return Index or null of not found
+     */
+    public Index getIndex(String term) {
+        Object index = connectionHandler.get(Index.PREFIX + term);
+        if(index != null && index instanceof Index) {
+            return (Index)index;
         }
         return null;
     }
