@@ -1,91 +1,55 @@
 package p2pbay.client;
 
-import java.io.IOException;
-import java.util.Scanner;
-
+import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
 import p2pbay.core.Item;
-import p2pbay.core.User;
-import p2pbay.server.TomP2PHandler;
 
-public class ItemForSale {
-    TomP2PHandler tomp2p;
-    private User user;
+public class ItemForSale extends UserInteraction implements Runnable {
     private String title;
     private String description;
     private float baseBid;
-    private Scanner input;    
 
-    public ItemForSale(TomP2PHandler tomp2p, Scanner input, User user) {
-        this.tomp2p = tomp2p;
-        this.user = user;
-        this.input = input;
+    public ItemForSale(Client client) {
+        super(client);
     }
 
-    public String getTitle() {
-        return title;
+    @Override
+    public void getInfo() {
+        System.out.print("\nTitulo:");
+        this.title = getInput();
+        System.out.print("Descricao:");
+        this.description = getInput();
+        this.baseBid = getPositiveNumber("Base de licitacao:");
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void execute() {
-        getInfo();
-        store();
-        indexItem();
-    }
-    
-    private void getInfo() {
-        System.out.println("Titulo:");
-        this.title = input.nextLine();
-        System.out.println("Descricao:");
-        this.description = input.nextLine();
-        this.baseBid = getBaseBid(input);
-    }
-
-    private float getBaseBid(Scanner input) {
-        float bBid = -1;
-        do{
-            try {
-                System.out.println("Base de licitacao:");
-                bBid = Float.parseFloat(input.nextLine());
-                if (bBid <= 0) {
-                    System.err.println("O valor introduzido nao e valido.");
-                }
-            }
-            catch (NumberFormatException e) {
-                System.err.println("O valor introduzido nao e valido.");
-            }
-        } while (bBid <= 0);
-        return bBid;
-    }
-
-    private void store() {
-        try {
-            tomp2p.store(title, new Item(user.getUsername(), title, description, baseBid));
+    @Override
+    public void storeObjects() {
+        Item item = new Item(getClient().getUser().getUsername(), title, description, baseBid);
+        if(getClient().store(item))
             System.out.println("O item foi publicado com sucesso!");
-        } catch (IOException e) {
-            System.err.println("Ocorreu um erro ao publicar o item...");
-        }
-    }
-
-    public void indexItem() {
-        for(String term : this.getTitle().split(" "))
-            doIndex(term);
-    }
-
-    public void doIndex(String term) {
-        String key = "index" + term;
-        Index index = (Index) tomp2p.get(key);
-        if (index == null)
-            index = new Index(key, getTitle());
         else
-            index.addTitle(getTitle());
-        try {
-            tomp2p.store(key, index);
-        } catch (IOException e) {
+            System.out.println("Ocorreu um erro ao publicar o item...");
+
+        indexItems();
+    }
+
+    public void indexItems() {
+        for(String term : title.split(" "))
+            indexTerm(term);
+    }
+
+    public void indexTerm(String term) {
+        String key = term;
+        Index index = getClient().getIndex(key);
+
+        if (index == null)
+            index = new Index(key, title);
+        else
+            index.addTitle(title);
+
+        if(getClient().store(index))
+            System.out.println("Term:" + index.getTerm() + " actualizado");
+        else
             System.err.println("Ocorreu um erro na insercao do indice...");
-        }
     }
 }

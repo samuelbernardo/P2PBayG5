@@ -2,15 +2,16 @@ package p2pbay.core;
 
 import java.io.Serializable;
 
-public class Bid implements Serializable {
+public class Bid extends DHTObject implements Serializable {
     private static final long serialVersionUID = 6128016096756071380L;
     private String title;
     private float value;
     private String owner;
     
-    public Bid(String title, String owner, float value) {
+    public Bid(String title, User owner, float value) {
+        super(title+owner);
         this.title = title;
-        this.owner = owner;
+        this.owner = owner.getUsername();
         this.value = value;
     }
     

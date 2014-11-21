@@ -7,6 +7,7 @@ import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerMaker;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
+import p2pbay.core.DHTObject;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -45,11 +46,37 @@ public class TomP2PHandler {
      * @param object Objecto a ser guardado na dht
      * @throws IOException possivelmente se o objecto nao for serializavel
      */
-    public void store(String key, Object object) throws IOException {
-        Number160 hKey = Number160.createHash(key);
-        peer.put(hKey).setData(new Data(object)).start().awaitUninterruptibly();
+    public boolean store(String key, Object object) {
+        try {
+            Number160 hKey = Number160.createHash(key);
+            peer.put(hKey).setData(new Data(object)).start().awaitUninterruptibly();
+            return true;
+        } catch (IOException e) {
+//            e.printStackTrace();
+            System.err.println("Nao foi possivel guardar o objecto:");
+            System.err.println(object);
+            System.err.println("Expecao " + e);
+            return false;
+        }
     }
-    
+
+    public boolean store(DHTObject object) {
+        try {
+            peer.put(object.getHash()).setData(new Data(object)).start().awaitUninterruptibly();
+            return true;
+        } catch (IOException e) {
+            System.err.println("Nao foi possivel guardar o objecto:");
+            System.err.println(object);
+            System.err.println("Expecao " + e);
+            return false;
+        }
+    }
+
+    /**
+     * Gets an object from the DHT
+     * @param key Object Key
+     * @return The Object or null if not found
+     */
     public Object get(String key) {
         Number160 hKey = Number160.createHash(key);
         FutureDHT futureDHT = peer.get(hKey).start().awaitUninterruptibly();
@@ -61,5 +88,9 @@ public class TomP2PHandler {
             }
         }
         return null;
+    }
+
+    public void close() {
+        peer.shutdown();
     }
 }

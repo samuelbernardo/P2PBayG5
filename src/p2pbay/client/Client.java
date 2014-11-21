@@ -1,5 +1,10 @@
 package p2pbay.client;
 
+import p2pbay.client.user.Login;
+import p2pbay.client.user.SignUp;
+import p2pbay.core.DHTObject;
+import p2pbay.core.Index;
+import p2pbay.core.Item;
 import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
 
@@ -7,92 +12,109 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Client {
-    private static User LOGGEDUSER;
-    private static TomP2PHandler CONNECTIONHANDLER;
-    private Scanner inputReader;
+    public static User LOGGED = null;
 
-    public Client(TomP2PHandler handler, Scanner inputReader) {
-        LOGGEDUSER = null;
-        CONNECTIONHANDLER = handler;
-        this.inputReader = inputReader;
+    private Scanner input = new Scanner(System.in);
+    private TomP2PHandler connectionHandler;
+
+    public Client(TomP2PHandler handler) {
+        connectionHandler = handler;
+    }
+
+
+    public boolean isLogged() {
+        return LOGGED != null;
+    }
+
+    public User findUser(String username) {
+        return (User) connectionHandler.get(username);
+    }
+
+    public void setUser(User user) {
+        LOGGED = user;
+    }
+
+    public boolean store(DHTObject object) {
+        return connectionHandler.store(object);
+    }
+
+    public String getInput() {
+        return input.nextLine();
+    }
+
+    public float getNumberInput() {
+        return Float.parseFloat(input.nextLine());
+    }
+
+    public User getUser() {
+        return LOGGED;
     }
 
     /**
-     * Used for a user to login onto the client application
-     * @return true if user login is successful, false otherwise
+     * Gets an user from the DHT
+     * @param username username of the user
+     * @return User or null of not found
      */
-    public boolean login() {
-        System.out.println("Login");
-
-        String username = getUsername();
-        String password = getPassword();
-
-        User user = (User) CONNECTIONHANDLER.get(username);
-        if(user != null) {
-            if(user.getPassword().equals(password)) {
-                LOGGEDUSER = user;
-                return true;
-            }
+    public User getUser(String username) {
+        Object item = connectionHandler.get(username);
+        if(item != null && item instanceof User) {
+            return (User)item;
         }
-        return false;
-    }
+        return null;    }
 
-    private String getUsername() {
-        System.out.print("Username:");
-        return inputReader.nextLine();
-    }
-
-    private String getPassword() {
-        System.out.print("Password:");
-        return inputReader.nextLine();
-    }
-
-    private boolean signup() {
-        System.out.println("Sign up");
-        String username = getUsername();
-        String password = getPassword();
-        User user = (User) CONNECTIONHANDLER.get(username);
-
-        if(user == null) {
-            user = new User(username, password);
-            try {
-                CONNECTIONHANDLER.store(user.getUsername(), user);
-                return true;
-            } catch (IOException e) {
-                return false;
-            }
-        }
-        else
-            return false;
-    }
 
     public void start() throws IOException, ClassNotFoundException {
-        Menu menu = new Menu(this.inputReader);
+        Menu menu = new Menu(this);
         String option;
 
-        while (true) {
+        while (!isLogged()) {
             option = menu.showLoginMenu();
             switch (option) {
                 case "1":
-                    if(login()) {
-                        System.out.println("\nLogged in as " + LOGGEDUSER.getUsername());
-                        menu.navigate(CONNECTIONHANDLER, LOGGEDUSER);
-                    }
-                    else
-                        System.err.println("\nERROR! The login failed");
+                    new Login(this).run();
                     break;
                 case "2":
-                    if(signup())
-                        System.out.println("\nSign up successful");
-                    else
-                        System.err.println("\nERROR! The given username already exists");
+                    new SignUp(this).run();
                     break;
                 case "exit":
-                    inputReader.close();
-                    System.exit(0);
+                    close();
+                    return;
                 default:
-                    System.out.println("Invalid option");
+                    System.out.println("Opcao invalida!");
             }
         }
+        close();
+    }
+
+    public void close() {
+        input.close();
+        connectionHandler.close();
+    }
+
+
+    /**
+     * Gets an item from the DHT
+     * @param title title of the item
+     * @return Item or null of not found
+     */
+    public Item getItem(String title) {
+        Object item = connectionHandler.get(title);
+        if(item != null && item instanceof Item) {
+            return (Item)item;
+        }
+        return null;
+    }
+
+    /**
+     * Gets an Index from the DHT
+     * @param term term of the Index
+     * @return Index or null of not found
+     */
+    public Index getIndex(String term) {
+        Object index = connectionHandler.get(Index.PREFIX + term);
+        if(index != null && index instanceof Index) {
+            return (Index)index;
+        }
+        return null;
     }
 }

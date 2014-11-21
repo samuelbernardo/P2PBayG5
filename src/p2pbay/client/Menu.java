@@ -7,10 +7,10 @@ import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
 
 public class Menu {
-    Scanner input;
+    private Client client;
 
-    public Menu(Scanner input) {
-        this.input = input;
+    public Menu(Client client) {
+        this.client = client;
     }
 
     public String showLoginMenu() {
@@ -19,7 +19,7 @@ public class Menu {
                 + "1 - Login\n"
                 + "2 - Sign up\n\n"
                 + "'exit' para sair\n");
-        String option = input.nextLine();
+        String option = client.getInput();
         return option;
     }
 
@@ -34,44 +34,41 @@ public class Menu {
                 + "6 - Consultar o meu historico\n"
                 + "7 - Logout\n\n"
                 + "'exit' para sair\n");
-        String option = input.nextLine();
+        String option = client.getInput();
         return option;
     }
 
-    public void navigate(TomP2PHandler tomp2p, User user) {
+    public void navigate() {
         String option;
-        while(true){
+        boolean running = true;
+        while(running){
             option = showMainMenu();
             switch (option) {
                 case "1":
-                    ItemForSale newItem = new ItemForSale(tomp2p, input, user);
-                    newItem.execute();
+                    new ItemForSale(client).run();
                     break;
                 case "2":
-                    AuctionToClose newClose = new AuctionToClose(tomp2p, input, user);
-                    newClose.execute();
+                    new AuctionToClose(client).run();
                     break;
                 case "3":
-                    Search newSearch = new Search(tomp2p, input);
-                    newSearch.execute();
+                    new Search(client).run();
+//                    new SearchForItems().run();
                     break;
                 case "4":
-                    BidOnItem newBid = new BidOnItem(tomp2p, input, user);
-                    newBid.execute();
+                    new BidOnItem(client).run();
                     break;
                 case "5":
-                    DetailsOfItem newDetails = new DetailsOfItem(tomp2p, input);
-                    newDetails.execute();
+                    new DetailsOfItem(client).run();
                     break;
                 case "6":
-                    HistoryCheck newHistory = new HistoryCheck(tomp2p, user);
-                    newHistory.execute();
+                    new HistoryCheck(client).run();
                     break;
                 case "7":
                     return;
                 case "exit":
-                    input.close();
-                    System.exit(0);
+                    client.close();
+                    running = false;
+                    break;
                 default:
                     System.out.println("Opcao invalida!");
             }
