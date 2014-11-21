@@ -64,6 +64,7 @@ public class Menu {
                     new HistoryCheck(client).run();
                     break;
                 case "7":
+                    client.logout();
                     return;
                 case "exit":
                     client.close();

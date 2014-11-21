@@ -1,6 +1,7 @@
 package p2pbay.client;
 
 import p2pbay.client.user.UserInteraction;
+import p2pbay.core.Index;
 import p2pbay.core.Item;
 
 public class AuctionToClose extends UserInteraction{
@@ -22,7 +23,7 @@ public class AuctionToClose extends UserInteraction{
             System.err.println("The item doesn't exist");
             return false;
         }
-        if (!item.getOwner().equals(user.getUsername())) {
+        if (!item.getOwner().equals(getClient().getUser().getUsername())) {
             System.err.println("You can't close this auction because you're not the owner of the item");
             return false;
         }
@@ -33,7 +34,7 @@ public class AuctionToClose extends UserInteraction{
     public void storeObjects() {
         Item item = getClient().getItem(title);
         
-        if isValid(item) {
+        if(isValid(item)) {
             item.setAuctionClosed(true);
             float value = item.getValue();
             if(getClient().store(item))
@@ -51,22 +52,16 @@ public class AuctionToClose extends UserInteraction{
     }
     
     public void removeIndex(String term) {
-        Index index = null;
-        index = (Index) this.tomp2p.get(term);
+        Index index = getClient().getIndex(term);
         if (index != null) {
             index.removeTitle(this.title);
-            try {
-                tomp2p.store(term, index);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            getClient().store(index);//TODO not checked
         }
     }
     
     public void printIndex() {
         for(String term : this.title.split(" ")) {
-            Index index = (Index) tomp2p.get(term);
+            Index index = getClient().getIndex(term);
             if (index != null)
                 System.out.println("Termo: " + index.getTerm() + "Titulo: " + index.getTitles());
         }

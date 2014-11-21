@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Client {
-    public static User LOGGED = null;
+    public User LOGGED = null;
 
     private Scanner input = new Scanner(System.in);
     private TomP2PHandler connectionHandler;
@@ -116,5 +116,9 @@ public class Client {
             return (Index)index;
         }
         return null;
+    }
+
+    public void logout() {
+        LOGGED = null;
     }
 }

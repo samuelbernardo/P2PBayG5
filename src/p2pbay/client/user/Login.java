@@ -1,6 +1,7 @@
 package p2pbay.client.user;
 
 import p2pbay.client.Client;
+import p2pbay.client.Menu;
 import p2pbay.core.User;
 
 public class Login extends UserInteraction implements Runnable {
@@ -24,6 +25,9 @@ public class Login extends UserInteraction implements Runnable {
                 //User password matches
                 getClient().setUser(user);
                 System.out.println("Login com sucesso");
+
+                Menu menu = new Menu(getClient());
+                menu.navigate();
                 return;
             }
         System.out.println("Login falhou");
