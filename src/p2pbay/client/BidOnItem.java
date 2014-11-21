@@ -41,7 +41,8 @@ public class BidOnItem  extends UserInteraction{
                 System.out.println("Ocorreu um erro ao actualizar o item...");
         }
         else
-            System.out.println("A licitacao foi rejeitada pois o valor do item (" + item.getValue() + "€) e igual ou superior a sua oferta!");
-
+            System.out.println("A licitacao foi rejeitada pois o valor do item (" +
+                                item.getValueToString() +
+                                ") e igual ou superior a sua oferta!");
     }
 }

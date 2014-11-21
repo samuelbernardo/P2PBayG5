@@ -34,6 +34,20 @@ public abstract class UserInteraction implements Runnable {
         return client.getNumberInput();
     }
 
+    public float getPositiveNumber(String message) {
+        while (true) {
+            System.out.print(message);
+            try {
+                float value = client.getNumberInput();
+
+                if (value > 0)
+                    return value;
+            } catch (NumberFormatException ignored) {}
+
+            System.out.println("O valor introduzido nao e valido.");
+        }
+    }
+
     public abstract void getInfo();
 
     public abstract void storeObjects();

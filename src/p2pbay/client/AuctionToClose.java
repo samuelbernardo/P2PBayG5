@@ -1,6 +1,7 @@
 package p2pbay.client;
 
 import p2pbay.client.user.UserInteraction;
+import p2pbay.core.Index;
 import p2pbay.core.Item;
 
 public class AuctionToClose extends UserInteraction{
@@ -15,18 +16,25 @@ public class AuctionToClose extends UserInteraction{
         System.out.println("\nTitulo:");
         title = getInput();
     }
-
+    
+    private boolean isValid(Item item) {
+        item = getClient().getItem(title);
+        if (item == null) {
+            System.err.println("The item doesn't exist");
+            return false;
+        }
+        if (!item.getOwner().equals(getClient().getUser().getUsername())) {
+            System.err.println("You can't close this auction because you're not the owner of the item");
+            return false;
+        }
+        return true;
+    }
+    
     @Override
     public void storeObjects() {
         Item item = getClient().getItem(title);
-        if(item == null) {
-            System.out.println("Item nao existe!");
-            return;
-        }
-        if(item.auctionIsClosed()) {
-            System.out.println("O leilao ja esta fechado...");
-        }
-        else {
+        
+        if(isValid(item)) {
             item.setAuctionClosed(true);
             float value = item.getValue();
             if(getClient().store(item))
@@ -34,6 +42,30 @@ public class AuctionToClose extends UserInteraction{
             else {
                 System.out.println("Ocorreu um erro ao actualizar o item...");
             }
+        }
+
+        removeTitle();
+    }
+    
+    private void removeTitle() {
+        for(String term : this.title.split(" ")) {
+            removeIndex(term);
+        }
+    }
+    
+    public void removeIndex(String term) {
+        Index index = getClient().getIndex(term);
+        if (index != null) {
+            index.removeTitle(this.title);
+            getClient().store(index);//TODO not checked
+        }
+    }
+    
+    public void printIndex() {
+        for(String term : this.title.split(" ")) {
+            Index index = getClient().getIndex(term);
+            if (index != null)
+                System.out.println("Termo: " + index.getTerm() + "Titulo: " + index.getTitles());
         }
     }
 }

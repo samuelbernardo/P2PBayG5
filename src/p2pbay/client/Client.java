@@ -3,6 +3,7 @@ package p2pbay.client;
 import p2pbay.client.user.Login;
 import p2pbay.client.user.SignUp;
 import p2pbay.core.DHTObject;
+import p2pbay.core.Index;
 import p2pbay.core.Item;
 import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
@@ -11,7 +12,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Client {
-    public static User LOGGED = null;
+    public User LOGGED = null;
 
     private Scanner input = new Scanner(System.in);
     private TomP2PHandler connectionHandler;
@@ -25,10 +26,6 @@ public class Client {
         return LOGGED != null;
     }
 
-    /**
-     * @param username
-     * @return User or null if not found
-     */
     public User findUser(String username) {
         return (User) connectionHandler.get(username);
     }
@@ -86,8 +83,7 @@ public class Client {
                     System.out.println("Opcao invalida!");
             }
         }
-
-        menu.navigate();
+        close();
     }
 
     public void close() {
@@ -107,5 +103,22 @@ public class Client {
             return (Item)item;
         }
         return null;
+    }
+
+    /**
+     * Gets an Index from the DHT
+     * @param term term of the Index
+     * @return Index or null of not found
+     */
+    public Index getIndex(String term) {
+        Object index = connectionHandler.get(Index.PREFIX + term);
+        if(index != null && index instanceof Index) {
+            return (Index)index;
+        }
+        return null;
+    }
+
+    public void logout() {
+        LOGGED = null;
     }
 }
