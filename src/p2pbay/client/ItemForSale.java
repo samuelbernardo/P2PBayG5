@@ -23,11 +23,11 @@ public class ItemForSale {
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     public String getDescription() {
-        return this.description;
+        return description;
     }
 
     public void execute() {
@@ -38,10 +38,10 @@ public class ItemForSale {
     
     private void getInfo() {
         System.out.println("Titulo:");
-        this.title = this.input.nextLine();
+        this.title = input.nextLine();
         System.out.println("Descricao:");
-        this.description = this.input.nextLine();
-        this.baseBid = getBaseBid(this.input);
+        this.description = input.nextLine();
+        this.baseBid = getBaseBid(input);
     }
 
     private float getBaseBid(Scanner input) {
@@ -63,7 +63,7 @@ public class ItemForSale {
 
     private void store() {
         try {
-            tomp2p.store(this.title, new Item(this.user.getUsername(), this.title, this.description, this.baseBid));
+            tomp2p.store(title, new Item(user.getUsername(), title, description, baseBid));
             System.out.println("O item foi publicado com sucesso!");
         } catch (IOException e) {
             System.err.println("Ocorreu um erro ao publicar o item...");

@@ -79,7 +79,7 @@ public class Client {
                         menu.navigate(CONNECTIONHANDLER, LOGGEDUSER);
                     }
                     else
-                        System.err.println("\nERROR! The given username doesn't exist");
+                        System.err.println("\nERROR! The login failed");
                     break;
                 case "2":
                     if(signup())
