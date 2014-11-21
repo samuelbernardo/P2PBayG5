@@ -7,16 +7,21 @@ import p2pbay.server.TomP2PHandler;
 public class DetailsOfItem {
     private TomP2PHandler tomp2p;
     private String title;
+    private Scanner input;
 
-    public DetailsOfItem(TomP2PHandler tomp2p, Scanner in) {
+    public DetailsOfItem(TomP2PHandler tomp2p, Scanner input) {
         this.tomp2p = tomp2p;
-        setInfo(in);
+        this.input = input;
+    }
+    
+    public void execute() {
+        setInfo();
         getDetails();
     }
-
-    private void setInfo(Scanner in) {
+    
+    private void setInfo() {
         System.out.println("\nTitulo:");
-        title = in.nextLine();
+        title = this.input.nextLine();
     }
 
     private void getDetails() {

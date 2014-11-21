@@ -13,19 +13,24 @@ public class BidOnItem {
     private User user;
     private String title;
     private Float proposedValue;
+    private Scanner input;
 
-    public BidOnItem(TomP2PHandler tomp2p, Scanner in, User user) {
+    public BidOnItem(TomP2PHandler tomp2p, Scanner input, User user) {
         this.tomp2p = tomp2p;
         this.user = user;
-        setInfo(in);
-        bidOnItem();
+        this.input = input;
     }
 
-    private void setInfo(Scanner in) {
+    public void execute() {
+        setInfo();
+        bidOnItem();
+    }
+    
+    private void setInfo() {
         System.out.println("Titulo do item:");
-        this.title = in.nextLine();
+        this.title = this.input.nextLine();
         System.out.println("Valor:");
-        this.proposedValue = Float.parseFloat(in.nextLine());
+        this.proposedValue = Float.parseFloat(this.input.nextLine());
     }
 
     private void bidOnItem() {

@@ -13,14 +13,13 @@ public class ItemForSale {
     private User user;
     private String title;
     private String description;
-    private float baseBid;    
+    private float baseBid;
+    private Scanner input;    
 
     public ItemForSale(TomP2PHandler tomp2p, Scanner input, User user) {
         this.tomp2p = tomp2p;
         this.user = user;
-        getInfo(input);
-        store();
-        indexItem();
+        this.input = input;
     }
 
     public String getTitle() {
@@ -31,12 +30,18 @@ public class ItemForSale {
         return this.description;
     }
 
-    private void getInfo(Scanner input) {
+    public void execute() {
+        getInfo();
+        store();
+        indexItem();
+    }
+    
+    private void getInfo() {
         System.out.println("Titulo:");
-        this.title = input.nextLine();
+        this.title = this.input.nextLine();
         System.out.println("Descricao:");
-        this.description = input.nextLine();
-        this.baseBid = getBaseBid(input);
+        this.description = this.input.nextLine();
+        this.baseBid = getBaseBid(this.input);
     }
 
     private float getBaseBid(Scanner input) {

@@ -19,8 +19,16 @@ public class Search {
     public Search(TomP2PHandler tomp2p, Scanner input) {
         this.tomp2p = tomp2p;
         this.search = getBooleanSearch(input);
-        doSearch();
-        printResults();
+    }
+    
+    public void execute() {
+        try {
+            doSearch();
+            printResults();
+        }
+        catch(ArrayIndexOutOfBoundsException e) {
+            System.out.println("A expressao nao esta bem formada, por favor tente novamente.");
+        }
     }
 
     private String getBooleanSearch(Scanner input) {
@@ -29,37 +37,35 @@ public class Search {
     }
 
     private void doSearch() {
-        try {
-            this.splitSearch = this.search.split(" ");
-            this.previousResult = new TreeSet<String>();
-            this.nWords = splitSearch.length;
 
-            // análise da primeira expressão mais à direita
-            if(!splitSearch[nWords-2].equals("NOT")) { 
-                this.previousResult = analyseWithoutNOT(nWords-3, 1);
-                this.nWords -= 3;
+        this.splitSearch = this.search.split(" ");
+        this.previousResult = new TreeSet<String>();
+        this.nWords = splitSearch.length;
+
+        // análise da primeira expressão mais à direita
+        if(!splitSearch[nWords-2].equals("NOT")) { 
+            this.previousResult = analyseWithoutNOT(nWords-3, 1);
+            this.nWords -= 3;
+        }
+        else {
+            this.previousResult = analyseWithNOT();
+            this.nWords -= 4;
+        }
+
+        // análise das restantes expressões, se houver
+        while(nWords > 0) {
+            if(!splitSearch[nWords-2].equals("NOT")) {
+                this.previousResult = analyseWithoutNOT(nWords-2, 2);
+                nWords -= 2;
             }
             else {
                 this.previousResult = analyseWithNOT();
-                this.nWords -= 4;
+                nWords -= 3;
             }
-
-            // análise das restantes expressões, se houver
-            while(nWords > 0) {
-                if(!splitSearch[nWords-2].equals("NOT")) {
-                    this.previousResult = analyseWithoutNOT(nWords-2, 2);
-                    nWords -= 2;
-                }
-                else {
-                    this.previousResult = analyseWithNOT();
-                    nWords -= 3;
-                }
-            }
-        }
-        catch(ArrayIndexOutOfBoundsException e) {
-            System.out.println("A expressao nao esta bem formada, por favor tente novamente.");
         }
     }
+
+
 
     // type = 1 significa que é a primeira análise da direita; type = 2 significa que é uma das análises mais à esquerda
     private TreeSet<String> analyseWithoutNOT(int booleanOperatorPosition, int type) {
@@ -82,13 +88,13 @@ public class Search {
             titlesWithTerm1 = indexWithTerm1.getTitles();
             titlesWithTerm2 = this.previousResult;
         }
-        
+
         try {
             titles = doBooleanOperation(splitSearch[booleanOperatorPosition], titlesWithTerm1, titlesWithTerm2);
         } catch(UnsupportedOperationException e) {
             System.out.println(e.getMessage());
         }
-        
+
         return titles;
     }
 

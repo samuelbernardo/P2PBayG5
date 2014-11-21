@@ -15,9 +15,9 @@ public class Menu {
 
     public String showLoginMenu() {
         System.out.println("\n"
-                + "-----P2PBay-----\n\n"
+                + "-- P2PBay --\n\n"
                 + "1 - Login\n"
-                + "2 - Criar uma conta\n\n"
+                + "2 - Sign up\n\n"
                 + "'exit' para sair\n");
         String option = input.nextLine();
         return option;
@@ -25,6 +25,7 @@ public class Menu {
 
     public String showMainMenu() {
         System.out.println("\n"
+                + "-------------- P2PBay --------------\n\n"
                 + "1 - Vender um item\n"
                 + "2 - Fechar leilao\n"
                 + "3 - Procurar um item para comprar\n"
@@ -43,23 +44,31 @@ public class Menu {
             option = showMainMenu();
             switch (option) {
                 case "1":
-                    new ItemForSale(tomp2p, input, user);
+                    ItemForSale newItem = new ItemForSale(tomp2p, input, user);
+                    newItem.execute();
                     break;
                 case "2":
-                    new AuctionToClose(tomp2p, input);
+                    AuctionToClose newClose = new AuctionToClose(tomp2p, input, user);
+                    newClose.execute();
                     break;
                 case "3":
-                    new Search(tomp2p, input);
+                    Search newSearch = new Search(tomp2p, input);
+                    newSearch.execute();
                     break;
                 case "4":
-                    new BidOnItem(tomp2p, input, user);
+                    BidOnItem newBid = new BidOnItem(tomp2p, input, user);
+                    newBid.execute();
                     break;
                 case "5":
-                    new DetailsOfItem(tomp2p, input);
+                    DetailsOfItem newDetails = new DetailsOfItem(tomp2p, input);
+                    newDetails.execute();
                     break;
                 case "6":
-                    new HistoryCheck(tomp2p, user);
+                    HistoryCheck newHistory = new HistoryCheck(tomp2p, user);
+                    newHistory.execute();
                     break;
+                case "7":
+                    return;
                 case "exit":
                     input.close();
                     System.exit(0);

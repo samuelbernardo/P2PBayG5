@@ -7,14 +7,14 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Client {
-    public static User LOGGED = null;
-
-    private TomP2PHandler connectionHandler;
+    private static User LOGGEDUSER;
+    private static TomP2PHandler CONNECTIONHANDLER;
     private Scanner inputReader;
 
-    public Client(TomP2PHandler handler) {
-        connectionHandler = handler;
-        inputReader = new Scanner(System.in);
+    public Client(TomP2PHandler handler, Scanner inputReader) {
+        LOGGEDUSER = null;
+        CONNECTIONHANDLER = handler;
+        this.inputReader = inputReader;
     }
 
     /**
@@ -22,85 +22,77 @@ public class Client {
      * @return true if user login is successful, false otherwise
      */
     public boolean login() {
-        System.out.println("Login...");
+        System.out.println("Login");
 
         String username = getUsername();
         String password = getPassword();
 
-        //Check if exists user with such username
-        User user = (User) connectionHandler.get(username);
-        if(user != null)
-            if(user.getPassword().equals(password))
-                //User password matches
-                LOGGED = user;
-
-        return isLogged();
-    }
-
-    private boolean signup() {
-        System.out.println("Sign up...");
-
-        String username = getUsername();
-        String password = getPassword();
-
-        //Check if user exists
-        User user = (User) connectionHandler.get(username);
-
-        if(user == null) {
-            user = new User(username, password);
-            try {
-                connectionHandler.store(user.getUsername(), user);
-            } catch (IOException e) {
-                return false;
+        User user = (User) CONNECTIONHANDLER.get(username);
+        if(user != null) {
+            if(user.getPassword().equals(password)) {
+                LOGGEDUSER = user;
+                return true;
             }
-            return true;
-        } else {
-            return false;
         }
-    }
-
-    public boolean isLogged() {
-        return LOGGED != null;
+        return false;
     }
 
     private String getUsername() {
-        System.out.print(Login.USERNAME + ":");
+        System.out.print("Username:");
         return inputReader.nextLine();
     }
 
     private String getPassword() {
-        System.out.print(Login.PASSWORD + ":");
+        System.out.print("Password:");
         return inputReader.nextLine();
     }
 
+    private boolean signup() {
+        System.out.println("Sign up");
+        String username = getUsername();
+        String password = getPassword();
+        User user = (User) CONNECTIONHANDLER.get(username);
+
+        if(user == null) {
+            user = new User(username, password);
+            try {
+                CONNECTIONHANDLER.store(user.getUsername(), user);
+                return true;
+            } catch (IOException e) {
+                return false;
+            }
+        }
+        else
+            return false;
+    }
+
     public void start() throws IOException, ClassNotFoundException {
-        Scanner in = new Scanner(System.in);
-        Menu menu = new Menu(in);
+        Menu menu = new Menu(this.inputReader);
         String option;
 
-        while (!isLogged()) {
+        while (true) {
             option = menu.showLoginMenu();
             switch (option) {
                 case "1":
-                    if(login())
-                        System.out.println("Logged in as " + LOGGED.getUsername());
+                    if(login()) {
+                        System.out.println("\nLogged in as " + LOGGEDUSER.getUsername());
+                        menu.navigate(CONNECTIONHANDLER, LOGGEDUSER);
+                    }
                     else
-                        System.out.println("Login failed");
+                        System.err.println("\nERROR! The given username doesn't exist");
                     break;
                 case "2":
                     if(signup())
-                        System.out.println("Sign up Successful");
+                        System.out.println("\nSign up successful");
                     else
-                        System.out.println("Error Signing up");
+                        System.err.println("\nERROR! The given username already exists");
                     break;
                 case "exit":
-                    in.close();
+                    inputReader.close();
                     System.exit(0);
                 default:
-                    System.out.println("Opcao invalida!");
+                    System.out.println("Invalid option");
             }
         }
-
-        menu.navigate(connectionHandler, LOGGED);
     }
 }

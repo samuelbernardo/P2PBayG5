@@ -5,67 +5,82 @@ import java.util.Scanner;
 
 import p2pbay.core.Index;
 import p2pbay.core.Item;
+import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
 
 public class AuctionToClose {
     private String title;
-    private TomP2PHandler tomp2p;
+    private TomP2PHandler CONNECTIONHANDLER;
+    private Scanner inputReader;
+    private User user;
 
-    public AuctionToClose(TomP2PHandler tomp2p, Scanner in) {
-        this.tomp2p = tomp2p;
-        setInfo(in);
-        closeAuction();
-        removeTitle();
+    public AuctionToClose(TomP2PHandler CONNECTIONHANDLER, Scanner inputReader, User user) {
+        this.CONNECTIONHANDLER = CONNECTIONHANDLER;
+        this.inputReader = inputReader;
+        this.user = user;
     }
 
-    private void setInfo(Scanner in) {
-        System.out.println("\nTitulo:");
-        title = in.nextLine();
+    public void execute() {
+        getInfo();
+        if(isValid()) {
+            closeAuction();
+            removeTitle();
+        }
+    }
+
+    private void getInfo() {
+        System.out.println("\nTitle:");
+        title = inputReader.nextLine();
+    }
+
+    private boolean isValid() {
+        Item item = (Item) CONNECTIONHANDLER.get(title);
+        if (item == null) {
+            System.err.println("The item doesn't exist");
+            return false;
+        }
+        if (!item.getOwner().equals(user.getUsername())) {
+            System.err.println("You can't close this auction because you're not the owner of the item");
+            return false;
+        }
+        return true;
     }
 
     private void closeAuction() {
         Item item = null;
-        item = (Item) this.tomp2p.get(title);
+        item = (Item) CONNECTIONHANDLER.get(title);
         if(item.auctionIsClosed()) {
-            System.out.println("O leilao ja estava fechado...");
+            System.err.println("The auction was already closed");
         }
         else {
             item.setAuctionClosed(true);
             float value = item.getValue();
             try {
-                tomp2p.store(title, item);
+                CONNECTIONHANDLER.store(title, item);
+                System.out.println("The auction was successfuly closed, the final value of the item is " + value + "€.");
             } catch (IOException e) {
-                System.out.println("Ocorreu um erro ao actualizar o item...");
+                System.err.println("Error removing the item from sale");
             }
-            System.out.println("O leilao foi fechado com sucesso, o valor final do item e " + value + "€.");
         }
     }
-    
+
     private void removeTitle() {
-        for(String term : this.title.split(" ")) {
+        for(String term : title.split(" ")) {
             removeIndex(term);
         }
     }
-    
+
     public void removeIndex(String term) {
         Index index = null;
-        index = (Index) this.tomp2p.get(term);
+        String key = "index" + term;
+        index = (Index) CONNECTIONHANDLER.get(key);
         if (index != null) {
-            index.removeTitle(this.title);
+            index.removeTitle(title);
             try {
-                tomp2p.store(term, index);
+                CONNECTIONHANDLER.store(key, index);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                System.err.println("Error updating the index " + term);
             }
-        }
-    }
-    
-    public void printIndex() {
-        for(String term : this.title.split(" ")) {
-            Index index = (Index) tomp2p.get(term);
-            if (index != null)
-                System.out.println("Termo: " + index.getTerm() + "Titulo: " + index.getTitles());
         }
     }
 }

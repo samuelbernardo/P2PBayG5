@@ -12,6 +12,9 @@ public class HistoryCheck {
     public HistoryCheck(TomP2PHandler tomp2p, User user) {
         this.tomp2p = tomp2p;
         this.user = user;
+    }
+    
+    public void execute() {
         getHistory();
     }
     
