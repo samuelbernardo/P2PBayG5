@@ -3,7 +3,6 @@ package p2pbay.client;
 import java.util.Scanner;
 
 //import p2pbay.core.Item;
-import p2pbay.P2PBay;
 import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
 
@@ -83,6 +82,7 @@ public class Menu {
 //                    new AuctionToClose(tomp2p, input);
                     break;
                 case "3":
+                    new SearchForItems().run();
                     break;
                 case "4":
 //                    new BidOnItem(tomp2p, input, client.LOGGED);
