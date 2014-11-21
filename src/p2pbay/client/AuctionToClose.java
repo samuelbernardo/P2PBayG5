@@ -18,7 +18,6 @@ public class AuctionToClose extends UserInteraction{
     }
     
     private boolean isValid(Item item) {
-        item = getClient().getItem(title);
         if (item == null) {
             System.err.println("The item doesn't exist");
             return false;
