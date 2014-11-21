@@ -37,4 +37,40 @@ public class ItemForSale extends UserInteraction implements Runnable {
         else
             System.out.println("Ocorreu um erro ao publicar o item...");
     }
+
+    public void indexItem() {
+        for(String term : this.getTitle().split(" "))
+            doIndex(term);
+    }
+
+    public void doIndex(String term) {
+        String key = "index" + term;
+        Index index = (Index) tomp2p.get(key);
+        if (index == null)
+            index = new Index(key, getTitle());
+        else
+            index.addTitle(getTitle());
+        try {
+            tomp2p.store(key, index);
+        } catch (IOException e) {
+            System.err.println("Ocorreu um erro na insercao do indice...");
+        }
+    }
+
+    private float getBaseBid(Scanner input) {
+        float bBid = -1;
+        do{
+            try {
+                System.out.println("Base de licitacao:");
+                bBid = Float.parseFloat(input.nextLine());
+                if (bBid <= 0) {
+                    System.err.println("O valor introduzido nao e valido.");
+                }
+            }
+            catch (NumberFormatException e) {
+                System.err.println("O valor introduzido nao e valido.");
+            }
+        } while (bBid <= 0);
+        return bBid;
+    }
 }

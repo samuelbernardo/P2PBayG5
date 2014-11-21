@@ -37,38 +37,7 @@ public class Menu {
         return option;
     }
 
-//    public void navigate(TomP2PHandler tomp2p, User user) {
-//        String option;
-//        while(true){
-//            option = showMainMenu();
-//            switch (option) {
-//                case "1":
-//                    new ItemForSale(tomp2p, input, user);
-//                    break;
-//                case "2":
-//                    new AuctionToClose(tomp2p, input);
-//                    break;
-//                case "3":
-//                    break;
-//                case "4":
-//                    new BidOnItem(tomp2p, input, user);
-//                    break;
-//                case "5":
-//                    new DetailsOfItem(tomp2p, input);
-//                    break;
-//                case "6":
-//                    new HistoryCheck(tomp2p, user);
-//                    break;
-//                case "exit":
-//                    input.close();
-//                    System.exit(0);
-//                default:
-//                    System.out.println("Opcao invalida!");
-//            }
-//        }
-//    }
-
-    public void navigate() {
+    public void navigate(TomP2PHandler tomp2p, User user) {
         String option;
         boolean running = true;
         while(running){
@@ -81,6 +50,7 @@ public class Menu {
                     new AuctionToClose(client).run();
                     break;
                 case "3":
+                    new Search(tomp2p, input);
 //                    new SearchForItems().run();
                     break;
                 case "4":
