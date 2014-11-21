@@ -43,6 +43,8 @@ public class AuctionToClose extends UserInteraction{
                 System.out.println("Ocorreu um erro ao actualizar o item...");
             }
         }
+
+        removeTitle();
     }
     
     private void removeTitle() {
