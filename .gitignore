@@ -19,6 +19,7 @@ hs_err_pid*
 .idea/
 */META-INF/MANIFEST.MF
 META-INF/MANIFEST.MF
+META-INF/
 # if you remove the above rule, at least ignore the following:
 
 # User-specific stuff:
@@ -109,6 +110,8 @@ tmp/
 local.properties
 .settings/
 .loadpath
+.project
+.classpath
 # External tool builders
 .externalToolBuilders/
 # Locally stored "Eclipse launch configurations"
