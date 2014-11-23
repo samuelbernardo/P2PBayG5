@@ -17,6 +17,9 @@ hs_err_pid*
 
 ## Directory-based project format:
 .idea/
+META-INF
+META-INF/
+MANIFEST.MF
 # if you remove the above rule, at least ignore the following:
 
 # User-specific stuff:
@@ -93,3 +96,47 @@ local.properties
 *.log
 build/
 RemoteSystemsTempFiles/
+
+# Eclipse
+RemoteSystemsTempFiles
+*.pydevproject
+.metadata
+.gradle
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.project
+.classpath
+# External tool builders
+.externalToolBuilders/
+# Locally stored "Eclipse launch configurations"
+*.launch
+# CDT-specific
+.cproject
+# PDT-specific
+.buildpath
+# sbteclipse plugin
+.target
+# TeXlipse plugin
+.texlipse
+
+# jar
+*.bak
+*.tar.gz
+*.tmp
+*~
+blib*
+Build
+pm_to_blib*
+_build*
+Jar-Manifest-*
+
+# Samuel
+libs/
+libs

@@ -1,0 +1,98 @@
+<project name="P2PBay" default="dist" basedir=".">
+    <description>
+        P2PBay auction system
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="libs"  location="libs"/>
+  <property name="classes.build"  location="${build}/classes"/>
+  <property name="main.class"  value="p2pbay.P2PBay"/>
+	<property name="manifest.file" value="MANIFEST.MF" />
+
+	<!--manifestclasspath property="manifest.classpath" jarfile="${jar.file}">
+		<classpath location="${lib.dir}" />
+	</manifestclasspath-->
+
+	<manifest file="${manifest.file}" >
+		<attribute name="built-by" value="${user.name}" />
+		<attribute name="Main-Class" value="${main.class}" />
+		<!--attribute name="Class-Path" value="${manifest.classpath}" /-->
+	</manifest>
+
+  <!-- Hook into One-Jar project -->
+  <!--available property="one-jar.dir" file="../one-jar/build.onejar.xml" value="../one-jar/one-jar"/-->
+    <!-- Will be ignored if available above -->
+	<!--property name="one-jar.dir" location="../one-jar/one-jar" />
+    <import file="${one-jar.dir}/build.onejar.xml"/-->
+  
+  <!--path id="libs.path.ref">
+    <fileset dir="${libs}" includes="*.jar"/>
+  </path-->
+  
+  <path id="project.classpath">
+    <!--pathelement path="${classpath}"/-->
+  	<pathelement location="${classes.build}" />
+  	<fileset dir="${libs}">
+  		<include name="*.jar" />
+      <include name="**/*.jar" />
+  	</fileset>
+  </path>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${classes.build}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Compiling sources..." />
+    <javac destdir="${classes.build}" debug="true" debuglevel="lines,vars,source"
+           optimize="true" deprecation="true" verbose="false" includeantruntime="false">
+      <classpath refid="project.classpath" />
+      <src>
+        <pathelement path="${src}"/>
+      </src>
+      <compilerarg line=""/>
+    </javac>
+  </target>
+
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/lib"/>
+
+		<!-- Delete existing jar if directory already exists -->
+		<delete file="${dist}/lib/P2PBay-*.jar" />
+
+    <!-- Put everything in ${build} into the P2PBay-${DSTAMP}.jar file -->
+		<jar destfile="${dist}/lib/P2PBay-${DSTAMP}.jar"  
+    	basedir="${classes.build}"
+			manifest="${manifest.file}" > 
+    	<fileset dir="${classes.build}" includes="**/*.class" /> 
+    	<zipgroupfileset dir="${libs}" includes="**/*.jar" /> 
+    </jar>
+    <!--one-jar destfile="${dist}/lib/P2PBay-${DSTAMP}.jar" onejarmainclass="${main.class}">
+			<main>
+				<fileset dir="${classes.build}" />
+			</main>
+			<lib>
+				<fileset dir="${libs}" >
+  				<include name="*.jar" />
+        	<include name="**/*.jar" />
+  			</fileset>
+			</lib>
+		</one-jar-->
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>
