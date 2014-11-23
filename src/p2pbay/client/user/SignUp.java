@@ -1,6 +1,7 @@
 package p2pbay.client.user;
 
 import p2pbay.client.Client;
+import p2pbay.client.SysStrings;
 import p2pbay.core.User;
 
 public class SignUp extends UserInteraction implements Runnable {
@@ -14,7 +15,7 @@ public class SignUp extends UserInteraction implements Runnable {
 
     @Override
     public void getInfo() {
-        System.out.println("Sign up...");
+        System.out.println(SysStrings.SIGNUP);
 
         username = getUsername();
         password = getPassword();
@@ -28,9 +29,9 @@ public class SignUp extends UserInteraction implements Runnable {
         if(user == null) {
             user = new User(username, password);
             getClient().store(user);
-            System.out.println("User registado");
+            System.out.println(SysStrings.USER_REGISTERED);
         }
         else
-            System.out.println("User não registado");
+            System.out.println(SysStrings.USER_NOT_REGISTERED);
     }
 }
