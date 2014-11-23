@@ -1,13 +1,10 @@
 package p2pbay.client;
 
 import java.lang.UnsupportedOperationException;
-import java.util.Iterator;
-import java.util.Scanner;
 import java.util.TreeSet;
 
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
-import p2pbay.server.TomP2PHandler;
 
 public class Search extends UserInteraction {
 
@@ -20,11 +17,6 @@ public class Search extends UserInteraction {
         super(client);
     }
 
-    private String getBooleanSearch(Scanner input) {
-        System.out.println("Pesquisa:");
-        return input.nextLine();
-    }
-
     private void doSearch() {
 
         this.splitSearch = this.search.split(" ");
@@ -32,24 +24,28 @@ public class Search extends UserInteraction {
         this.nWords = splitSearch.length;
 
         // análise da primeira expressão mais à direita
-        if(!splitSearch[nWords-2].equals("NOT")) { 
+        if(splitSearch[nWords-2].equals("NOT")){
+            this.previousResult = analyseWithNOT(nWords-2, 1);
+            this.nWords -= 4;
+        }
+        if(splitSearch[nWords-3].equals("NOT")){
+            this.previousResult = analyseWithNOT(nWords-3, 1);
+            this.nWords -= 4;
+        }
+        else { 
             this.previousResult = analyseWithoutNOT(nWords-3, 1);
             this.nWords -= 3;
-        }
-        else {
-            this.previousResult = analyseWithNOT();
-            this.nWords -= 4;
         }
 
         // análise das restantes expressões, se houver
         while(nWords > 0) {
-            if(!splitSearch[nWords-2].equals("NOT")) {
-                this.previousResult = analyseWithoutNOT(nWords-2, 2);
-                nWords -= 2;
+            if(splitSearch[nWords-2].equals("NOT")){
+                this.previousResult = analyseWithNOT(nWords-2, 2);
+                nWords -= 3;
             }
             else {
-                this.previousResult = analyseWithNOT();
-                nWords -= 3;
+                this.previousResult = analyseWithoutNOT(nWords-2, 2);
+                nWords -= 2;
             }
         }
     }
@@ -66,7 +62,7 @@ public class Search extends UserInteraction {
 
         if(type==1) {
             indexWithTerm1 = getClient().getIndex(splitSearch[this.nWords-2]);
-            indexWithTerm2 = getClient().getIndex(splitSearch[this.nWords - 1]);
+            indexWithTerm2 = getClient().getIndex(splitSearch[this.nWords-1]);
             if(indexWithTerm1 != null)
                 titlesWithTerm1 = indexWithTerm1.getTitles();
             if(indexWithTerm2 != null)
@@ -79,7 +75,7 @@ public class Search extends UserInteraction {
         }
 
         try {
-            titles = doBooleanOperation(splitSearch[booleanOperatorPosition], titlesWithTerm1, titlesWithTerm2);
+            titles = doBooleanOperation(3, splitSearch[booleanOperatorPosition], titlesWithTerm1, titlesWithTerm2);
         } catch(UnsupportedOperationException e) {
             System.out.println(e.getMessage());
         }
@@ -87,38 +83,89 @@ public class Search extends UserInteraction {
         return titles;
     }
 
-    private TreeSet<String> analyseWithNOT() {
-        TreeSet<String> NOTresults = new TreeSet<String>();
+    private TreeSet<String> analyseWithNOT(int NOTposition, int type) {
+        Index indexWithTerm1;
+        Index indexWithTerm2;
+        TreeSet<String> titlesWithTerm1;
+        TreeSet<String> titlesWithTerm2;
+        TreeSet<String> NOTtitles = new TreeSet<String>();
         TreeSet<String> titles = new TreeSet<String>();
-        Index indexWithTerm1 = getClient().getIndex(this.splitSearch[nWords - 3]);
-        TreeSet<String> titlesWithTerm1 = indexWithTerm1.getTitles();
-        Index indexWithTerm2 = getClient().getIndex(this.splitSearch[nWords - 1]);
-        TreeSet<String> titlesWithTerm2 = indexWithTerm2.getTitles();
-        NOTresults.addAll(titlesWithTerm1);
-        NOTresults.removeAll(titlesWithTerm2);
-        try {
-            titles = doBooleanOperation(this.splitSearch[this.nWords-4], titlesWithTerm1, NOTresults);
+        int firstTermPosition;
+        
+        if(type == 1) {
+            
+            if(NOTposition == nWords-2) {
+                firstTermPosition = nWords-3;
+            }
+            else {
+                firstTermPosition = nWords-2;
+            }
+            indexWithTerm1 = getClient().getIndex(splitSearch[firstTermPosition]);
+            indexWithTerm2 = getClient().getIndex(splitSearch[nWords - 1]);
+            titlesWithTerm1 = indexWithTerm1.getTitles();
+            titlesWithTerm2 = indexWithTerm2.getTitles();
+
+            NOTtitles.addAll(titlesWithTerm1);
+            NOTtitles.removeAll(titlesWithTerm2);
+            try {
+                titles = doBooleanOperation(type, splitSearch[this.nWords-4], titlesWithTerm1, NOTtitles);
+            }
+            catch(UnsupportedOperationException e) {
+                System.out.println(e.getMessage());
+            }
         }
-        catch(UnsupportedOperationException e) {
-            System.out.println(e.getMessage());
+        else {
+            if(NOTposition == nWords-2) {
+                firstTermPosition = nWords-1;
+                indexWithTerm1 = getClient().getIndex(splitSearch[firstTermPosition]);
+                titlesWithTerm1 = indexWithTerm1.getTitles();
+                titlesWithTerm2 = previousResult;
+                NOTtitles.addAll(titlesWithTerm1);
+                titles = doBooleanOperation(type, splitSearch[nWords-3], NOTtitles, titlesWithTerm2);
+            }
+            else {
+                firstTermPosition = nWords-2;
+                indexWithTerm1 = getClient().getIndex(splitSearch[firstTermPosition]);
+                titlesWithTerm1 = indexWithTerm1.getTitles();
+                titlesWithTerm2 = previousResult;
+                NOTtitles.addAll(titlesWithTerm2);
+                titles = doBooleanOperation(2, splitSearch[nWords-3], titlesWithTerm1, NOTtitles);
+            }
         }
         return titles;
     }
 
-    private TreeSet<String> doBooleanOperation(String operator, TreeSet<String> titlesWithTerm1, TreeSet<String> titlesWithTerm2) throws UnsupportedOperationException {
+    private TreeSet<String> doBooleanOperation(int type, String operator, TreeSet<String> titlesWithTerm1, TreeSet<String> titlesWithTerm2) throws UnsupportedOperationException {
         TreeSet<String> titles = new TreeSet<String>();
-
-        switch (operator) {
-            case "AND":
-                titles.addAll(titlesWithTerm1);
-                titles.retainAll(titlesWithTerm2);
-                break;
-            case "OR":
-                titles.addAll(titlesWithTerm1);
-                titles.addAll(titlesWithTerm2);
-                break;
-            default:
-                throw new UnsupportedOperationException("ERRO! Keyword booleana invalida: " + operator);
+        if(type == 1) {
+            switch (operator) {
+                case "AND":
+                    titles.addAll(titlesWithTerm1);
+                    titles.retainAll(titlesWithTerm2);
+                    break;
+                case "OR":
+                    titles.addAll(titlesWithTerm1);
+                    titles.addAll(titlesWithTerm2);
+                    break;
+                default:
+                    throw new UnsupportedOperationException("ERRO! Keyword booleana invalida: " + operator);
+            }
+        }
+        
+        
+        if(type == 3) {
+            switch (operator) {
+                case "AND":
+                    titles.addAll(titlesWithTerm1);
+                    titles.retainAll(titlesWithTerm2);
+                    break;
+                case "OR":
+                    titles.addAll(titlesWithTerm1);
+                    titles.addAll(titlesWithTerm2);
+                    break;
+                default:
+                    throw new UnsupportedOperationException("ERRO! Keyword booleana invalida: " + operator);
+            }
         }
         return titles;
     }
@@ -138,7 +185,7 @@ public class Search extends UserInteraction {
     public void getInfo() {
         System.out.print("Pesquisa:");
         search = getClient().getInput();
-        
+
         try {
             doSearch();
             printResults();
@@ -150,6 +197,5 @@ public class Search extends UserInteraction {
 
     @Override
     public void storeObjects() {
-
     }
 }

@@ -50,7 +50,7 @@ public class Menu {
                     new AuctionToClose(client).run();
                     break;
                 case "3":
-                    new Search(client).run();
+                    new Searchv2(client).run();
                     break;
                 case "4":
                     new BidOnItem(client).run();
