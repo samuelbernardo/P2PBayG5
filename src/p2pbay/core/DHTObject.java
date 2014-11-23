@@ -20,4 +20,9 @@ public class DHTObject implements Serializable{
     public String getKey() {
         return itemKey;
     }
+
+    @Override
+    public String toString() {
+        return "[" + itemKey + "]";
+    }
 }

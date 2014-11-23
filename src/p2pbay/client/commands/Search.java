@@ -1,8 +1,9 @@
-package p2pbay.client;
+package p2pbay.client.commands;
 
 import java.lang.UnsupportedOperationException;
 import java.util.TreeSet;
 
+import p2pbay.client.Client;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
 
@@ -29,22 +30,22 @@ public class Search extends UserInteraction {
             this.nWords -= 4;
         }
         if(splitSearch[nWords-3].equals("NOT")){
-            this.previousResult = analyseWithNOT(nWords-3, 1);
+            this.previousResult = analyseWithNOT(nWords - 3, 1);
             this.nWords -= 4;
         }
         else { 
-            this.previousResult = analyseWithoutNOT(nWords-3, 1);
+            this.previousResult = analyseWithoutNOT(nWords - 3, 1);
             this.nWords -= 3;
         }
 
         // análise das restantes expressões, se houver
         while(nWords > 0) {
             if(splitSearch[nWords-2].equals("NOT")){
-                this.previousResult = analyseWithNOT(nWords-2, 2);
+                this.previousResult = analyseWithNOT(nWords - 2, 2);
                 nWords -= 3;
             }
             else {
-                this.previousResult = analyseWithoutNOT(nWords-2, 2);
+                this.previousResult = analyseWithoutNOT(nWords - 2, 2);
                 nWords -= 2;
             }
         }

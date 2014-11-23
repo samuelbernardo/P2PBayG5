@@ -1,5 +1,6 @@
 package p2pbay.client;
 
+import p2pbay.client.commands.Menu;
 import p2pbay.client.user.Login;
 import p2pbay.client.user.SignUp;
 import p2pbay.core.DHTObject;

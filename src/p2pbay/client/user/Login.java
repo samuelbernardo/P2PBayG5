@@ -1,7 +1,7 @@
 package p2pbay.client.user;
 
 import p2pbay.client.Client;
-import p2pbay.client.Menu;
+import p2pbay.client.commands.Menu;
 import p2pbay.client.SysStrings;
 import p2pbay.core.User;
 

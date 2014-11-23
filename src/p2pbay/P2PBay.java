@@ -8,16 +8,29 @@ public class P2PBay {
     public static TomP2PHandler P2PBAY;
 
     public static void main(String[] args) throws Exception {
+        boolean serverMode = false;
+        boolean verbose = true;
+
+        for (String arg : args) {
+            switch (arg) {
+                case "server":
+                    serverMode = true;
+                    break;
+                case "-s":
+                    verbose = false;
+                    break;
+            }
+        }
+
         //Connect to the P2P network
         P2PBayBootstrap bootstrap = new P2PBayBootstrap();
         //bootstrap.loadConfig();
-        P2PBAY = new TomP2PHandler(bootstrap);
+        P2PBAY = new TomP2PHandler(bootstrap, verbose);
+        System.out.println("Connecting...");
+        P2PBAY.connect();
 
-        //If the program is running as a server, there is no menu
-        if(args.length > 0) {
-            if(args[0].equals("server"))
-                return;
-        }
+        if (serverMode)
+            return;
 
         //Running in client mode
         Client client = new Client(P2PBAY);
