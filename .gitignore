@@ -17,9 +17,9 @@ hs_err_pid*
 
 ## Directory-based project format:
 .idea/
-*/META-INF/MANIFEST.MF
-META-INF/MANIFEST.MF
+META-INF
 META-INF/
+MANIFEST.MF
 # if you remove the above rule, at least ignore the following:
 
 # User-specific stuff:

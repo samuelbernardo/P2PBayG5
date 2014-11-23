@@ -8,7 +8,18 @@
   <property name="dist"  location="dist"/>
   <property name="libs"  location="libs"/>
   <property name="classes.build"  location="${build}/classes"/>
-  <property name="main.class"  location="p2pbay.P2PBay"/>
+  <property name="main.class"  value="p2pbay.P2PBay"/>
+	<property name="manifest.file" value="MANIFEST.MF" />
+
+	<!--manifestclasspath property="manifest.classpath" jarfile="${jar.file}">
+		<classpath location="${lib.dir}" />
+	</manifestclasspath-->
+
+	<manifest file="${manifest.file}" >
+		<attribute name="built-by" value="${user.name}" />
+		<attribute name="Main-Class" value="${main.class}" />
+		<!--attribute name="Class-Path" value="${manifest.classpath}" /-->
+	</manifest>
 
   <!-- Hook into One-Jar project -->
   <!--available property="one-jar.dir" file="../one-jar/build.onejar.xml" value="../one-jar/one-jar"/-->
@@ -60,7 +71,8 @@
 
     <!-- Put everything in ${build} into the P2PBay-${DSTAMP}.jar file -->
 		<jar destfile="${dist}/lib/P2PBay-${DSTAMP}.jar"  
-    	basedir="${classes.build}" > 
+    	basedir="${classes.build}"
+			manifest="${manifest.file}" > 
     	<fileset dir="${classes.build}" includes="**/*.class" /> 
     	<zipgroupfileset dir="${libs}" includes="**/*.jar" /> 
     </jar>
