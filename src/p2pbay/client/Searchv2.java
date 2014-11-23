@@ -6,7 +6,6 @@ import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
 
 public class Searchv2 extends UserInteraction {
-    TreeSet<String> searchResult;
     TreeSet<String> previousResult; 
     String booleanOperator;
     TreeSet<String> titlesWithTerm1;
@@ -18,7 +17,6 @@ public class Searchv2 extends UserInteraction {
 
     public Searchv2(Client client) {
         super(client);
-        searchResult = new TreeSet<String>();
         previousResult = new TreeSet<String>();
         booleanOperator = null;
         titlesWithTerm1 = new TreeSet<String>();
@@ -32,32 +30,79 @@ public class Searchv2 extends UserInteraction {
         search = getClient().getInput();
         splitSearch = search.split(" ");
         nWords = splitSearch.length;
-
-        try {
-            doSearch();
-            printResults();
-        } catch (UnsupportedOperationException e) {
-            System.out.println(e.getMessage());
+        
+        TreeSet<String> searchResult = new TreeSet<String>();
+        if (nWords <= 4) {
+            try {
+                searchResult = doSearch();
+                printResults(searchResult);
+            } catch (UnsupportedOperationException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        else {
+            try {
+                searchResult = doComplexSearch();
+                printResults(searchResult);
+            } catch (UnsupportedOperationException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
-    private void doSearch() {
-        // pesquisa com uma palavra
-        if (nWords == 1) {
-            doSimpleSearch();
+    private TreeSet<String> doComplexSearch() {
+        TreeSet<String> searchResult = new TreeSet<String>();
+        
+        if (!hasNOT()) {
+            getPartialTitles("withoutNOT");
+            searchResult = doSimpleBooleanSearchWithoutNot();
+            nWords -= 3;
         }
+        else {
+            getPartialTitles("withNOT");
+            searchResult = doSimpleBooleanSearchWithNot();
+            nWords -= 4;
+        }
+        while(nWords > 0) {
+            if(!hasNOT()) {
+                titlesWithTerm1 = doSimpleSearch();
+                titlesWithTerm2 = searchResult;
+                booleanOperator = splitSearch[nWords-2];
+                searchResult = doSimpleBooleanSearchWithoutNot();
+                nWords -= 2;
+            }
+            else {
+                Index index = getClient().getIndex(splitSearch[nWords-1]);
+                if(index != null) {
+                    NOTtitles = index.getTitles();
+                }
+                previousResult = searchResult;
+                searchResult = doSimpleBooleanSearchWithNot();
+                nWords -= 3;
+            }
+        }
+        return searchResult;
+    }
+
+    private TreeSet<String> doSearch() {
+        TreeSet<String> searchResult = new TreeSet<String>();
+
+        // pesquisa com uma palavra
+        if (nWords == 1)
+            searchResult = doSimpleSearch();
         // pesquisa com AND ou OR (sem NOT)
         else if (nWords == 3) {
             getPartialTitles("withoutNOT");
-            doSimpleBooleanSearchWithoutNot();
+            searchResult = doSimpleBooleanSearchWithoutNot();
         }
         else if (nWords == 4) {
             getPartialTitles("withNOT");
-            doSimpleBooleanSearchWithNot();
+            searchResult = doSimpleBooleanSearchWithNot();
         }
-
         else
             System.out.println(SysStrings.SEARCH_FAILED);
+
+        return searchResult;
     }
 
     private void getPartialTitles(String hasNOT) {
@@ -65,14 +110,18 @@ public class Searchv2 extends UserInteraction {
         switch(hasNOT) {
             case "withoutNOT":
                 index = getClient().getIndex(splitSearch[nWords-1]);
+                
                 if(index != null) {
                     titlesWithTerm1 = index.getTitles();
+                    System.out.println("ENCONTREI OS TITULOS DE FEIA");
                 }
                 index = getClient().getIndex(splitSearch[nWords-2]);
                 if(index != null) {
                     titlesWithTerm2 = index.getTitles();
+                    System.out.println("ENCONTREI OS TITLOS DE PEDO");
                 }
                 booleanOperator = splitSearch[nWords-3];
+                System.out.println("ENCONTREI O OPERADOR: " + booleanOperator);
                 break;
             case "withNOT":
                 int NOTposition = findNOTposition();
@@ -98,10 +147,13 @@ public class Searchv2 extends UserInteraction {
         }
     }
 
-    private void doSimpleSearch() {
+    private TreeSet<String> doSimpleSearch() {
+        TreeSet<String> searchResult = new TreeSet<String>();
         Index index = getClient().getIndex(splitSearch[nWords-1]);
-        if(index != null)
+        if(index != null) {
             searchResult = index.getTitles();
+        }
+        return searchResult;
     }
 
     private int findNOTposition() {
@@ -116,7 +168,16 @@ public class Searchv2 extends UserInteraction {
         return NOTposition;
     }
 
-    private void doSimpleBooleanSearchWithoutNot() throws UnsupportedOperationException {
+    private boolean hasNOT() {
+        if (splitSearch[nWords-2].equals("NOT")) {
+            return true;
+        }
+        else
+            return false;
+    }
+    
+    private TreeSet<String> doSimpleBooleanSearchWithoutNot() throws UnsupportedOperationException {
+        TreeSet<String> searchResult = new TreeSet<String>();
         switch(booleanOperator) {
             case "AND":
                 searchResult.addAll(titlesWithTerm1);
@@ -129,9 +190,11 @@ public class Searchv2 extends UserInteraction {
             default:
                 throw new UnsupportedOperationException(SysStrings.SEARCH_INVALIDOPERATOR + booleanOperator);
         }
+        return searchResult;
     }
 
-    private void doSimpleBooleanSearchWithNot() throws UnsupportedOperationException {
+    private TreeSet<String> doSimpleBooleanSearchWithNot() throws UnsupportedOperationException {
+        TreeSet<String> searchResult = new TreeSet<String>();
         switch(booleanOperator) {
             case "AND":
                 searchResult.addAll(previousResult);
@@ -142,9 +205,10 @@ public class Searchv2 extends UserInteraction {
             default:
                 throw new UnsupportedOperationException(SysStrings.SEARCH_INVALIDOPERATOR + booleanOperator);
         }
+        return searchResult;
     }
 
-    private void printResults() {
+    private void printResults(TreeSet<String> searchResult) {
         if(searchResult.isEmpty()) {
             System.out.println(SysStrings.SEARCH_NORESULTS);
             return;
@@ -156,6 +220,5 @@ public class Searchv2 extends UserInteraction {
     }
 
     @Override
-    public void storeObjects() {
-    }
+    public void storeObjects() {}
 }
