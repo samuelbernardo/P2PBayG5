@@ -7,7 +7,6 @@ import p2pbay.server.TomP2PHandler;
 public class P2PBay {
     public static TomP2PHandler P2PBAY;
 
-
     public static void main(String[] args) throws Exception {
         //Connect to the P2P network
         P2PBayBootstrap bootstrap = new P2PBayBootstrap();

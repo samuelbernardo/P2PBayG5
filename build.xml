@@ -89,6 +89,11 @@
 		</one-jar-->
   </target>
 
+	<target name="run" depends="dist"
+			description="run application" >
+		<java jar="${dist}/lib/P2PBay-${DSTAMP}.jar" fork="true" />
+	</target>
+
   <target name="clean"
         description="clean up" >
     <!-- Delete the ${build} and ${dist} directory trees -->

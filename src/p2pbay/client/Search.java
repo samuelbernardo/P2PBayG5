@@ -1,155 +1,230 @@
 package p2pbay.client;
 
-import java.lang.UnsupportedOperationException;
-import java.util.Iterator;
-import java.util.Scanner;
 import java.util.TreeSet;
 
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
-import p2pbay.server.TomP2PHandler;
 
-public class Search extends UserInteraction {
-
-    private String search;
-    private String[] splitSearch;
-    private int nWords;
-    private TreeSet<String> previousResult;
+public class Search extends UserInteraction{
+    TreeSet<String> previousResult; 
+    String booleanOperator;
+    TreeSet<String> titlesWithTerm1;
+    TreeSet<String> titlesWithTerm2;
+    TreeSet<String> NOTtitles;
+    String search;
+    String[] splitSearch;
+    int nWords;
 
     public Search(Client client) {
         super(client);
+        previousResult = new TreeSet<String>();
+        booleanOperator = null;
+        titlesWithTerm1 = new TreeSet<String>();
+        titlesWithTerm2 = new TreeSet<String>();
+        NOTtitles = new TreeSet<String>();
     }
 
-    private String getBooleanSearch(Scanner input) {
-        System.out.println("Pesquisa:");
-        return input.nextLine();
-    }
-
-    private void doSearch() {
-
-        this.splitSearch = this.search.split(" ");
-        this.previousResult = new TreeSet<String>();
-        this.nWords = splitSearch.length;
-
-        // análise da primeira expressão mais à direita
-        if(!splitSearch[nWords-2].equals("NOT")) { 
-            this.previousResult = analyseWithoutNOT(nWords-3, 1);
-            this.nWords -= 3;
+    // arranjar solucao para discordancia do nome com o que faz
+    public void getInfo() {
+        System.out.print(SysStrings.SEARCH);
+        search = getClient().getInput();
+        splitSearch = search.split(" ");
+        nWords = splitSearch.length;
+        
+        TreeSet<String> searchResult = new TreeSet<String>();
+        if (nWords <= 4) {
+            try {
+                searchResult = doSearch();
+                printResults(searchResult);
+            } catch (UnsupportedOperationException e) {
+                System.out.println(e.getMessage());
+            }
         }
         else {
-            this.previousResult = analyseWithNOT();
-            this.nWords -= 4;
+            try {
+                searchResult = doComplexSearch();
+                printResults(searchResult);
+            } catch (UnsupportedOperationException e) {
+                System.out.println(e.getMessage());
+            }
         }
+    }
 
-        // análise das restantes expressões, se houver
+    private TreeSet<String> doSearch() {
+        TreeSet<String> searchResult = new TreeSet<String>();
+
+        // pesquisa com uma palavra
+        if (nWords == 1)
+            searchResult = doSimpleSearch();
+        else if (nWords == 2 && splitSearch[nWords-2].equals("NOT"))
+            throw new UnsupportedOperationException(SysStrings.SEARCH_IMPOSSIBLE);
+        // pesquisa com AND ou OR (sem NOT)
+        else if (nWords == 3) {
+            getPartialTitles("withoutNOT");
+            searchResult = doSimpleBooleanSearchWithoutNot();
+        }
+        else if (nWords == 4) {
+            getPartialTitles("withNOT");
+            searchResult = doSimpleBooleanSearchWithNot();
+        }
+        else
+            System.out.println(SysStrings.SEARCH_FAILED);
+
+        return searchResult;
+    }
+
+    private TreeSet<String> doComplexSearch() {
+        TreeSet<String> searchResult = new TreeSet<String>();
+        
+        if (!hasNOT()) {
+            getPartialTitles("withoutNOT");
+            searchResult = doSimpleBooleanSearchWithoutNot();
+            nWords -= 3;
+        }
+        else {
+            getPartialTitles("withNOT");
+            searchResult = doSimpleBooleanSearchWithNot();
+            nWords -= 4;
+        }
         while(nWords > 0) {
-            if(!splitSearch[nWords-2].equals("NOT")) {
-                this.previousResult = analyseWithoutNOT(nWords-2, 2);
+            if(!hasNOT()) {
+                titlesWithTerm1 = doSimpleSearch();
+                titlesWithTerm2 = searchResult;
+                booleanOperator = splitSearch[nWords-2];
+                searchResult = doSimpleBooleanSearchWithoutNot();
                 nWords -= 2;
             }
             else {
-                this.previousResult = analyseWithNOT();
+                Index index = getClient().getIndex(splitSearch[nWords-1]);
+                if(index != null) {
+                    NOTtitles = index.getTitles();
+                }
+                previousResult = searchResult;
+                searchResult = doSimpleBooleanSearchWithNot();
                 nWords -= 3;
             }
         }
+        return searchResult;
+    }
+    
+    private void getPartialTitles(String hasNOT) {
+        Index index;
+        switch(hasNOT) {
+            case "withoutNOT":
+                index = getClient().getIndex(splitSearch[nWords-1]);
+                
+                if(index != null) {
+                    titlesWithTerm1 = index.getTitles();
+                }
+                index = getClient().getIndex(splitSearch[nWords-2]);
+                if(index != null) {
+                    titlesWithTerm2 = index.getTitles();
+                }
+                booleanOperator = splitSearch[nWords-3];
+                break;
+            case "withNOT":
+                int NOTposition = findNOTposition();
+                NOTtitles = new TreeSet<String>();
+                if(NOTposition == nWords-3) {
+                    index = getClient().getIndex(splitSearch[nWords-1]);
+                    if (index != null)
+                        previousResult = index.getTitles();
+                    index = getClient().getIndex(splitSearch[nWords-2]);
+                    if (index != null)
+                        NOTtitles = index.getTitles();
+                }
+                else if(NOTposition == nWords-2) {
+                    index = getClient().getIndex(splitSearch[nWords-3]);
+                    if (index != null)
+                        previousResult = index.getTitles();
+                    index = getClient().getIndex(splitSearch[nWords-1]);
+                    if (index != null)
+                        NOTtitles = index.getTitles();
+                }
+                booleanOperator = splitSearch[nWords-4];
+                break;
+        }
     }
 
-
-
-    // type = 1 significa que é a primeira análise da direita; type = 2 significa que é uma das análises mais à esquerda
-    private TreeSet<String> analyseWithoutNOT(int booleanOperatorPosition, int type) {
-        TreeSet<String> titles = new TreeSet<String>();
-        Index indexWithTerm1;
-        Index indexWithTerm2;
-        TreeSet<String> titlesWithTerm1 = new TreeSet<String>();
-        TreeSet<String> titlesWithTerm2 = new TreeSet<String>();;
-
-        if(type==1) {
-            indexWithTerm1 = getClient().getIndex(splitSearch[this.nWords-2]);
-            indexWithTerm2 = getClient().getIndex(splitSearch[this.nWords - 1]);
-            if(indexWithTerm1 != null)
-                titlesWithTerm1 = indexWithTerm1.getTitles();
-            if(indexWithTerm2 != null)
-                titlesWithTerm2 = indexWithTerm2.getTitles();
+    private TreeSet<String> doSimpleSearch() {
+        TreeSet<String> searchResult = new TreeSet<String>();
+        Index index = getClient().getIndex(splitSearch[nWords-1]);
+        if(index != null) {
+            searchResult = index.getTitles();
         }
-        else {
-            indexWithTerm1 = getClient().getIndex(splitSearch[this.nWords - 1]);
-            titlesWithTerm1 = indexWithTerm1.getTitles();
-            titlesWithTerm2 = this.previousResult;
-        }
-
-        try {
-            titles = doBooleanOperation(splitSearch[booleanOperatorPosition], titlesWithTerm1, titlesWithTerm2);
-        } catch(UnsupportedOperationException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return titles;
+        return searchResult;
     }
 
-    private TreeSet<String> analyseWithNOT() {
-        TreeSet<String> NOTresults = new TreeSet<String>();
-        TreeSet<String> titles = new TreeSet<String>();
-        Index indexWithTerm1 = getClient().getIndex(this.splitSearch[nWords - 3]);
-        TreeSet<String> titlesWithTerm1 = indexWithTerm1.getTitles();
-        Index indexWithTerm2 = getClient().getIndex(this.splitSearch[nWords - 1]);
-        TreeSet<String> titlesWithTerm2 = indexWithTerm2.getTitles();
-        NOTresults.addAll(titlesWithTerm1);
-        NOTresults.removeAll(titlesWithTerm2);
-        try {
-            titles = doBooleanOperation(this.splitSearch[this.nWords-4], titlesWithTerm1, NOTresults);
+    private int findNOTposition() {
+        int NOTposition = -1;
+        if (splitSearch[nWords-2].equals("NOT")) {
+            NOTposition = nWords-2;
         }
-        catch(UnsupportedOperationException e) {
-            System.out.println(e.getMessage());
-        }
-        return titles;
+        else if (splitSearch[nWords-3].equals("NOT"))
+            NOTposition = nWords-3;
+        else
+            throw new UnsupportedOperationException(SysStrings.SEARCH_FAILED);
+        return NOTposition;
     }
 
-    private TreeSet<String> doBooleanOperation(String operator, TreeSet<String> titlesWithTerm1, TreeSet<String> titlesWithTerm2) throws UnsupportedOperationException {
-        TreeSet<String> titles = new TreeSet<String>();
-
-        switch (operator) {
+    private boolean hasNOT() {
+        boolean hasNOT = false;
+        if (splitSearch[nWords-2].equals("NOT")) {
+            hasNOT = true;
+        }
+        else if (nWords >= 3) {
+            if (splitSearch[nWords-3].equals("NOT")) {
+                hasNOT = true;
+            }
+        }
+        else
+            hasNOT = false;
+        return hasNOT;
+    }
+    
+    private TreeSet<String> doSimpleBooleanSearchWithoutNot() throws UnsupportedOperationException {
+        TreeSet<String> searchResult = new TreeSet<String>();
+        switch(booleanOperator) {
             case "AND":
-                titles.addAll(titlesWithTerm1);
-                titles.retainAll(titlesWithTerm2);
+                searchResult.addAll(titlesWithTerm1);
+                searchResult.retainAll(titlesWithTerm2);
                 break;
             case "OR":
-                titles.addAll(titlesWithTerm1);
-                titles.addAll(titlesWithTerm2);
+                searchResult.addAll(titlesWithTerm1);
+                searchResult.addAll(titlesWithTerm2);
                 break;
             default:
-                throw new UnsupportedOperationException("ERRO! Keyword booleana invalida: " + operator);
+                throw new UnsupportedOperationException(SysStrings.SEARCH_INVALIDOPERATOR + booleanOperator);
         }
-        return titles;
+        return searchResult;
     }
 
-    private void printResults() {
-        if(previousResult.isEmpty()) {
-            System.out.println("Sem resultados... Por favor tente outras keywords.");
+    private TreeSet<String> doSimpleBooleanSearchWithNot() throws UnsupportedOperationException {
+        TreeSet<String> searchResult = new TreeSet<String>();
+        switch(booleanOperator) {
+            case "AND":
+                searchResult.addAll(previousResult);
+                searchResult.removeAll(NOTtitles);
+                break;
+            case "OR":
+                throw new UnsupportedOperationException(SysStrings.SEARCH_IMPOSSIBLE);
+            default:
+                throw new UnsupportedOperationException(SysStrings.SEARCH_INVALIDOPERATOR + booleanOperator);
+        }
+        return searchResult;
+    }
+
+    private void printResults(TreeSet<String> searchResult) {
+        if(searchResult.isEmpty()) {
+            System.out.println(SysStrings.SEARCH_NORESULTS);
             return;
         }
-        System.out.println("\nResultados da pesquisa:");
-        for (String title : previousResult) {
+        System.out.println(SysStrings.SEARCH_RESULTS);
+        for (String title : searchResult) {
             System.out.println(" - " + title);
         }
     }
 
     @Override
-    public void getInfo() {
-        System.out.print("Pesquisa:");
-        search = getClient().getInput();
-        
-        try {
-            doSearch();
-            printResults();
-        }
-        catch(ArrayIndexOutOfBoundsException e) {
-            System.out.println("A expressao nao esta bem formada, por favor tente novamente.");
-        }
-    }
-
-    @Override
-    public void storeObjects() {
-
-    }
+    public void storeObjects() {}
 }
