@@ -16,8 +16,8 @@ public class SysStrings {
     public static final String SIGNUP = "Sign up";
     public static final String USER_REGISTERED = "User registado";
     public static final String USER_NOT_REGISTERED = "User não registado";
-    public static final String INPUT_USERNAME = "Username:";
-    public static final String INPUT_PASSWORD = "Password:";
+    public static final String INPUT_USERNAME = "Username: ";
+    public static final String INPUT_PASSWORD = "Password: ";
     public static final String INPUT_TITLE = "Titulo:";
     public static final String TITLE = "Titulo";
     public static final String ITEM_NOT_EXIST = "The item doesn't exist";
