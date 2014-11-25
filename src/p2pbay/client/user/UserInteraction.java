@@ -1,11 +1,10 @@
 package p2pbay.client.user;
 
 import p2pbay.client.Client;
+import p2pbay.client.SysStrings;
 import java.io.Console;
 
 public abstract class UserInteraction implements Runnable {
-    public static String USERNAME = "Username:";
-    public static String PASSWORD = "Password:";
 
     private Client client;
 
@@ -24,7 +23,7 @@ public abstract class UserInteraction implements Runnable {
             Console cnsl = System.console();
             // if console is not null
             if (cnsl != null) {
-                username = cnsl.readLine(USERNAME);
+                username = cnsl.readLine(SysStrings.INPUT_USERNAME);
             }
         } catch(Exception e){
             // if any error occurs
@@ -41,7 +40,7 @@ public abstract class UserInteraction implements Runnable {
             Console cnsl = System.console();
             // if console is not null
             if (cnsl != null) {
-                password = new String(cnsl.readPassword(PASSWORD));
+                password = new String(cnsl.readPassword(SysStrings.INPUT_PASSWORD));
             }
         } catch(Exception e){
             // if any error occurs
@@ -69,7 +68,7 @@ public abstract class UserInteraction implements Runnable {
                     return value;
             } catch (NumberFormatException ignored) {}
 
-            System.out.println("O valor introduzido nao e valido.");
+            System.out.println(SysStrings.INVALID_VALUE);
         }
     }
 

@@ -13,18 +13,17 @@ public class AuctionToClose extends UserInteraction{
 
     @Override
     public void getInfo() {
-        System.out.println("\nTitulo:");
+        System.out.print("\n" + SysStrings.INPUT_TITLE);
         title = getInput();
     }
     
     private boolean isValid(Item item) {
-        item = getClient().getItem(title);
         if (item == null) {
-            System.err.println("The item doesn't exist");
+            System.err.println(SysStrings.ITEM_NOT_EXIST);
             return false;
         }
         if (!item.getOwner().equals(getClient().getUser().getUsername())) {
-            System.err.println("You can't close this auction because you're not the owner of the item");
+            System.err.println(SysStrings.ITEM_NOT_OWNER);
             return false;
         }
         return true;
@@ -38,9 +37,9 @@ public class AuctionToClose extends UserInteraction{
             item.setAuctionClosed(true);
             float value = item.getValue();
             if(getClient().store(item))
-                System.out.println("O leilao foi fechado com sucesso, o valor final do item e " + value + "€.");
+                System.out.println(SysStrings.ACTION_CLOSED + item.getValueToString());
             else {
-                System.out.println("Ocorreu um erro ao actualizar o item...");
+                System.out.println(SysStrings.ITEM_ERROR);
             }
         }
 
@@ -65,7 +64,8 @@ public class AuctionToClose extends UserInteraction{
         for(String term : this.title.split(" ")) {
             Index index = getClient().getIndex(term);
             if (index != null)
-                System.out.println("Termo: " + index.getTerm() + "Titulo: " + index.getTitles());
+                System.out.println(SysStrings.TERM + ": " + index.getTerm() +
+                                   SysStrings.TITLE + ": " + index.getTitles());
         }
     }
 }
