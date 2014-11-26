@@ -20,7 +20,7 @@ public class Login extends UserInteraction implements Runnable {
         String password = getPassword();
 
         //Check if exists user with such username
-        User user = getClient().findUser(username);
+        User user = getClient().getUser(username);
         if (user != null)
             if (user.getPassword().equals(password)) {
                 //User password matches

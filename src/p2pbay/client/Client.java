@@ -2,10 +2,7 @@ package p2pbay.client;
 
 import p2pbay.client.user.Login;
 import p2pbay.client.user.SignUp;
-import p2pbay.core.DHTObject;
-import p2pbay.core.Index;
-import p2pbay.core.Item;
-import p2pbay.core.User;
+import p2pbay.core.*;
 import p2pbay.server.TomP2PHandler;
 
 import java.io.IOException;
@@ -50,19 +47,6 @@ public class Client {
         return LOGGED;
     }
 
-    /**
-     * Gets an user from the DHT
-     * @param username username of the user
-     * @return User or null of not found
-     */
-    public User getUser(String username) {
-        Object item = connectionHandler.get(username);
-        if(item != null && item instanceof User) {
-            return (User)item;
-        }
-        return null;    }
-
-
     public void start() throws IOException, ClassNotFoundException {
         Menu menu = new Menu(this);
         String option;
@@ -76,6 +60,9 @@ public class Client {
                 case "2":
                     new SignUp(this).run();
                     break;
+                case "3":
+                    getDistributed();
+                    break;
                 case "exit":
                     close();
                     return;
@@ -84,6 +71,10 @@ public class Client {
             }
         }
         close();
+    }
+
+    private void getDistributed() {
+        connectionHandler.iterDHT();
     }
 
     public void close() {
@@ -98,7 +89,7 @@ public class Client {
      * @return Item or null of not found
      */
     public Item getItem(String title) {
-        Object item = connectionHandler.get(title);
+        Object item = connectionHandler.get(DHTObjectType.ITEM.getKey(title));
         if(item != null && item instanceof Item) {
             return (Item)item;
         }
@@ -111,9 +102,22 @@ public class Client {
      * @return Index or null of not found
      */
     public Index getIndex(String term) {
-        Object index = connectionHandler.get(Index.PREFIX + term);
+        Object index = connectionHandler.get(DHTObjectType.INDEX.getKey(term));
         if(index != null && index instanceof Index) {
             return (Index)index;
+        }
+        return null;
+    }
+
+    /**
+     * Gets an user from the DHT
+     * @param username username of the user
+     * @return User or null of not found
+     */
+    public User getUser(String username) {
+        Object item = connectionHandler.get(DHTObjectType.USER.getKey(username));
+        if(item != null && item instanceof User) {
+            return (User)item;
         }
         return null;
     }

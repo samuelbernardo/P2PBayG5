@@ -14,7 +14,7 @@ public class Item extends DHTObject implements Serializable {
     private List<Bid> bids;
 
     public Item(String owner, String title, String description, float baseBid) {
-        super(title);
+        super(title, DHTObjectType.ITEM);
         this.owner = owner;
         this.title = title;
         this.description = description;
