@@ -16,7 +16,13 @@ public enum DHTObjectType {
         return super.toString();
     }
 
-    public Number160 getKey(String key) {
-        return Number160.createHash(key + this.toString());
+    public Number160 getContentKey() {
+        switch (this) {
+            case BID: return Number160.createHash("BID");
+            case INDEX: return Number160.createHash("INDEX");
+            case ITEM: return Number160.createHash("ITEM");
+            case USER: return Number160.createHash("USER");
+        }
+        return null; //Nunca chega aqui!!!
     }
 }

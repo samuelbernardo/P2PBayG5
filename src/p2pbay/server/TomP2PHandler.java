@@ -1,5 +1,6 @@
 package p2pbay.server;
 
+import net.tomp2p.connection.ConnectionBean;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.futures.FutureDiscover;
@@ -10,6 +11,7 @@ import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.storage.Data;
 import net.tomp2p.storage.StorageMemory;
 import p2pbay.core.DHTObject;
+import p2pbay.core.DHTObjectType;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -28,6 +30,8 @@ public class TomP2PHandler {
         StorageMemory storageMemory = new BayStorage();
         peerMaker.setStorage(storageMemory);
         peerMaker.setPorts(port);
+        peerMaker.setEnableIndirectReplication(true);
+        System.out.println(peerMaker.isEnableIndirectReplication());
         storage = storageMemory;
         peer = peerMaker.makeAndListen();
 
@@ -74,28 +78,13 @@ public class TomP2PHandler {
     }
 
     /**
-     * Guarda qualquer objecto na dht
-     * @param key String que deve ser usada como chave
+     * Guarda um objecto do tipo DHTObject
      * @param object Objecto a ser guardado na dht
      * @throws IOException possivelmente se o objecto nao for serializavel
      */
-    public boolean store(String key, Object object) {
-        try {
-            Number160 hKey = Number160.createHash(key);
-            peer.put(hKey).setData(new Data(object)).start().awaitUninterruptibly();
-            return true;
-        } catch (IOException e) {
-//            e.printStackTrace();
-            System.err.println("Nao foi possivel guardar o objecto:");
-            System.err.println(object);
-            System.err.println("Expecao " + e);
-            return false;
-        }
-    }
-
     public boolean store(DHTObject object) {
         try {
-            peer.put(object.getKey()).setData(new Data(object)).start().awaitUninterruptibly();
+            peer.put(object.getKey()).setKeyObject(object.getContentKey(), object).start().awaitUninterruptibly();
             return true;
         } catch (IOException e) {
             System.err.println("Nao foi possivel guardar o objecto:");
@@ -110,9 +99,9 @@ public class TomP2PHandler {
      * @param key Object Key
      * @return The Object or null if not found
      */
-    public Object get(String key) {
+    public Object get(String key, DHTObjectType type) {
         Number160 hKey = Number160.createHash(key);
-        FutureDHT futureDHT = peer.get(hKey).start().awaitUninterruptibly();
+        FutureDHT futureDHT = peer.get(hKey).setContentKey(type.getContentKey()).start().awaitUninterruptibly();
         if (futureDHT.isSuccess()) {
             try {
                 return futureDHT.getData().getObject();

@@ -11,7 +11,7 @@ public class Bid extends DHTObject implements Serializable {
     private String owner;
     
     public Bid(String title, User owner, float value) {
-        super(title+owner, DHTObjectType.BID);
+        super(title, DHTObjectType.BID);
         this.title = title;
         this.owner = owner.getUsername();
         this.value = value;
