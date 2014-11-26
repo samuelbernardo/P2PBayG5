@@ -1,11 +1,8 @@
 package p2pbay.client.user;
 
 import p2pbay.client.Client;
-<<<<<<< HEAD
 import p2pbay.client.SysStrings;
-=======
 import java.io.Console;
->>>>>>> refs/remotes/origin/pre_release
 
 public abstract class UserInteraction implements Runnable {
 
@@ -20,17 +17,13 @@ public abstract class UserInteraction implements Runnable {
     }
 
     public String getUsername() {
-<<<<<<< HEAD
-        System.out.print(SysStrings.INPUT_USERNAME);
-        return client.getInput();
-=======
         String username = null;
         try {
             // creates a console object
             Console cnsl = System.console();
             // if console is not null
             if (cnsl != null) {
-                username = cnsl.readLine(USERNAME);
+                username = cnsl.readLine(SysStrings.INPUT_USERNAME);
             }
         } catch(Exception e){
             // if any error occurs
@@ -38,21 +31,16 @@ public abstract class UserInteraction implements Runnable {
         } finally {
             return username;
         }
->>>>>>> refs/remotes/origin/pre_release
     }
 
     public String getPassword() {
-<<<<<<< HEAD
-        System.out.print(SysStrings.INPUT_USERNAME);
-        return client.getInput();
-=======
         String password = null;
         try {
             // creates a console object
             Console cnsl = System.console();
             // if console is not null
             if (cnsl != null) {
-                password = new String(cnsl.readPassword(PASSWORD));
+                password = new String(cnsl.readPassword(SysStrings.INPUT_PASSWORD));
             }
         } catch(Exception e){
             // if any error occurs
@@ -60,7 +48,6 @@ public abstract class UserInteraction implements Runnable {
         } finally {
             return password;
         }
->>>>>>> refs/remotes/origin/pre_release
     }
 
     public String getInput() {
