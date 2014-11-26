@@ -25,7 +25,7 @@ public class TomP2PHandler {
     public TomP2PHandler(P2PBayBootstrap bootstrap) throws Exception {
         //** CREATE A NEW PEER **//
         PeerMaker peerMaker = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress()));
-        StorageMemory storageMemory = new StorageMemory();
+        StorageMemory storageMemory = new BayStorage();
         peerMaker.setStorage(storageMemory);
         peerMaker.setPorts(port);
         storage = storageMemory;
