@@ -1,7 +1,10 @@
-package p2pbay.client.commands;
+package p2pbay.client;
+
+import java.util.Scanner;
 
 //import p2pbay.core.Item;
-import p2pbay.client.Client;
+import p2pbay.core.User;
+import p2pbay.server.TomP2PHandler;
 
 public class Menu {
     private Client client;
@@ -47,7 +50,6 @@ public class Menu {
                     new AuctionToClose(client).run();
                     break;
                 case "3":
-//                    new Searchv2(client).run();
                     new Search(client).run();
                     break;
                 case "4":

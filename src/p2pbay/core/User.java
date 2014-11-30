@@ -11,14 +11,14 @@ public class User extends DHTObject implements Serializable {
     private List<Bid> bids;
 
     public User(String username, String password) {
-        super(username);
+        super(username, DHTObjectType.USER);
         this.username = username;
         this.password = password;
         this.bids = new ArrayList<Bid>();
     }
     
     public User(String username, String password, List<Bid> bids) {
-        super(username);
+        super(username, DHTObjectType.USER);
         this.username = username;
         this.password = password;
         this.bids = bids;
