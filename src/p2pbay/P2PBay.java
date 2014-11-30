@@ -29,11 +29,14 @@ public class P2PBay {
 
         //Connect to the P2P network
         P2PBayBootstrap bootstrap = new P2PBayBootstrap();
-        bootstrap.loadConfig();
-        P2PBAY = new TomP2PHandler(bootstrap, port, verbose);
+//        bootstrap.loadConfig();
+        while(bootstrap.loadLocalPort());
+
+        P2PBAY = new TomP2PHandler(bootstrap);
+//        P2PBAY = new TomP2PHandler(bootstrap, port, verbose);
         System.out.println("Connecting...");
         P2PBAY.connect();
-        System.out.println("Listening on port " + port);
+        System.out.println("Listening on port " + P2PBAY.getPort());
 
         if (serverMode)
             return;

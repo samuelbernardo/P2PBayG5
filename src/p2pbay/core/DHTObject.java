@@ -7,10 +7,12 @@ import java.io.Serializable;
 public class DHTObject implements Serializable{
     private Number160 itemKeyHash;
     private DHTObjectType type;
+    private String key;
     
     public DHTObject(String key, DHTObjectType type) {
         this.itemKeyHash = Number160.createHash(key);
         this.type = type;
+        this.key = key;
     }
 
     public DHTObjectType getType() {
@@ -27,6 +29,6 @@ public class DHTObject implements Serializable{
 
     @Override
     public String toString() {
-        return "[" + itemKey + "]";
+        return "[" + key + "]";
     }
 }

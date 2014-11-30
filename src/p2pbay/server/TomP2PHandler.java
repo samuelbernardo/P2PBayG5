@@ -1,6 +1,5 @@
 package p2pbay.server;
 
-import net.tomp2p.connection.ConnectionBean;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.futures.FutureDiscover;
@@ -12,32 +11,44 @@ import net.tomp2p.storage.Data;
 import net.tomp2p.storage.StorageMemory;
 import p2pbay.core.DHTObject;
 import p2pbay.core.DHTObjectType;
+import p2pbay.server.monitor.ActiveMonitor;
+import p2pbay.server.monitor.ServerMonitor;
+import p2pbay.server.peer.Node;
 
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.net.InetAddress;
+import java.util.List;
+import java.util.Random;
 
 public class TomP2PHandler {
-    final private Peer peer;
-    final private int port = 4001;
+    private Peer peer;
+    private int port = 4001;
     private StorageMemory storage;
-
+    private P2PBayBootstrap bootstrap;
+    private ServerMonitor monitor;
     final static private String test = "test";
 
-    public TomP2PHandler(P2PBayBootstrap bootstrap) throws Exception {
+    public TomP2PHandler(P2PBayBootstrap bootstrap) {
+        this.bootstrap = bootstrap;
+        this.monitor = new ActiveMonitor();
+    }
+
+    public boolean connect() throws IOException {
+        Random r = new Random();
+
+        PeerAddress localPeerAddress = new PeerAddress(Number160.createHash(Inet4Address.getLocalHost().getHostAddress() + r.nextInt()));
+
         //** CREATE A NEW PEER **//
-        PeerMaker peerMaker = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress()));
+        PeerMaker peerMaker = new PeerMaker(localPeerAddress.getID());
         StorageMemory storageMemory = new BayStorage();
         peerMaker.setStorage(storageMemory);
-        peerMaker.setPorts(port);
+
+        peerMaker.setPorts(1000 + r.nextInt(10000));
         peerMaker.setEnableIndirectReplication(true);
         System.out.println(peerMaker.isEnableIndirectReplication());
         storage = storageMemory;
         peer = peerMaker.makeAndListen();
-
-        /* Creation of a peer. */
-//        peer = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress())).setPorts(port).makeAndListen();
-        System.out.println("peer = " + peer.getPeerAddress());
+        monitor.printPeer(peer);
 
 
         // ** Testing lambdas ** //
@@ -55,28 +66,28 @@ public class TomP2PHandler {
             return "ok";
         });
 
-
-
-        /* Connects THIS to an existing peer. */
-        System.out.println("Connecting...");
-
+        new SystemInfoThread(this).start();
 
         // Procura por todos os nos dados pelo objecto P2PBayBoostrap
-        for(InetAddress address:bootstrap.getNodes()) {
-            System.out.println("Trying " + address.getHostName());
-            FutureDiscover futureDiscover = peer.discover().setInetAddress(address).setPorts(port).start();
+        for(Node node:bootstrap.getNodes()) {
+            System.out.println("Trying " + node.getHostName() + ":" + node.getPort());
+            FutureDiscover futureDiscover = peer.discover().setInetAddress(node.getAddress()).setPorts(node.getPort()).start();
             futureDiscover.awaitUninterruptibly();
-            FutureBootstrap fb = peer.bootstrap().setInetAddress(address).setPorts(port).start();
+
+            FutureBootstrap fb = peer.bootstrap().setInetAddress(node.getAddress()).setPorts(node.getPort()).start();
             fb.awaitUninterruptibly();
             if (fb.getBootstrapTo() != null) {
+                for (PeerAddress peerAddress : fb.getBootstrapTo()) {
+                    System.out.println("peerAddress = " + peerAddress);
+                }
                 System.out.println("Connected to " + fb.getBootstrapTo());
                 PeerAddress peerAddress = fb.getBootstrapTo().iterator().next();
                 peer.discover().setPeerAddress(peerAddress).start().awaitUninterruptibly();
-                break;
+                return true;
             }
         }
+        return false;
     }
-
     /**
      * Guarda um objecto do tipo DHTObject
      * @param object Objecto a ser guardado na dht
@@ -141,5 +152,21 @@ public class TomP2PHandler {
                 e.printStackTrace();
             }
         }
+    }
+
+    public List<PeerAddress> getNeighbors() {
+        return peer.getPeerBean().getPeerMap().getAll();
+    }
+
+    public boolean isRunning() {
+        return peer.isRunning();
+    }
+
+    public void sendInfo(PeerAddress address) {
+
+    }
+
+    public int getPort() {
+        return port;
     }
 }
