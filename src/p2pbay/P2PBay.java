@@ -10,6 +10,7 @@ public class P2PBay {
     public static void main(String[] args) throws Exception {
         boolean serverMode = false;
         boolean verbose = true;
+        int port = 4001;
 
         for (String arg : args) {
             switch (arg) {
@@ -19,15 +20,20 @@ public class P2PBay {
                 case "-s":
                     verbose = false;
                     break;
+                default:
+                    try {
+                        port = Integer.parseInt(arg);
+                    } catch (NumberFormatException ignore) {}
             }
         }
 
         //Connect to the P2P network
         P2PBayBootstrap bootstrap = new P2PBayBootstrap();
-        //bootstrap.loadConfig();
-        P2PBAY = new TomP2PHandler(bootstrap, verbose);
+        bootstrap.loadConfig();
+        P2PBAY = new TomP2PHandler(bootstrap, port, verbose);
         System.out.println("Connecting...");
         P2PBAY.connect();
+        System.out.println("Listening on port " + port);
 
         if (serverMode)
             return;

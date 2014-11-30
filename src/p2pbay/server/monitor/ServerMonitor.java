@@ -9,6 +9,8 @@ import java.net.InetAddress;
 import java.util.Collection;
 
 public interface ServerMonitor {
+    void print(String message);
+
     void printPeer(Peer peer);
 
     void printTrying(InetAddress address);

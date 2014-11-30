@@ -10,6 +10,11 @@ import java.util.Collection;
 
 public class ActiveMonitor implements ServerMonitor {
     @Override
+    public void print(String message) {
+        System.out.println(message);
+    }
+
+    @Override
     public void printPeer(Peer peer) {
         System.out.println("peer = " + peer.getPeerAddress());
     }
