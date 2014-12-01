@@ -9,15 +9,23 @@ import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.storage.Data;
 import net.tomp2p.storage.StorageMemory;
+import org.jboss.netty.channel.ChannelException;
 import p2pbay.core.DHTObject;
 import p2pbay.core.DHTObjectType;
+import p2pbay.core.Item;
+import p2pbay.core.User;
+import p2pbay.server.messages.Message;
+import p2pbay.server.messages.MessageReceiver;
+import p2pbay.server.messages.SystemInfoMessage;
 import p2pbay.server.monitor.ActiveMonitor;
 import p2pbay.server.monitor.ServerMonitor;
 import p2pbay.server.peer.Node;
 
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class TomP2PHandler {
@@ -25,48 +33,40 @@ public class TomP2PHandler {
     private int port = 4001;
     private StorageMemory storage;
     private P2PBayBootstrap bootstrap;
+    private SystemInfoMessage infoMessage;
+
     private ServerMonitor monitor;
-    final static private String test = "test";
 
     public TomP2PHandler(P2PBayBootstrap bootstrap) {
         this.bootstrap = bootstrap;
         this.monitor = new ActiveMonitor();
     }
 
-    public boolean connect() throws IOException {
+    public boolean connect() throws UnknownHostException {
         Random r = new Random();
-
-        PeerAddress localPeerAddress = new PeerAddress(Number160.createHash(Inet4Address.getLocalHost().getHostAddress() + r.nextInt()));
+        Number160 id = null;
+        try {
+            id = Number160.createHash(Inet4Address.getLocalHost().getHostAddress() + r.nextInt());
+        } catch (UnknownHostException e) {
+            return false;
+        }
+        PeerAddress localPeerAddress = new PeerAddress(id);
 
         //** CREATE A NEW PEER **//
         PeerMaker peerMaker = new PeerMaker(localPeerAddress.getID());
-        StorageMemory storageMemory = new BayStorage();
+        StorageMemory storageMemory = new BayStorage(id.shortValue(), this);
         peerMaker.setStorage(storageMemory);
 
         peerMaker.setPorts(1000 + r.nextInt(10000));
         peerMaker.setEnableIndirectReplication(true);
         System.out.println(peerMaker.isEnableIndirectReplication());
         storage = storageMemory;
-        peer = peerMaker.makeAndListen();
+        try {
+            peer = peerMaker.makeAndListen();
+        } catch (IOException | ChannelException e) {
+            return false;
+        }
         monitor.printPeer(peer);
-
-
-        // ** Testing lambdas ** //
-        // Executed when receiving a direct message.
-        peer.setObjectDataReply((sender, request) -> {
-            if (request instanceof MessageType) {
-                switch ((MessageType) request) {
-                    case TEST:
-                        System.out.println("Received " + request.getClass());
-                        break;
-                }
-            }
-            System.out.println("sender = " + sender);
-            System.out.println("request = " + request);
-            return "ok";
-        });
-
-        new SystemInfoThread(this).start();
 
         // Procura por todos os nos dados pelo objecto P2PBayBoostrap
         for(Node node:bootstrap.getNodes()) {
@@ -83,6 +83,11 @@ public class TomP2PHandler {
                 System.out.println("Connected to " + fb.getBootstrapTo());
                 PeerAddress peerAddress = fb.getBootstrapTo().iterator().next();
                 peer.discover().setPeerAddress(peerAddress).start().awaitUninterruptibly();
+
+                this.infoMessage = new SystemInfoMessage(peer.getPeerID());
+                peer.setObjectDataReply(new MessageReceiver(infoMessage));
+                new SystemInfoThread(this).start();
+
                 return true;
             }
         }
@@ -163,10 +168,30 @@ public class TomP2PHandler {
     }
 
     public void sendInfo(PeerAddress address) {
+        peer.sendDirect(address).setObject(infoMessage).start();
+    }
 
+    public void send(Message message, PeerAddress peer) {
+        this.peer.sendDirect(peer).setObject(message).start();
+    }
+
+    public void addInfo(DHTObject object) {
+        switch (object.getType()) {
+            case ITEM:
+                infoMessage.addItem(object.getKey());
+                break;
+            case USER:
+                infoMessage.addUser(object.getKey());
+                break;
+        }
     }
 
     public int getPort() {
-        return port;
+        return peer.getPeerAddress().portTCP();
+    }
+
+
+    public SystemInfoMessage getSystemInfo() {
+        return infoMessage;
     }
 }

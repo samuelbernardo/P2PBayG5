@@ -37,7 +37,12 @@ public class P2PBay {
         System.out.println("Connecting...");
         P2PBAY.connect();
         System.out.println("Listening on port " + P2PBAY.getPort());
-
+        bootstrap.addLocalPort(P2PBAY.getPort());
+        for(int i = 0; i < 100; i++) {
+            TomP2PHandler handler = new TomP2PHandler(bootstrap);
+            while(!handler.connect());
+            System.out.println("i = " + i);
+        }
         if (serverMode)
             return;
 

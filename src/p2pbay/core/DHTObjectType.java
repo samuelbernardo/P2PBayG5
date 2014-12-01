@@ -5,6 +5,11 @@ import net.tomp2p.peers.Number160;
 public enum DHTObjectType {
     BID, INDEX, ITEM, USER;
 
+    private static final Number160 bid = Number160.createHash("BID");
+    private static final Number160 index = Number160.createHash("INDEX");
+    private static final Number160 item = Number160.createHash("ITEM");
+    private static final Number160 user = Number160.createHash("USER");
+
     @Override
     public String toString() {
         switch (this) {
@@ -18,10 +23,10 @@ public enum DHTObjectType {
 
     public Number160 getContentKey() {
         switch (this) {
-            case BID: return Number160.createHash("BID");
-            case INDEX: return Number160.createHash("INDEX");
-            case ITEM: return Number160.createHash("ITEM");
-            case USER: return Number160.createHash("USER");
+            case BID: return bid;
+            case INDEX: return index;
+            case ITEM: return item;
+            case USER: return user;
         }
         return null; //Nunca chega aqui!!!
     }

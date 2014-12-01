@@ -68,5 +68,9 @@ public class P2PBayBootstrap {
             return false;
         return true;
     }
+
+    public boolean addLocalPort(int port) {
+        return nodes.add(new Node("localhost", port));
+    }
 }
 
