@@ -12,8 +12,6 @@ import net.tomp2p.storage.StorageMemory;
 import org.jboss.netty.channel.ChannelException;
 import p2pbay.core.DHTObject;
 import p2pbay.core.DHTObjectType;
-import p2pbay.core.Item;
-import p2pbay.core.User;
 import p2pbay.server.messages.Message;
 import p2pbay.server.messages.MessageReceiver;
 import p2pbay.server.messages.SystemInfoMessage;
@@ -25,7 +23,6 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 public class TomP2PHandler {
@@ -86,7 +83,7 @@ public class TomP2PHandler {
 
                 this.infoMessage = new SystemInfoMessage(peer.getPeerID());
                 peer.setObjectDataReply(new MessageReceiver(infoMessage));
-                new SystemInfoThread(this).start();
+                new InfoThread(this).start();
 
                 return true;
             }
