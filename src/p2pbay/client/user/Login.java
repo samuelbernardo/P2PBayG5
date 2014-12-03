@@ -1,7 +1,7 @@
 package p2pbay.client.user;
 
 import p2pbay.client.Client;
-import p2pbay.client.Menu;
+import p2pbay.client.commands.Menu;
 import p2pbay.client.SysStrings;
 import p2pbay.core.User;
 
@@ -20,7 +20,7 @@ public class Login extends UserInteraction implements Runnable {
         String password = getPassword();
 
         //Check if exists user with such username
-        User user = getClient().findUser(username);
+        User user = getClient().getUser(username);
         if (user != null)
             if (user.getPassword().equals(password)) {
                 //User password matches

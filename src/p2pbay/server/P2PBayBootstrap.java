@@ -1,10 +1,13 @@
 package p2pbay.server;
 
+import p2pbay.server.peer.Node;
+
 import java.io.*;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Scanner;
 
 /**
  * Classe para ligacao a rede p2pbay
@@ -16,7 +19,7 @@ public class P2PBayBootstrap {
     /**
      * Lista de nos
      */
-    private ArrayList<InetAddress> nodes;
+    private ArrayList<Node> nodes;
 
     public P2PBayBootstrap() {
         nodes = new ArrayList<>();
@@ -31,7 +34,7 @@ public class P2PBayBootstrap {
             String address;
             // Para cada linha adiciona um endereco a lista de dos
             while((address = reader.readLine()) != null) {
-                nodes.add(Inet4Address.getByName(address));
+                nodes.add(new Node(address));
             }
 
             // Baralha a lista de nos, apenas para nao estar
@@ -47,8 +50,27 @@ public class P2PBayBootstrap {
     /**
      * @return Lista de nos
      */
-    public ArrayList<InetAddress> getNodes() {
+    public ArrayList<Node> getNodes() {
         return nodes;
+    }
+
+    public boolean loadLocalPort() {
+        Scanner in = new Scanner(System.in);
+        int port = 0;
+        try {
+            System.out.print("port:");
+            port = Integer.parseInt(in.nextLine());
+            nodes.add(new Node("localhost", port));
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        if(port < 1000)
+            return false;
+        return true;
+    }
+
+    public boolean addLocalPort(int port) {
+        return nodes.add(new Node("localhost", port));
     }
 }
 

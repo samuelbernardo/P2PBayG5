@@ -1,5 +1,6 @@
-package p2pbay.client;
+package p2pbay.client.commands;
 
+import p2pbay.client.Client;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Item;
 

@@ -1,8 +1,9 @@
-package p2pbay.client;
+package p2pbay.client.commands;
 
 import java.util.Scanner;
 
 //import p2pbay.core.Item;
+import p2pbay.client.Client;
 import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
 
