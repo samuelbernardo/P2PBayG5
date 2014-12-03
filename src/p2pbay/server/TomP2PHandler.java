@@ -8,6 +8,7 @@ import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerMaker;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
+import net.tomp2p.rpc.ObjectDataReply;
 import net.tomp2p.storage.Data;
 import net.tomp2p.storage.StorageMemory;
 import p2pbay.core.DHTObject;
@@ -42,17 +43,20 @@ public class TomP2PHandler {
 
         // ** Testing lambdas ** //
         // Executed when receiving a direct message.
-        peer.setObjectDataReply((sender, request) -> {
-            if (request instanceof MessageType) {
-                switch ((MessageType) request) {
-                    case TEST:
-                        System.out.println("Received " + request.getClass());
-                        break;
+        peer.setObjectDataReply(new ObjectDataReply() {
+            @Override
+            public Object reply(PeerAddress sender, Object request) throws Exception {
+                if (request instanceof MessageType) {
+                    switch ((MessageType) request) {
+                        case TEST:
+                            System.out.println("Received " + request.getClass());
+                            break;
+                    }
                 }
+                System.out.println("sender = " + sender);
+                System.out.println("request = " + request);
+                return "ok";
             }
-            System.out.println("sender = " + sender);
-            System.out.println("request = " + request);
-            return "ok";
         });
 
 
