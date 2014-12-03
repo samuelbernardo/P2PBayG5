@@ -1,6 +1,6 @@
 package p2pbay.client;
 
-import java.util.TreeSet;
+import java.util.*;
 
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
@@ -15,13 +15,42 @@ public class Search extends UserInteraction{
     String[] splitSearch;
     int nWords;
 
+    private HashMap<String, Index> indexes;
+
     public Search(Client client) {
         super(client);
-        previousResult = new TreeSet<String>();
+        previousResult = new TreeSet<>();
         booleanOperator = null;
-        titlesWithTerm1 = new TreeSet<String>();
-        titlesWithTerm2 = new TreeSet<String>();
-        NOTtitles = new TreeSet<String>();
+        titlesWithTerm1 = new TreeSet<>();
+        titlesWithTerm2 = new TreeSet<>();
+        NOTtitles = new TreeSet<>();
+        indexes = new HashMap<>();
+    }
+
+    private boolean isOperator(String term) {
+        return term.equals("OR") || term.equals("AND") || term.equals("NOT");
+    }
+
+
+    private void getAllIndex() {
+        HashSet<String> terms = new HashSet<>();
+
+        //Verificar quais os termos que sao para procurar
+        for (String searchTerm : splitSearch) {
+            if (!isOperator(searchTerm)) {
+                terms.add(searchTerm);
+            }
+        }
+
+        //Iniciar a pesquisa na dht
+        for (String term : terms) {
+            indexes.put(term, getClient().getIndex(term));
+        }
+        //Wait;;
+    }
+
+    private Index getIndex(String term) {
+        return indexes.get(term);
     }
 
     // arranjar solucao para discordancia do nome com o que faz
@@ -29,6 +58,7 @@ public class Search extends UserInteraction{
         System.out.print(SysStrings.SEARCH);
         search = getClient().getInput();
         splitSearch = search.split(" ");
+        getAllIndex();
         nWords = splitSearch.length;
         
         TreeSet<String> searchResult = new TreeSet<String>();
@@ -95,7 +125,7 @@ public class Search extends UserInteraction{
                 nWords -= 2;
             }
             else {
-                Index index = getClient().getIndex(splitSearch[nWords-1]);
+                Index index = getIndex(splitSearch[nWords-1]);
                 if(index != null) {
                     NOTtitles = index.getTitles();
                 }
@@ -111,12 +141,12 @@ public class Search extends UserInteraction{
         Index index;
         switch(hasNOT) {
             case "withoutNOT":
-                index = getClient().getIndex(splitSearch[nWords-1]);
+                index = getIndex(splitSearch[nWords-1]);
                 
                 if(index != null) {
                     titlesWithTerm1 = index.getTitles();
                 }
-                index = getClient().getIndex(splitSearch[nWords-2]);
+                index = getIndex(splitSearch[nWords-2]);
                 if(index != null) {
                     titlesWithTerm2 = index.getTitles();
                 }
@@ -126,18 +156,18 @@ public class Search extends UserInteraction{
                 int NOTposition = findNOTposition();
                 NOTtitles = new TreeSet<String>();
                 if(NOTposition == nWords-3) {
-                    index = getClient().getIndex(splitSearch[nWords-1]);
+                    index = getIndex(splitSearch[nWords-1]);
                     if (index != null)
                         previousResult = index.getTitles();
-                    index = getClient().getIndex(splitSearch[nWords-2]);
+                    index = getIndex(splitSearch[nWords-2]);
                     if (index != null)
                         NOTtitles = index.getTitles();
                 }
                 else if(NOTposition == nWords-2) {
-                    index = getClient().getIndex(splitSearch[nWords-3]);
+                    index = getIndex(splitSearch[nWords-3]);
                     if (index != null)
                         previousResult = index.getTitles();
-                    index = getClient().getIndex(splitSearch[nWords-1]);
+                    index = getIndex(splitSearch[nWords-1]);
                     if (index != null)
                         NOTtitles = index.getTitles();
                 }
