@@ -6,21 +6,23 @@ import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
 
 public class Search extends UserInteraction{
-    TreeSet<String> previousResult; 
-    String booleanOperator;
+    TreeSet<String> previousResult;
+    String word;
     TreeSet<String> titlesWithTerm1;
     TreeSet<String> titlesWithTerm2;
     TreeSet<String> NOTtitles;
     String search;
     String[] splitSearch;
     int nWords;
+    int position = 0;
 
     private HashMap<String, Index> indexes;
+    private TreeSet<String> searchResult;
 
     public Search(Client client) {
         super(client);
         previousResult = new TreeSet<>();
-        booleanOperator = null;
+        word = null;
         titlesWithTerm1 = new TreeSet<>();
         titlesWithTerm2 = new TreeSet<>();
         NOTtitles = new TreeSet<>();
@@ -30,7 +32,6 @@ public class Search extends UserInteraction{
     private boolean isOperator(String term) {
         return term.equals("OR") || term.equals("AND") || term.equals("NOT");
     }
-
 
     private void getAllIndex() {
         HashSet<String> terms = new HashSet<>();
@@ -60,191 +61,62 @@ public class Search extends UserInteraction{
         splitSearch = search.split(" ");
         getAllIndex();
         nWords = splitSearch.length;
-        
-        TreeSet<String> searchResult = new TreeSet<String>();
-        if (nWords <= 4) {
-            try {
-                searchResult = doSearch();
-                printResults(searchResult);
-            } catch (UnsupportedOperationException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-        else {
-            try {
-                searchResult = doComplexSearch();
-                printResults(searchResult);
-            } catch (UnsupportedOperationException e) {
-                System.out.println(e.getMessage());
-            }
+        try {
+            searchResult = doSearch(true);
+            if (splitSearch[position+1] == null)
+                printResults();
+            else throw new UnsupportedOperationException(SysStrings.SEARCH_FAILED);
+        } catch (UnsupportedOperationException e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    private TreeSet<String> doSearch() {
-        TreeSet<String> searchResult = new TreeSet<String>();
+    private TreeSet<String> doSearch(boolean invalidNOT ) throws UnsupportedOperationException {
+        word = splitSearch[position];
 
-        // pesquisa com uma palavra
-        if (nWords == 1)
-            searchResult = doSimpleSearch();
-        else if (nWords == 2 && splitSearch[nWords-2].equals("NOT"))
-            throw new UnsupportedOperationException(SysStrings.SEARCH_IMPOSSIBLE);
-        // pesquisa com AND ou OR (sem NOT)
-        else if (nWords == 3) {
-            getPartialTitles("withoutNOT");
-            searchResult = doSimpleBooleanSearchWithoutNot();
-        }
-        else if (nWords == 4) {
-            getPartialTitles("withNOT");
-            searchResult = doSimpleBooleanSearchWithNot();
-        }
-        else
-            System.out.println(SysStrings.SEARCH_FAILED);
-
-        return searchResult;
-    }
-
-    private TreeSet<String> doComplexSearch() {
-        TreeSet<String> searchResult = new TreeSet<String>();
-        
-        if (!hasNOT()) {
-            getPartialTitles("withoutNOT");
-            searchResult = doSimpleBooleanSearchWithoutNot();
-            nWords -= 3;
-        }
-        else {
-            getPartialTitles("withNOT");
-            searchResult = doSimpleBooleanSearchWithNot();
-            nWords -= 4;
-        }
-        while(nWords > 0) {
-            if(!hasNOT()) {
-                titlesWithTerm1 = doSimpleSearch();
-                titlesWithTerm2 = searchResult;
-                booleanOperator = splitSearch[nWords-2];
-                searchResult = doSimpleBooleanSearchWithoutNot();
-                nWords -= 2;
-            }
-            else {
-                Index index = getIndex(splitSearch[nWords-1]);
-                if(index != null) {
-                    NOTtitles = index.getTitles();
-                }
-                previousResult = searchResult;
-                searchResult = doSimpleBooleanSearchWithNot();
-                nWords -= 3;
-            }
-        }
-        return searchResult;
-    }
-    
-    private void getPartialTitles(String hasNOT) {
-        Index index;
-        switch(hasNOT) {
-            case "withoutNOT":
-                index = getIndex(splitSearch[nWords-1]);
-                
-                if(index != null) {
-                    titlesWithTerm1 = index.getTitles();
-                }
-                index = getIndex(splitSearch[nWords-2]);
-                if(index != null) {
-                    titlesWithTerm2 = index.getTitles();
-                }
-                booleanOperator = splitSearch[nWords-3];
-                break;
-            case "withNOT":
-                int NOTposition = findNOTposition();
-                NOTtitles = new TreeSet<String>();
-                if(NOTposition == nWords-3) {
-                    index = getIndex(splitSearch[nWords-1]);
-                    if (index != null)
-                        previousResult = index.getTitles();
-                    index = getIndex(splitSearch[nWords-2]);
-                    if (index != null)
-                        NOTtitles = index.getTitles();
-                }
-                else if(NOTposition == nWords-2) {
-                    index = getIndex(splitSearch[nWords-3]);
-                    if (index != null)
-                        previousResult = index.getTitles();
-                    index = getIndex(splitSearch[nWords-1]);
-                    if (index != null)
-                        NOTtitles = index.getTitles();
-                }
-                booleanOperator = splitSearch[nWords-4];
-                break;
-        }
-    }
-
-    private TreeSet<String> doSimpleSearch() {
-        TreeSet<String> searchResult = new TreeSet<String>();
-        Index index = getClient().getIndex(splitSearch[nWords-1]);
-        if(index != null) {
-            searchResult = index.getTitles();
-        }
-        return searchResult;
-    }
-
-    private int findNOTposition() {
-        int NOTposition = -1;
-        if (splitSearch[nWords-2].equals("NOT")) {
-            NOTposition = nWords-2;
-        }
-        else if (splitSearch[nWords-3].equals("NOT"))
-            NOTposition = nWords-3;
-        else
+        if (word == null)
             throw new UnsupportedOperationException(SysStrings.SEARCH_FAILED);
-        return NOTposition;
+
+        if (invalidNOT && word.equals("NOT"))
+            throw new UnsupportedOperationException(SysStrings.SEARCH_IMPOSSIBLE);
+
+        if (isOperator(word)) {
+            return doOperation(word);
+        }
+
+        Index index = getIndex(word);
+        if (index == null)
+             return new TreeSet<>();
+
+        return index.getTitles();
     }
 
-    private boolean hasNOT() {
-        boolean hasNOT = false;
-        if (splitSearch[nWords-2].equals("NOT")) {
-            hasNOT = true;
-        }
-        else if (nWords >= 3) {
-            if (splitSearch[nWords-3].equals("NOT")) {
-                hasNOT = true;
-            }
-        }
-        else
-            hasNOT = false;
-        return hasNOT;
-    }
-    
-    private TreeSet<String> doSimpleBooleanSearchWithoutNot() throws UnsupportedOperationException {
-        TreeSet<String> searchResult = new TreeSet<String>();
-        switch(booleanOperator) {
+    private TreeSet<String> doOperation(String operator) {
+        TreeSet<String> result = new TreeSet<>();
+        position += 1;
+        switch (operator) {
             case "AND":
-                searchResult.addAll(titlesWithTerm1);
-                searchResult.retainAll(titlesWithTerm2);
+                result.addAll(doSearch(false));
+                position++;
+                result.retainAll(doSearch(false));
                 break;
             case "OR":
-                searchResult.addAll(titlesWithTerm1);
-                searchResult.addAll(titlesWithTerm2);
+                result.addAll(doSearch(true));
+                position++;
+                result.addAll(doSearch(true));
                 break;
-            default:
-                throw new UnsupportedOperationException(SysStrings.SEARCH_INVALIDOPERATOR + booleanOperator);
+            case "NOT":
+                TreeSet<String> notWords = doSearch(false);
+                for (Index index : indexes.values()) {
+                    result.addAll(index.getTitles());
+                }
+                result.removeAll(notWords);
         }
-        return searchResult;
+        return result;
     }
 
-    private TreeSet<String> doSimpleBooleanSearchWithNot() throws UnsupportedOperationException {
-        TreeSet<String> searchResult = new TreeSet<String>();
-        switch(booleanOperator) {
-            case "AND":
-                searchResult.addAll(previousResult);
-                searchResult.removeAll(NOTtitles);
-                break;
-            case "OR":
-                throw new UnsupportedOperationException(SysStrings.SEARCH_IMPOSSIBLE);
-            default:
-                throw new UnsupportedOperationException(SysStrings.SEARCH_INVALIDOPERATOR + booleanOperator);
-        }
-        return searchResult;
-    }
 
-    private void printResults(TreeSet<String> searchResult) {
+    private void printResults() {
         if(searchResult.isEmpty()) {
             System.out.println(SysStrings.SEARCH_NORESULTS);
             return;

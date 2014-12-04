@@ -3,6 +3,7 @@ package p2pbay;
 import p2pbay.client.Client;
 import p2pbay.server.P2PBayBootstrap;
 import p2pbay.server.TomP2PHandler;
+import p2pbay.testing.AutoTest;
 
 import java.util.ArrayList;
 
@@ -47,6 +48,8 @@ public class P2PBay {
             handler.connect(bootstrap);
             nodes.add(handler);
         }
+
+        AutoTest.storeItems();
 
         client.start();
     }
