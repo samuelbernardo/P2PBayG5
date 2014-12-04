@@ -7,6 +7,7 @@ import p2pbay.server.TomP2PHandler;
 
 import java.io.Console;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Client {
@@ -161,8 +162,31 @@ public class Client {
         LOGGED = null;
     }
 
-    public void getBids(String title) {
-        System.out.println(connectionHandler.get(title));
+    /**
+     * Gets all bids for the item and returns the highest
+     * @param title title of the item
+     * @return the first highest bid for the item
+     */
+    public Bid getHighestBid(String title) {
+        List<Bid> bids = connectionHandler.get(title);
+        Bid highestBid = null;
+        for (Bid bid : bids) {
+            if (highestBid == null)
+                highestBid = bid;
+            else if (highestBid.getValue() < bid.getValue())
+                    highestBid = bid;
+
+        }
+        return highestBid;
+    }
+
+    /**
+     * Gets all bids for the item and returns the highest
+     * @param title title of the item
+     * @return the first highest bid for the item
+     */
+    public List<Bid> getBids(String title) {
+        return connectionHandler.get(title);
     }
 
     public boolean isDevMode() {

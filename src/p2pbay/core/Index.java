@@ -31,4 +31,9 @@ public class Index extends DHTObject implements Serializable {
     public void removeTitle(String title) {
         titles.remove(title);
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + titles;
+    }
 }

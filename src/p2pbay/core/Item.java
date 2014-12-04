@@ -67,4 +67,9 @@ public class Item extends DHTObject implements Serializable {
     public void addBid(Bid bid) {
         bids.add(bid);
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + owner + ":" + title + ":" + description + ":" + getValueToString();
+    }
 }

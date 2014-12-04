@@ -25,6 +25,11 @@ public class P2PBay {
                 }
             }
         }
+        int nodes = 10;
+
+        for (int i = 0; i < nodes; i++) {
+//            new TomP2PHandler(bootstrap);
+        }
 
         //Running in client mode
         if (client == null)

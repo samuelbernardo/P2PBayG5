@@ -106,7 +106,7 @@ public class TomP2PHandler {
     public boolean store(Bid bid) {
         try {
             System.out.println("bid = " + bid.getKey());
-            peer.add(bid.getKey()).setDomainKey(bid.getContentKey()).setObject(bid).start().awaitUninterruptibly();
+            peer.add(bid.getKey()).setData(new Data(bid)).start().awaitUninterruptibly();
             return true;
         } catch (IOException e) {
             System.err.println("Nao foi possivel guardar o objecto:");
@@ -142,13 +142,13 @@ public class TomP2PHandler {
      */
     public List<Bid> get(String key) {
         Number160 hKey = Number160.createHash(key);
-        FutureDHT futureDHT = peer.get(hKey).setDomainKey(DHTObjectType.BID.getContentKey())
-                                                    .setAll().start().awaitUninterruptibly();
+        FutureDHT futureDHT = peer.get(hKey).setAll().start().awaitUninterruptibly();
         ArrayList<Bid> bids = new ArrayList<>();
         if (futureDHT.isSuccess()) {
             try {
                 for (Data map : futureDHT.getDataMap().values()) {
-                    bids.add((Bid) map.getObject());
+                    if (map.getObject() instanceof  Bid)
+                        bids.add((Bid) map.getObject());
                 }
             } catch (ClassNotFoundException | IOException e) {
                 e.printStackTrace();

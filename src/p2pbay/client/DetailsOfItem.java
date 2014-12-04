@@ -1,6 +1,7 @@
 package p2pbay.client;
 
 import p2pbay.client.user.UserInteraction;
+import p2pbay.core.Bid;
 import p2pbay.core.Item;
 
 public class DetailsOfItem extends UserInteraction {
@@ -25,7 +26,9 @@ public class DetailsOfItem extends UserInteraction {
     }
 
     private void printBids() {
-        getClient().getBids(item.getTitle());
+        for (Bid bid : getClient().getBids(item.getTitle())) {
+            System.out.println(bid);
+        }
     }
 
     @Override
