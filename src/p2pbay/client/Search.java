@@ -56,7 +56,7 @@ public class Search extends UserInteraction{
     // arranjar solucao para discordancia do nome com o que faz
     public void getInfo() {
         System.out.print(SysStrings.SEARCH);
-        search = getClient().getInput();
+        search = getClient().readInput();
         splitSearch = search.split(" ");
         getAllIndex();
         nWords = splitSearch.length;

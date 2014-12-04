@@ -19,12 +19,7 @@ public abstract class UserInteraction implements Runnable {
     public String getUsername() {
         String username = null;
         try {
-            // creates a console object
-            Console cnsl = System.console();
-            // if console is not null
-            if (cnsl != null) {
-                username = cnsl.readLine(SysStrings.INPUT_USERNAME);
-            }
+            username = getClient().readInput(SysStrings.INPUT_USERNAME);
         } catch(Exception e){
             // if any error occurs
             e.printStackTrace();
@@ -36,12 +31,7 @@ public abstract class UserInteraction implements Runnable {
     public String getPassword() {
         String password = null;
         try {
-            // creates a console object
-            Console cnsl = System.console();
-            // if console is not null
-            if (cnsl != null) {
-                password = new String(cnsl.readPassword(SysStrings.INPUT_PASSWORD));
-            }
+            password = getClient().readInputPassword();
         } catch(Exception e){
             // if any error occurs
             e.printStackTrace();
@@ -51,18 +41,18 @@ public abstract class UserInteraction implements Runnable {
     }
 
     public String getInput() {
-        return client.getInput();
+        return client.readInput();
     }
 
     public float getFloat() {
-        return client.getNumberInput();
+        return client.readNumberInput();
     }
 
     public float getPositiveNumber(String message) {
         while (true) {
             System.out.print(message);
             try {
-                float value = client.getNumberInput();
+                float value = client.readNumberInput();
 
                 if (value > 0)
                     return value;

@@ -5,17 +5,27 @@ import p2pbay.client.user.SignUp;
 import p2pbay.core.*;
 import p2pbay.server.TomP2PHandler;
 
+import java.io.Console;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Client {
     public User LOGGED = null;
+    public boolean devMode = false;
 
     private Scanner input = new Scanner(System.in);
+    private Console console = System.console();
     private TomP2PHandler connectionHandler;
 
     public Client(TomP2PHandler handler) {
         connectionHandler = handler;
+        if (console == null)
+            devMode = true;
+    }
+
+    public Client(TomP2PHandler handler, boolean isDevMode) {
+        this(handler);
+        devMode = isDevMode;
     }
 
 
@@ -39,17 +49,33 @@ public class Client {
         return connectionHandler.store(bid);
     }
 
-    public String getInput() {
-        return input.nextLine();
+    public String readInput() {
+        if (isDevMode()) {
+            return input.nextLine();
+        }
+        return console.readLine();
     }
 
-    public String getInput(String message) {
-        System.out.print(message);
-        return input.nextLine();
+    public String readInput(String message) {
+        if (isDevMode()) {
+            System.out.print(message);
+            return input.nextLine();
+        }
+        return console.readLine(message);
     }
 
-    public float getNumberInput() {
-        return Float.parseFloat(input.nextLine());
+    public String readInputPassword() {
+        if (isDevMode()) {
+            System.out.print(SysStrings.INPUT_PASSWORD);
+            return input.nextLine();
+        }
+        return new String(console.readPassword(SysStrings.INPUT_PASSWORD));
+    }
+
+    public float readNumberInput() {
+        if (isDevMode())
+            return Float.parseFloat(input.nextLine());
+        return Float.parseFloat(console.readLine());
     }
 
     public User getUser() {
@@ -137,5 +163,9 @@ public class Client {
 
     public void getBids(String title) {
         System.out.println(connectionHandler.get(title));
+    }
+
+    public boolean isDevMode() {
+        return devMode;
     }
 }

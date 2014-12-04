@@ -13,14 +13,23 @@ public class P2PBay {
         //bootstrap.loadConfig();
         P2PBAY = new TomP2PHandler(bootstrap);
 
+        Client client = null;
         //If the program is running as a server, there is no menu
         if(args.length > 0) {
-            if(args[0].equals("server"))
-                return;
+            for (String arg : args) {
+                switch (arg) {
+                    case "server":
+                        return;
+                    case "dev":
+                        client = new Client(P2PBAY, true);
+                }
+            }
         }
 
         //Running in client mode
-        Client client = new Client(P2PBAY);
+        if (client == null)
+            client = new Client(P2PBAY);
+
         client.start();
     }
 }

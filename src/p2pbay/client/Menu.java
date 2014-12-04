@@ -1,10 +1,7 @@
 package p2pbay.client;
 
-import java.util.Scanner;
-
 //import p2pbay.core.Item;
-import p2pbay.core.User;
-import p2pbay.server.TomP2PHandler;
+
 
 public class Menu {
     private Client client;
@@ -19,7 +16,7 @@ public class Menu {
                 + "1 - Login\n"
                 + "2 - Sign up\n\n"
                 + "'exit' para sair\n");
-        String option = client.getInput();
+        String option = client.readInput();
         return option;
     }
 
@@ -34,7 +31,7 @@ public class Menu {
                 + "6 - Consultar o meu historico\n"
                 + "7 - Logout\n\n"
                 + "'exit' para sair\n");
-        String option = client.getInput();
+        String option = client.readInput();
         return option;
     }
 

@@ -39,4 +39,9 @@ public class User extends DHTObject implements Serializable {
     public void addBid(Bid bid) {
         this.bids.add(bid);
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + username + ":" + password;
+    }
 }
