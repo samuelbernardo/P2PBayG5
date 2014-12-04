@@ -194,4 +194,7 @@ public class Client {
     }
 
 
+    public void removeBid(Bid bid) {
+        connectionHandler.remove(bid);
+    }
 }

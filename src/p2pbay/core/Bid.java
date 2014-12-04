@@ -8,6 +8,7 @@ public class Bid extends DHTObject implements Serializable, Comparable{
     private float value;
     private String owner;
     private int position;
+    private boolean invalid;
     
     public Bid(String title, User owner, float value) {
         super(title, DHTObjectType.BID);
@@ -15,6 +16,15 @@ public class Bid extends DHTObject implements Serializable, Comparable{
         this.owner = owner.getUsername();
         this.value = value;
         this.position = 0;
+        this.invalid = false;
+    }
+
+    public void setInvalid(boolean invalid) {
+        this.invalid = invalid;
+    }
+
+    public boolean isInvalid() {
+        return invalid;
     }
 
     public void setPosition(int position) {

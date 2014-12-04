@@ -49,16 +49,25 @@ public class TomP2PHandler {
      * @param bid Bid a ser guardado na dht
      */
     public boolean store(Bid bid) {
-        // Find the most recent Bid
+        // Find the most recent and the Highest Bid
         // Which is the bid with the highest position
         List<Bid> bids = get(bid.getTitle());
         Bid mostRecent = null;
+        Bid highest = null;
         for (Bid aBid : bids) {
-            if (mostRecent == null)
+            if (mostRecent == null) {
                 mostRecent = aBid;
-            else if (mostRecent.getPosition() < aBid.getPosition())
+                highest = aBid;
+                continue;
+            }
+            if (mostRecent.getPosition() < aBid.getPosition())
                 mostRecent = aBid;
+            if (highest.getValue() < aBid.getValue())
+                highest = aBid;
         }
+
+        if (highest != null && highest.getValue() >= bid.getValue())
+            return false;
 
         // Position generator
         // A random number that can go up 20 positions
@@ -68,16 +77,14 @@ public class TomP2PHandler {
             position += 1 + mostRecent.getPosition();
         bid.setPosition(position);
 
-
         // Store the bid in the DHT
         try {
-            System.out.println("bid = " + bid.getKey());
             peer.add(bid.getKey()).setData(new Data(bid)).start().awaitUninterruptibly();
             return true;
         } catch (IOException e) {
             System.err.println("Nao foi possivel guardar o objecto:");
             System.err.println(bid);
-            System.err.println("Expecao " + e);
+            System.err.println("Excepcao " + e);
             return false;
         }
     }
@@ -191,5 +198,8 @@ public class TomP2PHandler {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void remove(DHTObject object) {
     }
 }

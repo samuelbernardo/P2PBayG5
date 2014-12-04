@@ -31,6 +31,7 @@ public class SysStrings {
     public static final String BID_BAD_VALUE_1 = "A licitacao foi rejeitada pois o valor do item (";
     public static final String BID_BAD_VALUE_2 = ") e igual ou superior a sua oferta!";
     public static final String BID_ACCEPTED = "A licitacao foi aceite!";
+    public static final String BID_REJECTED = "Invalid bid";
     public static final String BID_AUCTION_CLOSED = "Auction is closed. You can't bid.";
     public static final String INPUT_DESCRIPTION = "Description";
 }

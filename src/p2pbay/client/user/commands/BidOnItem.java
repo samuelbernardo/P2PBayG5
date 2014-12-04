@@ -1,10 +1,13 @@
 package p2pbay.client.user.commands;
 
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import p2pbay.client.Client;
 import p2pbay.client.SysStrings;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Bid;
 import p2pbay.core.Item;
+
+import java.util.List;
 
 public class BidOnItem  extends UserInteraction{
     private String title;
@@ -25,11 +28,14 @@ public class BidOnItem  extends UserInteraction{
     public void doOperation() {
         Item item = getClient().getItem(title);
         if (isValid(item)) {
-                Bid newBid = new Bid(title, getClient().getUser(), proposedValue);
+            Bid newBid = new Bid(title, getClient().getUser(), proposedValue);
+            getClient().store(getClient().getUser());
+            if (getClient().storeBid(newBid)) {
                 getClient().getUser().addBid(newBid);
-                getClient().store(getClient().getUser());
-                if (getClient().storeBid(newBid))
-                    System.out.println(SysStrings.BID_ACCEPTED);
+                System.out.println(SysStrings.BID_ACCEPTED);
+            } else {
+                System.err.println(SysStrings.BID_REJECTED);
+            }
         }
     }
 
