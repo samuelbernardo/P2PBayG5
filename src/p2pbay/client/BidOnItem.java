@@ -33,11 +33,9 @@ public class BidOnItem  extends UserInteraction{
             //Eu sei que se esta a guardar as bids no user por causa do historico
             //Acho que e possivel modelar de maneira a so se ter de guardar um objecto
             getClient().getUser().addBid(newBid);
-            if(getClient().store(item) && getClient().store(getClient().getUser()))
-                //TODO e se nao for so um aceite?
-                System.out.println("A licitacao foi aceite!");
-            else
-                System.out.println("Ocorreu um erro ao actualizar o item...");
+            getClient().store(getClient().getUser());
+            getClient().storeBid(newBid);
+            System.out.println("A licitacao foi aceite!");
         }
         else
             System.out.println("A licitacao foi rejeitada pois o valor do item (" +

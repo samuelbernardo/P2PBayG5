@@ -32,6 +32,7 @@ public class AuctionToClose extends UserInteraction{
     @Override
     public void storeObjects() {
         Item item = getClient().getItem(title);
+
         
         if(isValid(item)) {
             item.setAuctionClosed(true);

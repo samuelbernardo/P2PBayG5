@@ -3,8 +3,9 @@ package p2pbay.core;
 import net.tomp2p.peers.Number160;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
-public class Bid extends DHTObject implements Serializable {
+public class Bid extends DHTObject implements Serializable{
     private static final long serialVersionUID = 6128016096756071380L;
     private String title;
     private float value;
@@ -27,5 +28,10 @@ public class Bid extends DHTObject implements Serializable {
     
     public String getOwner() {
         return this.owner;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + owner + ":" + value;
     }
 }

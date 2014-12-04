@@ -1,6 +1,5 @@
 package p2pbay.server;
 
-import net.tomp2p.connection.ConnectionBean;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.futures.FutureDiscover;
@@ -11,12 +10,15 @@ import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.rpc.ObjectDataReply;
 import net.tomp2p.storage.Data;
 import net.tomp2p.storage.StorageMemory;
+import p2pbay.core.Bid;
 import p2pbay.core.DHTObject;
 import p2pbay.core.DHTObjectType;
 
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TomP2PHandler {
     final private Peer peer;
@@ -84,7 +86,6 @@ public class TomP2PHandler {
     /**
      * Guarda um objecto do tipo DHTObject
      * @param object Objecto a ser guardado na dht
-     * @throws IOException possivelmente se o objecto nao for serializavel
      */
     public boolean store(DHTObject object) {
         try {
@@ -93,6 +94,23 @@ public class TomP2PHandler {
         } catch (IOException e) {
             System.err.println("Nao foi possivel guardar o objecto:");
             System.err.println(object);
+            System.err.println("Expecao " + e);
+            return false;
+        }
+    }
+
+    /**
+     * Guarda um objecto do tipo Bid
+     * @param bid Bid a ser guardado na dht
+     */
+    public boolean store(Bid bid) {
+        try {
+            System.out.println("bid = " + bid.getKey());
+            peer.add(bid.getKey()).setDomainKey(bid.getContentKey()).setObject(bid).start().awaitUninterruptibly();
+            return true;
+        } catch (IOException e) {
+            System.err.println("Nao foi possivel guardar o objecto:");
+            System.err.println(bid);
             System.err.println("Expecao " + e);
             return false;
         }
@@ -116,21 +134,27 @@ public class TomP2PHandler {
         return null;
     }
 
+
     /**
-     * Gets an object from the DHT
-     * @param key Object Key
-     * @return The Object or null if not found
+     * Gets a Bid from the DHT
+     * @param key Bid Key
+     * @return The Bids or null if not found
      */
-    public Object get(Number160 key) {
-        FutureDHT futureDHT = peer.get(key).start().awaitUninterruptibly();
+    public List<Bid> get(String key) {
+        Number160 hKey = Number160.createHash(key);
+        FutureDHT futureDHT = peer.get(hKey).setDomainKey(DHTObjectType.BID.getContentKey())
+                                                    .setAll().start().awaitUninterruptibly();
+        ArrayList<Bid> bids = new ArrayList<>();
         if (futureDHT.isSuccess()) {
             try {
-                return futureDHT.getData().getObject();
+                for (Data map : futureDHT.getDataMap().values()) {
+                    bids.add((Bid) map.getObject());
+                }
             } catch (ClassNotFoundException | IOException e) {
                 e.printStackTrace();
             }
         }
-        return null;
+        return bids;
     }
 
     public void close() {

@@ -5,12 +5,14 @@ import net.tomp2p.peers.Number160;
 import java.io.Serializable;
 
 public class DHTObject implements Serializable{
-    private Number160 itemKeyHash;
+    private String key;
+    private Number160 keyHash;
     private DHTObjectType type;
     
     public DHTObject(String key, DHTObjectType type) {
-        this.itemKeyHash = Number160.createHash(key);
+        this.keyHash = Number160.createHash(key);
         this.type = type;
+        this.key = key;
     }
 
     public DHTObjectType getType() {
@@ -18,10 +20,15 @@ public class DHTObject implements Serializable{
     }
 
     public Number160 getKey() {
-        return itemKeyHash;
+        return keyHash;
     }
 
     public Number160 getContentKey() {
         return type.getContentKey();
+    }
+
+    @Override
+    public String toString() {
+        return "[" + key + "]";
     }
 }

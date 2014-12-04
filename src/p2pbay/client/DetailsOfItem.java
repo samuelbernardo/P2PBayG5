@@ -17,8 +17,15 @@ public class DetailsOfItem extends UserInteraction {
         if(item == null) {
             System.out.println("Item nao encontrado");
         }
+        System.out.println("Titulo: " + item.getTitle());
         System.out.println("Descricao: " + item.getDescription());
         System.out.println("Valor: " + item.getValueToString());
+        System.out.println(SysStrings.BIDS);
+        printBids();
+    }
+
+    private void printBids() {
+        getClient().getBids(item.getTitle());
     }
 
     @Override

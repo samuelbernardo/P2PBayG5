@@ -35,7 +35,16 @@ public class Client {
         return connectionHandler.store(object);
     }
 
+    public boolean storeBid(Bid bid) {
+        return connectionHandler.store(bid);
+    }
+
     public String getInput() {
+        return input.nextLine();
+    }
+
+    public String getInput(String message) {
+        System.out.print(message);
         return input.nextLine();
     }
 
@@ -124,5 +133,9 @@ public class Client {
 
     public void logout() {
         LOGGED = null;
+    }
+
+    public void getBids(String title) {
+        System.out.println(connectionHandler.get(title));
     }
 }

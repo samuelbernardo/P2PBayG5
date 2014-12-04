@@ -25,4 +25,5 @@ public class SysStrings {
     public static final String ACTION_CLOSED = "O leilao foi fechado com sucesso, o valor final do item e ";
     public static final String ITEM_ERROR = "Ocorreu um erro ao actualizar o item...";
     public static final String TERM = "Termo";
+    public static final String BIDS = "Bids:";
 }
