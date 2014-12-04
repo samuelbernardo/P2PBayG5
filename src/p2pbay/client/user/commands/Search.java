@@ -1,7 +1,9 @@
-package p2pbay.client;
+package p2pbay.client.user.commands;
 
 import java.util.*;
 
+import p2pbay.client.Client;
+import p2pbay.client.SysStrings;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
 

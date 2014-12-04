@@ -3,6 +3,8 @@ package p2pbay.client;
 //import p2pbay.core.Item;
 
 
+import p2pbay.client.user.commands.*;
+
 public class Menu {
     private Client client;
 
