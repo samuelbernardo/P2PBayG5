@@ -28,9 +28,9 @@ public abstract class UserInteraction implements Runnable {
         } catch(Exception e){
             // if any error occurs
             e.printStackTrace();
-        } finally {
-            return username;
         }
+
+        return username;
     }
 
     public String getPassword() {
@@ -45,9 +45,9 @@ public abstract class UserInteraction implements Runnable {
         } catch(Exception e){
             // if any error occurs
             e.printStackTrace();
-        } finally {
-            return password;
         }
+
+        return password;
     }
 
     public String getInput() {

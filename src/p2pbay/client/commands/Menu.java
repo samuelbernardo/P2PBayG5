@@ -33,7 +33,8 @@ public class Menu {
                 + "4 - Licitar um item\n"
                 + "5 - Consultar os detalhes de um item\n"
                 + "6 - Consultar o meu historico\n"
-                + "7 - Logout\n\n"
+                + "7 - Estatisticas\n"
+                + "8 - Logout\n\n"
                 + "'exit' para sair\n");
         String option = client.getInput();
         return option;
@@ -63,6 +64,8 @@ public class Menu {
                     new HistoryCheck(client).run();
                     break;
                 case "7":
+                    new StatisticsCheck(client).run();
+                case "8":
                     client.logout();
                     return;
                 case "exit":
