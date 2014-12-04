@@ -37,6 +37,10 @@ public class Bid extends DHTObject implements Serializable, Comparable{
         return this.owner;
     }
 
+    public String getValueToString() {
+        return getValue() + "€";
+    }
+
     @Override
     public String toString() {
         return super.toString() + owner + ":" + value + ":" + position;

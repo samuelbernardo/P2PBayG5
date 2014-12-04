@@ -2,7 +2,6 @@ package p2pbay.client.user;
 
 import p2pbay.client.Client;
 import p2pbay.client.SysStrings;
-import java.io.Console;
 
 public abstract class UserInteraction implements Runnable {
 
@@ -44,6 +43,10 @@ public abstract class UserInteraction implements Runnable {
         return client.readInput();
     }
 
+    public String getInput(String message) {
+        return client.readInput(message);
+    }
+
     public float getFloat() {
         return client.readNumberInput();
     }
@@ -64,11 +67,11 @@ public abstract class UserInteraction implements Runnable {
 
     public abstract void getInfo();
 
-    public abstract void storeObjects();
+    public abstract void doOperation();
 
     @Override
     public void run() {
         getInfo();
-        storeObjects();
+        doOperation();
     }
 }

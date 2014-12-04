@@ -164,12 +164,11 @@ public class Client {
     }
 
     /**
-     * Gets all bids for the item and returns the highest
-     * @param title title of the item
+     * Returns the highest bid
+     * @param bids of the item
      * @return the first highest bid for the item
      */
-    public Bid getHighestBid(String title) {
-        List<Bid> bids = connectionHandler.get(title);
+    public Bid getHighestBid(List<Bid> bids) {
         Bid highestBid = null;
         for (Bid bid : bids) {
             if (highestBid == null)
@@ -193,4 +192,6 @@ public class Client {
     public boolean isDevMode() {
         return devMode;
     }
+
+
 }

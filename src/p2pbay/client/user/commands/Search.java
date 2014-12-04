@@ -130,5 +130,5 @@ public class Search extends UserInteraction{
     }
 
     @Override
-    public void storeObjects() {}
+    public void doOperation() {}
 }

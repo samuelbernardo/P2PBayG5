@@ -12,6 +12,7 @@ import java.util.List;
 
 public class DetailsOfItem extends UserInteraction {
     private Item item;
+    private List<Bid> bids;
 
     public DetailsOfItem(Client client) {
         super(client);
@@ -19,20 +20,29 @@ public class DetailsOfItem extends UserInteraction {
 
     @Override
     public void getInfo() {
-        System.out.print("\nTitulo:");
-        item = getClient().getItem(getInput());
+        item = getClient().getItem(getInput(SysStrings.INPUT_TITLE));
         if(item == null) {
             System.out.println("Item nao encontrado");
+            return;
         }
-        System.out.println("Titulo: " + item.getTitle());
-        System.out.println("Descricao: " + item.getDescription());
-        System.out.println("Valor: " + item.getValueToString());
+        System.out.println(SysStrings.INPUT_TITLE + item.getTitle());
+        System.out.println(SysStrings.INPUT_DESCRIPTION + item.getDescription());
+        bids = getClient().getBids(item.getTitle());
+        System.out.print(SysStrings.VALUE);
+        printHighestBid();
         System.out.println(SysStrings.BIDS);
         printBids();
     }
 
+    private void printHighestBid() {
+        Bid highestBid = getClient().getHighestBid(bids);
+
+        if (highestBid != null)
+            System.out.println(highestBid.getValueToString());
+        else System.out.println(item.getValueToString());
+    }
+
     private void printBids() {
-        List<Bid> bids = getClient().getBids(item.getTitle());
         Collections.sort(bids);
         for (Bid bid : bids) {
             System.out.println(SysStrings.INPUT_USERNAME + bid.getOwner() + " " + SysStrings.VALUE + bid.getValue());
@@ -40,6 +50,6 @@ public class DetailsOfItem extends UserInteraction {
     }
 
     @Override
-    public void storeObjects() {
+    public void doOperation() {
     }
 }

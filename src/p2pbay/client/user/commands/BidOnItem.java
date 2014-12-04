@@ -22,23 +22,32 @@ public class BidOnItem  extends UserInteraction{
     }
 
     @Override
-    public void storeObjects() {
+    public void doOperation() {
         Item item = getClient().getItem(title);
-        if(item == null) {
-            System.out.println("O item que pretende licitar nao existe...");
-            return;
+        if (isValid(item)) {
+                Bid newBid = new Bid(title, getClient().getUser(), proposedValue);
+                getClient().getUser().addBid(newBid);
+                getClient().store(getClient().getUser());
+                if (getClient().storeBid(newBid))
+                    System.out.println(SysStrings.BID_ACCEPTED);
         }
-        if (proposedValue > item.getValue()) {
-            Bid newBid =  new Bid(title, getClient().getUser(), proposedValue);
-
-            getClient().getUser().addBid(newBid);
-            getClient().store(getClient().getUser());
-            if (getClient().storeBid(newBid))
-                System.out.println("A licitacao foi aceite!");
-        }
-        else
-            System.out.println("A licitacao foi rejeitada pois o valor do item (" +
-                                item.getValueToString() +
-                                ") e igual ou superior a sua oferta!");
     }
+
+    private boolean isValid(Item item) {
+        if (item == null) {
+            System.err.println(SysStrings.ITEM_NOT_EXIST);
+            return false;
+        }
+        if (proposedValue <= item.getValue()) {
+            System.err.println(SysStrings.BID_BAD_VALUE_1 + item.getValueToString() + SysStrings.BID_BAD_VALUE_2);
+            return false;
+        }
+        if (item.auctionIsClosed()) {
+            System.err.println(SysStrings.BID_AUCTION_CLOSED);
+            return false;
+        }
+        return true;
+    }
+
+
 }

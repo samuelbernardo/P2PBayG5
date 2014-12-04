@@ -25,7 +25,7 @@ public class SignUp extends UserInteraction implements Runnable {
     }
 
     @Override
-    public void storeObjects() {
+    public void doOperation() {
         if(user == null) {
             user = new User(username, password);
             getClient().store(user);

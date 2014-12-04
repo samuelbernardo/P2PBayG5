@@ -35,5 +35,5 @@ public class Login extends UserInteraction implements Runnable {
     }
 
     @Override
-    public void storeObjects() {}
+    public void doOperation() {}
 }

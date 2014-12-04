@@ -160,7 +160,7 @@ public class TomP2PHandler {
     /**
      * Gets a Bid from the DHT
      * @param key Bid Key
-     * @return The Bids or null if not found
+     * @return The Bids or empty List if not found
      */
     public List<Bid> get(String key) {
         Number160 hKey = Number160.createHash(key);

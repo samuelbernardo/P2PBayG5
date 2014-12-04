@@ -24,7 +24,7 @@ public class ItemForSale extends UserInteraction implements Runnable {
     }
 
     @Override
-    public void storeObjects() {
+    public void doOperation() {
         Item item = new Item(getClient().getUser().getUsername(), title, description, baseBid);
         if(getClient().store(item))
             System.out.println("O item foi publicado com sucesso!");
