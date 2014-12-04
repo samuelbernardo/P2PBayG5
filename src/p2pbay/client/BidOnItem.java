@@ -28,14 +28,11 @@ public class BidOnItem  extends UserInteraction{
         }
         if (proposedValue > item.getValue()) {
             Bid newBid =  new Bid(title, getClient().getUser(), proposedValue);
-            item.addBid(newBid);
 
-            //Eu sei que se esta a guardar as bids no user por causa do historico
-            //Acho que e possivel modelar de maneira a so se ter de guardar um objecto
             getClient().getUser().addBid(newBid);
             getClient().store(getClient().getUser());
-            getClient().storeBid(newBid);
-            System.out.println("A licitacao foi aceite!");
+            if (getClient().storeBid(newBid))
+                System.out.println("A licitacao foi aceite!");
         }
         else
             System.out.println("A licitacao foi rejeitada pois o valor do item (" +

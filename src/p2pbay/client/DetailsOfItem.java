@@ -4,6 +4,10 @@ import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Bid;
 import p2pbay.core.Item;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 public class DetailsOfItem extends UserInteraction {
     private Item item;
 
@@ -26,8 +30,10 @@ public class DetailsOfItem extends UserInteraction {
     }
 
     private void printBids() {
-        for (Bid bid : getClient().getBids(item.getTitle())) {
-            System.out.println(bid);
+        List<Bid> bids = getClient().getBids(item.getTitle());
+        Collections.sort(bids);
+        for (Bid bid : bids) {
+            System.out.println(SysStrings.INPUT_USERNAME + bid.getOwner() + " " + SysStrings.VALUE + bid.getValue());
         }
     }
 

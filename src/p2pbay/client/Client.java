@@ -1,5 +1,6 @@
 package p2pbay.client;
 
+import p2pbay.P2PBay;
 import p2pbay.client.user.Login;
 import p2pbay.client.user.SignUp;
 import p2pbay.core.*;
@@ -115,7 +116,7 @@ public class Client {
 
     public void close() {
         input.close();
-        connectionHandler.close();
+        P2PBay.close();
     }
 
 

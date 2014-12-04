@@ -12,7 +12,7 @@ public class HistoryCheck extends UserInteraction{
 
     @Override
     public void getInfo() {
-        User user = getClient().getUser(getClient().getUser().getUsername());
+        User user = getClient().getUser();
         System.out.println("Titulo:\t\tValor:");
         for(Bid b : user.getBids()) {
             System.out.println(b.getTitle() + "\t\t" + b.getValue());

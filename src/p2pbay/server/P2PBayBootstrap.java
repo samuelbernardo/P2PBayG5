@@ -1,8 +1,8 @@
 package p2pbay.server;
 
-import java.io.*;
-import java.net.Inet4Address;
-import java.net.InetAddress;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -16,7 +16,7 @@ public class P2PBayBootstrap {
     /**
      * Lista de nos
      */
-    private ArrayList<InetAddress> nodes;
+    private ArrayList<Node> nodes;
 
     public P2PBayBootstrap() {
         nodes = new ArrayList<>();
@@ -31,7 +31,7 @@ public class P2PBayBootstrap {
             String address;
             // Para cada linha adiciona um endereco a lista de dos
             while((address = reader.readLine()) != null) {
-                nodes.add(Inet4Address.getByName(address));
+                nodes.add(new Node(address));
             }
 
             // Baralha a lista de nos, apenas para nao estar
@@ -47,8 +47,12 @@ public class P2PBayBootstrap {
     /**
      * @return Lista de nos
      */
-    public ArrayList<InetAddress> getNodes() {
+    public ArrayList<Node> getNodes() {
         return nodes;
+    }
+
+    public void addLocal(int port) {
+        nodes.add(new Node("localhost", port));
     }
 }
 

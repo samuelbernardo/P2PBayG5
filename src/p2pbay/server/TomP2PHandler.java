@@ -16,71 +16,16 @@ import p2pbay.core.DHTObjectType;
 
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class TomP2PHandler {
-    final private Peer peer;
-    final private int port = 4001;
+    private Peer peer;
     private StorageMemory storage;
 
-    final static private String test = "test";
-
-    public TomP2PHandler(P2PBayBootstrap bootstrap) throws Exception {
-        //** CREATE A NEW PEER **//
-        PeerMaker peerMaker = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress()));
-        StorageMemory storageMemory = new BayStorage();
-        peerMaker.setStorage(storageMemory);
-        peerMaker.setPorts(port);
-        peerMaker.setEnableIndirectReplication(true);
-        System.out.println(peerMaker.isEnableIndirectReplication());
-        storage = storageMemory;
-        peer = peerMaker.makeAndListen();
-
-        /* Creation of a peer. */
-//        peer = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress())).setPorts(port).makeAndListen();
-        System.out.println("peer = " + peer.getPeerAddress());
-
-
-        // ** Testing lambdas ** //
-        // Executed when receiving a direct message.
-        peer.setObjectDataReply(new ObjectDataReply() {
-            @Override
-            public Object reply(PeerAddress sender, Object request) throws Exception {
-                if (request instanceof MessageType) {
-                    switch ((MessageType) request) {
-                        case TEST:
-                            System.out.println("Received " + request.getClass());
-                            break;
-                    }
-                }
-                System.out.println("sender = " + sender);
-                System.out.println("request = " + request);
-                return "ok";
-            }
-        });
-
-
-
-        /* Connects THIS to an existing peer. */
-        System.out.println("Connecting...");
-
-
-        // Procura por todos os nos dados pelo objecto P2PBayBoostrap
-        for(InetAddress address:bootstrap.getNodes()) {
-            System.out.println("Trying " + address.getHostName());
-            FutureDiscover futureDiscover = peer.discover().setInetAddress(address).setPorts(port).start();
-            futureDiscover.awaitUninterruptibly();
-            FutureBootstrap fb = peer.bootstrap().setInetAddress(address).setPorts(port).start();
-            fb.awaitUninterruptibly();
-            if (fb.getBootstrapTo() != null) {
-                System.out.println("Connected to " + fb.getBootstrapTo());
-                PeerAddress peerAddress = fb.getBootstrapTo().iterator().next();
-                peer.discover().setPeerAddress(peerAddress).start().awaitUninterruptibly();
-                break;
-            }
-        }
+    public TomP2PHandler() {
+        storage = new BayStorage();
     }
 
     /**
@@ -104,6 +49,27 @@ public class TomP2PHandler {
      * @param bid Bid a ser guardado na dht
      */
     public boolean store(Bid bid) {
+        // Find the most recent Bid
+        // Which is the bid with the highest position
+        List<Bid> bids = get(bid.getTitle());
+        Bid mostRecent = null;
+        for (Bid aBid : bids) {
+            if (mostRecent == null)
+                mostRecent = aBid;
+            else if (mostRecent.getPosition() < aBid.getPosition())
+                mostRecent = aBid;
+        }
+
+        // Position generator
+        // A random number that can go up 20 positions
+        //from the previous highest position
+        int position = new Random().nextInt(20);
+        if (mostRecent != null)
+            position += 1 + mostRecent.getPosition();
+        bid.setPosition(position);
+
+
+        // Store the bid in the DHT
         try {
             System.out.println("bid = " + bid.getKey());
             peer.add(bid.getKey()).setData(new Data(bid)).start().awaitUninterruptibly();
@@ -132,6 +98,62 @@ public class TomP2PHandler {
             }
         }
         return null;
+    }
+
+    public int connect() throws IOException{
+        int port = new Random().nextInt(5000) + 1000;
+        //** CREATE A NEW PEER **//
+        PeerMaker peerMaker = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress() + port));
+        peerMaker.setStorage(storage);
+        peerMaker.setPorts(port);
+        peerMaker.setEnableIndirectReplication(true);
+        System.out.println(peerMaker.isEnableIndirectReplication());
+        peer = peerMaker.makeAndListen();
+
+        /* Creation of a peer. */
+//        peer = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress())).setPorts(port).makeAndListen();
+        System.out.println("peer = " + peer.getPeerAddress());
+
+        // ** Testing lambdas ** //
+        // Executed when receiving a direct message.
+        peer.setObjectDataReply(new ObjectDataReply() {
+            @Override
+            public Object reply(PeerAddress sender, Object request) throws Exception {
+                if (request instanceof MessageType) {
+                    switch ((MessageType) request) {
+                        case TEST:
+                            System.out.println("Received " + request.getClass());
+                            break;
+                    }
+                }
+                System.out.println("sender = " + sender);
+                System.out.println("request = " + request);
+                return "ok";
+            }
+        });
+        return port;
+    }
+
+    public void connect(P2PBayBootstrap bootstrap) throws IOException {
+        connect();
+
+        /* Connects THIS to an existing peer. */
+        System.out.println("Connecting...");
+
+        // Procura por todos os nos dados pelo objecto P2PBayBoostrap
+        for(Node node:bootstrap.getNodes()) {
+            System.out.println("Trying " + node.getHostName());
+            FutureDiscover futureDiscover = peer.discover().setInetAddress(node.getAddress()).setPorts(node.getPort()).start();
+            futureDiscover.awaitUninterruptibly();
+            FutureBootstrap fb = peer.bootstrap().setInetAddress(node.getAddress()).setPorts(node.getPort()).start();
+            fb.awaitUninterruptibly();
+            if (fb.getBootstrapTo() != null) {
+                System.out.println("Connected to " + fb.getBootstrapTo());
+                PeerAddress peerAddress = fb.getBootstrapTo().iterator().next();
+                peer.discover().setPeerAddress(peerAddress).start().awaitUninterruptibly();
+                break;
+            }
+        }
     }
 
 

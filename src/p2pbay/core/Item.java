@@ -11,7 +11,6 @@ public class Item extends DHTObject implements Serializable {
     private String description;
     private float baseBid;
     private boolean auctionClosed;
-    private List<Bid> bids;
 
     public Item(String owner, String title, String description, float baseBid) {
         super(title, DHTObjectType.ITEM);
@@ -20,7 +19,6 @@ public class Item extends DHTObject implements Serializable {
         this.description = description;
         this.baseBid = baseBid;
         this.auctionClosed = false;
-        this.bids = new ArrayList<Bid>();
     }
 
     public String getOwner() {
@@ -48,24 +46,11 @@ public class Item extends DHTObject implements Serializable {
     }
 
     public float getValue() {
-        if (bids.isEmpty())
-            return this.baseBid;
-        else {
-            Bid lastBid = bids.get(bids.size()-1);
-            return lastBid.getValue();
-        }
+        return baseBid;
     }
 
     public String getValueToString() {
         return getValue() + "€";
-    }
-
-    public List<Bid> getBids() {
-        return this.bids;
-    }
-
-    public void addBid(Bid bid) {
-        bids.add(bid);
     }
 
     @Override

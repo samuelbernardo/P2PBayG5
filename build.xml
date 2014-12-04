@@ -41,7 +41,7 @@
   </path>
 
   <target name="init">
-    <!-- Create the time stamp -->
+    <!-- Create the position stamp -->
     <tstamp/>
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${classes.build}"/>

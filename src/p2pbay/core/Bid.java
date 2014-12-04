@@ -1,31 +1,28 @@
 package p2pbay.core;
 
-import net.tomp2p.peers.Number160;
-
 import java.io.Serializable;
-import java.util.Comparator;
 
-public class Bid extends DHTObject implements Serializable{
+public class Bid extends DHTObject implements Serializable, Comparable{
     private static final long serialVersionUID = 6128016096756071380L;
     private String title;
     private float value;
     private String owner;
-    private long time;
+    private int position;
     
     public Bid(String title, User owner, float value) {
         super(title, DHTObjectType.BID);
         this.title = title;
         this.owner = owner.getUsername();
         this.value = value;
-        this.time = 0;
+        this.position = 0;
     }
 
-    public void setTime(long time) {
-        this.time = time;
+    public void setPosition(int position) {
+        this.position = position;
     }
 
-    public long getTime() {
-        return time;
+    public int getPosition() {
+        return position;
     }
 
     public String getTitle() {
@@ -42,6 +39,14 @@ public class Bid extends DHTObject implements Serializable{
 
     @Override
     public String toString() {
-        return super.toString() + owner + ":" + value + ":" + time;
+        return super.toString() + owner + ":" + value + ":" + position;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (o instanceof Bid) {
+            return this.getPosition() - ((Bid)o).getPosition();
+        }
+        return 0;
     }
 }
