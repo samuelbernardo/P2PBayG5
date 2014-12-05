@@ -278,4 +278,11 @@ public class TomP2PHandler {
         this.peer.sendDirect(peer).setObject(message).start();
     }
 
+    public void sendCountBeaconModuleMessage(CountBeaconModule message, PeerAddress peer) {
+        this.peer.sendDirect(peer).setObject(message).start();
+    }
+
+    public void sendCountBeaconModuleAnswer(CountBeaconAnswer message, PeerAddress peer) {
+        this.peer.sendDirect(peer).setObject(message).start();
+    }
 }

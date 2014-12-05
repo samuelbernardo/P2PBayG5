@@ -2,7 +2,10 @@ package gossipico;
 
 import net.tomp2p.peers.PeerAddress;
 import p2pbay.server.TomP2PHandler;
+import peersim.core.Linkable;
+import peersim.core.Node;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +18,7 @@ import java.util.List;
  * 
  * @author Nicola Corti
  */
-public class CountBeaconModule extends CountModule {
+public class CountBeaconModule extends CountModule implements Serializable {
 
 	/** Esercito del nodo */
 	protected Army army;
@@ -23,7 +26,7 @@ public class CountBeaconModule extends CountModule {
 	/** Lista dei nodi che si sono disconnessi 
 	 *  Utile per non notificare due volte la disconessione
 	 */
-	private List<PeerAddress> disconnected;
+	protected List<PeerAddress> disconnected;
 
 
 	/**
@@ -34,6 +37,13 @@ public class CountBeaconModule extends CountModule {
 		super(node);
 		army = new Army(this);
 		disconnected = new ArrayList<>();
+	}
+
+	public CountBeaconModule(TomP2PHandler node, Army army, Message waiting, Message received, int state_value, int state_freshness, int init_value, List<PeerAddress> disconnected) {
+		super(node, waiting, received, state_value, state_freshness, init_value);
+
+		this.army = army;
+		this.disconnected = disconnected;
 	}
 
 	
@@ -60,29 +70,23 @@ public class CountBeaconModule extends CountModule {
 			// Itero fin quando non trovo un nodo up
 			while (next == null && count != 0){
 				int index = (int) (Math.random()* node.getNeighbors().size());
-				PeerAddress d = node.getNeighbors().get(index);
 				next = node.getNeighbors().get(index);
 				count--;
 			}
 			
-			if (count == 0 && next == null) return;	
-			
-			// Eseguo la schermaglia oppure aggiorno il percorso
-			if (next.army.isSameArmy(this.army)){
-				Army.updateShortest(this, next);
-			} else {
-				Army.skirmish(this, next);
-			}
+			if (count == 0 && next == null) return;
+
+			node.sendCountBeaconModuleMessage(this, next);
 		}
 	}
 
 	/**
 	 * Funzione per controllare se tutti i nodi vicini sono sempre up
 	 * 
-	 * @param link Protocollo che rappresenta la rete
-	 * @return true se sono sutti up, false altrimenti
+	 * link Protocollo che rappresenta la rete
+	 * true se sono sutti up, false altrimenti
 	 */
-	private boolean checkNeighboor(Linkable link) {
+	/*private boolean checkNeighboor(Linkable link) {
 		
 		for (int i = 0; i < link.degree(); i++){
 			Node e = link.getNeighbor(i);
@@ -92,7 +96,7 @@ public class CountBeaconModule extends CountModule {
 			}
 		}
 		return true;
-	}
+	}*/
 
 	
 	/* (non-Javadoc)
@@ -114,15 +118,15 @@ public class CountBeaconModule extends CountModule {
 
 
 	/* (non-Javadoc)
-	 * @see it.ncorti.p2p.CountModule#getNeighboor(peersim.core.Node, int)
+	 * @see it.ncorti.p2p.CountModule#getNeighbor(peersim.core.Node, int)
 	 */
 	@Override
-	protected CountModule getNeighboor(Node node, int protocolID) {
+	protected PeerAddress getNeighbor(TomP2PHandler node) {
 		// Ritorna sempre il vicino piu' prossimo al beacon, tranne se lui stesso e' il beacon
 		
 		if (waiting.IC() && !this.isBeacon())
 			return this.army.nexthop;
-		return super.getNeighboor(node, protocolID);
+		return super.getNeighbor(node);
 	}
 
 	
@@ -134,20 +138,7 @@ public class CountBeaconModule extends CountModule {
 	private boolean isBeacon() {
 		return (army.beacon.equals(this));
 	}
-	
-	
-	/* (non-Javadoc)
-	 * @see it.ncorti.p2p.CountModule#clone()
-	 */
-	@Override
-	public Object clone(){
-		CountBeaconModule node = null;
-		node=(CountBeaconModule)super.clone();
-		node.army = new Army(node);
-		node.disconnected = new ArrayList<>();
-		return node;
-	}
-	
+
 	/* (non-Javadoc)
 	 * @see it.ncorti.p2p.CountModule#toString()
 	 */

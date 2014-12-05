@@ -28,10 +28,18 @@ public class CountModule implements Serializable {
 	protected int state_freshness;
 		
 	/** Valore iniziale del calcolo */
-	private int init_value;
+	protected int init_value;
 
 	/** Node em que se baseia */
-	private TomP2PHandler node;
+	protected TomP2PHandler node;
+
+	public TomP2PHandler getNode() {
+		return node;
+	}
+
+	public void setNode(TomP2PHandler node) {
+		this.node = node;
+	}
 
 
 	/**
@@ -60,6 +68,15 @@ public class CountModule implements Serializable {
 			waiting = new MaxMessage(init_value);
 			received = new MaxMessage(init_value);
 		} */
+	}
+
+	public CountModule(TomP2PHandler node, Message waiting, Message received, int state_value, int state_freshness, int init_value) {
+		this.node = node;
+		this.waiting = waiting;
+		this.received = received;
+		this.state_value = state_value;
+		this.state_freshness = state_freshness;
+		this.init_value = init_value;
 	}
 
 	/* (non-Javadoc)

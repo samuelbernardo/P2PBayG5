@@ -56,6 +56,16 @@ public class MessageReceiver implements ObjectDataReply {
             ArmyStrengthMsgReceiver reply = new ArmyStrengthMsgReceiver(node);
             reply.process(sender, receivedState);
         }
+        else  if(request instanceof CountBeaconModule) {
+            CountBeaconModule receivedState = (CountBeaconModule)request;
+            CountBeaconMsgReceiver reply = new CountBeaconMsgReceiver(node);
+            reply.process(sender, receivedState);
+        }
+        else  if(request instanceof CountBeaconAnswer) {
+            CountBeaconAnswer receivedState = (CountBeaconAnswer)request;
+            CountBeaconAnsReceiver reply = new CountBeaconAnsReceiver(node);
+            reply.process(sender, receivedState);
+        }
 //        System.out.println("sender = " + sender);
 //        System.out.println("request = " + request);
         return "ok";

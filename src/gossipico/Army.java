@@ -1,5 +1,7 @@
 package gossipico;
 
+import net.tomp2p.peers.PeerAddress;
+
 /**
  * Classe che rappresenta un esercito, utilizzata dal modulo BEACON per il calcolo del combattimento fra gli esericiti.
  * Ogni nodo che implementa il protocollo COUNT-BEACON disporra' di un'istanza di questa classe.
@@ -11,13 +13,13 @@ public class Army {
 	/** Valore che rappresenta la forza dell'esercito */
 	public int strength;
 	/** Riferimento al nodo che adesso svolge il ruolo di beacon */
-	public CountBeaconModule beacon;
+	public PeerAddress beacon;
 	/** Riferimento al prossimo nodo verso il beacon */
-	public CountBeaconModule nexthop;
+	public PeerAddress nexthop;
 	/** Distanza verso il beacon */
 	public int distance;
 	/** Immunita' verso un esercito */
-	public CountBeaconModule immunity;
+	public PeerAddress immunity;
 	
 	/**
 	 * Costruttore che crea un nuovo esercito a partire dal nodo che lo deve possedere.
