@@ -4,6 +4,10 @@ package gossipico;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.tomp2p.peers.PeerAddress;
+import p2pbay.server.TomP2PHandler;
+import p2pbay.server.peer.Node;
+
 
 /**
  * Classe che rappresenta un inizializzatore per il protocollo COUNT-BEACON.
@@ -14,52 +18,44 @@ import java.util.List;
  * 
  * @author Nicola Corti
  */
-public class CountBeaconInitializer implements Control {
+public class CountBeaconInitializer extends Thread {
 
-
-    /** Stringa per recuperare il nome del protocollo dal file di conf */
-    private static final String PAR_PROT = "protocol";
-    /** Pid del protocollo CountBeacon */
-    private final int pid;
+    private TomP2PHandler handler;
     
     /** Lista di interi distinti per assegnare i valori di forza */
     private List<Integer> ints;
 
 
     /**
-     * Costruttore Base invocato dal simulatore
-     * @param prefix prefisso indicato nel file di configurazione
+     *
+     * @param handler
      */
-    public CountBeaconInitializer(String prefix) {
-        pid = Configuration.getPid(prefix + "." + PAR_PROT);
+    public CountBeaconInitializer(TomP2PHandler handler) {
         ints = new ArrayList<>();
-        for (int j = 0; j < Network.size(); j++){
+        for (int j = 0; j < handler.getNetworkSize(); j++){
         	ints.add(j);
         }
     }
 
-    /* (non-Javadoc)
-     * @see peersim.core.Control#execute()
-     */
     @Override
-	public boolean execute() {
-    	
-        for (int i = 0; i < Network.size(); i++) {
-            CountModule prot = (CountModule) Network.get(i).getProtocol(pid);
-            prot.ID = i;
-            if (prot instanceof CountBeaconModule){
-            	CountBeaconModule cbm = (CountBeaconModule) prot;
-            	int j = (int) (Math.random() * ints.size());
-            	if (j >= 0 && j < ints.size()){
-            		cbm.army.strenght = ints.get(j);
-            		ints.remove(j);
-            	} else {
-            		cbm.army.strenght = ints.get(0);
-            		ints.remove(0);
-            	}
+    public void run() {
+        /*try {
+            Thread.sleep(10000 + random.nextInt(20000));
+        } catch (InterruptedException ignore) {}*/
+
+        while (handler.isRunning()) {
+            for (Node node : handler.getNodes()) {
+                CountBeaconModule cbm = (CountBeaconModule) prot;
+                int j = (int) (Math.random() * ints.size());
+                if (j >= 0 && j < ints.size()){
+                    cbm.army.strenght = ints.get(j);
+                    ints.remove(j);
+                } else {
+                    cbm.army.strenght = ints.get(0);
+                    ints.remove(0);
+                }
             }
         }
-
-        return false;
     }
+
 }

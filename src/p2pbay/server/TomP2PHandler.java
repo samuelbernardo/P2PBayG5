@@ -22,6 +22,7 @@ import p2pbay.server.peer.Node;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -185,6 +186,22 @@ public class TomP2PHandler {
 
     public int getPort() {
         return peer.getPeerAddress().portTCP();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getNetworkSize() {
+        return  bootstrap.getNodes().size();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public ArrayList<Node> getNodes() {
+        return bootstrap.getNodes();
     }
 
 

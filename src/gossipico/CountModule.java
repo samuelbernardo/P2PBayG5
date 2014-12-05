@@ -9,7 +9,7 @@ package gossipico;
  * 
  * @author Nicola Corti
  */
-public class CountModule implements CDProtocol {
+public class CountModule {
 
 	/** Stringa per ottenere il valore iniziale */
 	protected static final String param_value = "value";
