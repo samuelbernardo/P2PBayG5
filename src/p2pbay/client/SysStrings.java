@@ -34,7 +34,7 @@ public class SysStrings {
     public static final String BIDS = "Bids:";
     public static final String BID_BAD_VALUE_1 = "The bid was rejected because the item has a value of (";
     public static final String BID_BAD_VALUE_2 = ") which is equal os greater than your offer!";
-    public static final String BID_ACCEPTED = "Dib accepted!";
+    public static final String BID_ACCEPTED = "Bid accepted!";
     public static final String BID_REJECTED = "Invalid bid";
     public static final String BID_AUCTION_CLOSED = "Auction is closed. You can't bid.";
     public static final String INPUT_DESCRIPTION = "Description";
