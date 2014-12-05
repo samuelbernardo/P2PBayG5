@@ -24,7 +24,6 @@ public class DetailsOfItem extends UserInteraction {
 
     @Override
     public void doOperation() {
-        System.out.println("im here");
         if(isValid()){
             System.out.println(SysStrings.INPUT_TITLE + item.getTitle());
             System.out.println(SysStrings.INPUT_DESCRIPTION + item.getDescription());
