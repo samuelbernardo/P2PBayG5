@@ -1,5 +1,6 @@
 package p2pbay;
 
+import gossipico.CountBeaconInitializer;
 import p2pbay.client.Client;
 import p2pbay.server.P2PBayBootstrap;
 import p2pbay.server.TomP2PHandler;
@@ -41,6 +42,7 @@ public class P2PBay {
         for(int i = 0; i < 100; i++) {
             TomP2PHandler handler = new TomP2PHandler(bootstrap);
             while(!handler.connect());
+            CountBeaconInitializer handlerGossip = new CountBeaconInitializer(handler);
             System.out.println("i = " + i);
         }
         if (serverMode)
