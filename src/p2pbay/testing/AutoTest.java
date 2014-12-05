@@ -1,8 +1,8 @@
 package p2pbay.testing;
 
 import p2pbay.P2PBay;
-import p2pbay.core.DHTObjectType;
-import p2pbay.core.Index;
+//import p2pbay.core.DHTObjectType;
+//import p2pbay.core.Index;
 import p2pbay.core.Item;
 
 public class AutoTest {

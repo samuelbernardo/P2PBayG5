@@ -20,11 +20,9 @@ public abstract class UserInteraction implements Runnable {
         try {
             username = getClient().readInput(SysStrings.INPUT_USERNAME);
         } catch(Exception e){
-            // if any error occurs
             e.printStackTrace();
-        } finally {
-            return username;
         }
+        return username;
     }
 
     public String getPassword() {
@@ -32,11 +30,9 @@ public abstract class UserInteraction implements Runnable {
         try {
             password = getClient().readInputPassword();
         } catch(Exception e){
-            // if any error occurs
             e.printStackTrace();
-        } finally {
-            return password;
         }
+        return password;
     }
 
     public String getInput() {
@@ -59,9 +55,9 @@ public abstract class UserInteraction implements Runnable {
 
                 if (value > 0)
                     return value;
-            } catch (NumberFormatException ignored) {}
-
-            System.out.println(SysStrings.INVALID_VALUE);
+            } catch (NumberFormatException ignored) {
+                System.out.println(SysStrings.INVALID_VALUE);
+            }
         }
     }
 

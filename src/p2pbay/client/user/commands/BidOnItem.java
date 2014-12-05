@@ -1,17 +1,15 @@
 package p2pbay.client.user.commands;
 
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import p2pbay.client.Client;
 import p2pbay.client.SysStrings;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Bid;
 import p2pbay.core.Item;
 
-import java.util.List;
-
 public class BidOnItem  extends UserInteraction{
     private String title;
     private Float proposedValue;
+    private Item item;
 
     public BidOnItem(Client client) {
         super(client);
@@ -20,13 +18,13 @@ public class BidOnItem  extends UserInteraction{
     @Override
     public void getInfo() {
         System.out.print("Titulo do item:");
-        this.title = getInput();
-        this.proposedValue = getPositiveNumber(SysStrings.VALUE);
+        title = getInput();
+        proposedValue = getPositiveNumber(SysStrings.VALUE);
+        item = getClient().getItem(title);
     }
 
     @Override
     public void doOperation() {
-        Item item = getClient().getItem(title);
         if (isValid(item)) {
             Bid newBid = new Bid(title, getClient().getUser(), proposedValue);
             getClient().store(getClient().getUser());

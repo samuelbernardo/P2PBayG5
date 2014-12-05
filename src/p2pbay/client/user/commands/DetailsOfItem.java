@@ -6,7 +6,6 @@ import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Bid;
 import p2pbay.core.Item;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,17 +20,28 @@ public class DetailsOfItem extends UserInteraction {
     @Override
     public void getInfo() {
         item = getClient().getItem(getInput(SysStrings.INPUT_TITLE));
-        if(item == null) {
-            System.out.println("Item nao encontrado");
-            return;
+    }
+
+    @Override
+    public void doOperation() {
+        if(isValid()){
+            System.out.println(SysStrings.INPUT_TITLE + item.getTitle());
+            System.out.println(SysStrings.INPUT_DESCRIPTION + item.getDescription());
+            bids = getClient().getBids(item.getTitle());
+            System.out.print(SysStrings.VALUE);
+            printHighestBid();
+            System.out.println(SysStrings.BIDS);
+            printBids();
         }
-        System.out.println(SysStrings.INPUT_TITLE + item.getTitle());
-        System.out.println(SysStrings.INPUT_DESCRIPTION + item.getDescription());
-        bids = getClient().getBids(item.getTitle());
-        System.out.print(SysStrings.VALUE);
-        printHighestBid();
-        System.out.println(SysStrings.BIDS);
-        printBids();
+    }
+
+    private boolean isValid() {
+        if(item == null) {
+            System.out.println(SysStrings.ITEM_NOT_EXIST);
+            return true;
+        }
+        else
+            return false;
     }
 
     private void printHighestBid() {
@@ -39,7 +49,8 @@ public class DetailsOfItem extends UserInteraction {
 
         if (highestBid != null)
             System.out.println(highestBid.getValueToString());
-        else System.out.println(item.getValueToString());
+        else
+            System.out.println(item.getValueToString());
     }
 
     private void printBids() {
@@ -47,9 +58,5 @@ public class DetailsOfItem extends UserInteraction {
         for (Bid bid : bids) {
             System.out.println(SysStrings.INPUT_USERNAME + bid.getOwner() + " " + SysStrings.VALUE + bid.getValue());
         }
-    }
-
-    @Override
-    public void doOperation() {
     }
 }

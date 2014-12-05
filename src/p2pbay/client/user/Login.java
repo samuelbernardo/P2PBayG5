@@ -6,7 +6,9 @@ import p2pbay.client.SysStrings;
 import p2pbay.core.User;
 
 public class Login extends UserInteraction implements Runnable {
-
+    private String username;
+    private String password;
+    
     public Login(Client client) {
         super(client);
     }
@@ -15,15 +17,16 @@ public class Login extends UserInteraction implements Runnable {
     public void getInfo() {
         System.out.println(SysStrings.LOGIN);
 
-        //User Credentials
-        String username = getUsername();
-        String password = getPassword();
+        username = getUsername();
+        password = getPassword();
+    }
 
-        //Check if exists user with such username
+    @Override
+    public void doOperation() {
+        //Check if exists user with then given username
         User user = getClient().getUser(username);
         if (user != null)
             if (user.getPassword().equals(password)) {
-                //User password matches
                 getClient().setUser(user);
                 System.out.println(SysStrings.LOGIN_SUCCESS);
 
@@ -33,7 +36,4 @@ public class Login extends UserInteraction implements Runnable {
             }
         System.out.println(SysStrings.LOGIN_FAILED);
     }
-
-    @Override
-    public void doOperation() {}
 }

@@ -5,6 +5,7 @@ import net.tomp2p.peers.Number160;
 import java.io.Serializable;
 
 public class DHTObject implements Serializable{
+    private static final long serialVersionUID = 1L;
     private String key;
     private Number160 keyHash;
     private DHTObjectType type;

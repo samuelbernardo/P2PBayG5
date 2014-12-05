@@ -31,10 +31,27 @@ public class Search extends UserInteraction{
         indexes = new HashMap<>();
     }
 
-    private boolean isOperator(String term) {
-        return term.equals("OR") || term.equals("AND") || term.equals("NOT");
+    @Override
+    public void getInfo() {
+        System.out.print(SysStrings.SEARCH);
+        search = getClient().readInput();
+        splitSearch = search.split(" ");
+        nWords = splitSearch.length;
+        getAllIndex();
     }
-
+    
+    @Override
+    public void doOperation() {
+        try {
+            searchResult = doSearch(true);
+            if (splitSearch[position+1] == null)
+                printResults();
+            else throw new UnsupportedOperationException(SysStrings.SEARCH_FAILED);
+        } catch (UnsupportedOperationException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
     private void getAllIndex() {
         HashSet<String> terms = new HashSet<>();
 
@@ -51,28 +68,11 @@ public class Search extends UserInteraction{
         }
         //Wait;;
     }
-
-    private Index getIndex(String term) {
-        return indexes.get(term);
+    
+    private boolean isOperator(String term) {
+        return term.equals("OR") || term.equals("AND") || term.equals("NOT");
     }
-
-    // arranjar solucao para discordancia do nome com o que faz
-    public void getInfo() {
-        System.out.print(SysStrings.SEARCH);
-        search = getClient().readInput();
-        splitSearch = search.split(" ");
-        getAllIndex();
-        nWords = splitSearch.length;
-        try {
-            searchResult = doSearch(true);
-            if (splitSearch[position+1] == null)
-                printResults();
-            else throw new UnsupportedOperationException(SysStrings.SEARCH_FAILED);
-        } catch (UnsupportedOperationException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
+    
     private TreeSet<String> doSearch(boolean invalidNOT ) throws UnsupportedOperationException {
         word = splitSearch[position];
 
@@ -83,7 +83,7 @@ public class Search extends UserInteraction{
             throw new UnsupportedOperationException(SysStrings.SEARCH_IMPOSSIBLE);
 
         if (isOperator(word)) {
-            return doOperation(word);
+            return doBooleanOperation(word);
         }
 
         Index index = getIndex(word);
@@ -93,7 +93,11 @@ public class Search extends UserInteraction{
         return index.getTitles();
     }
 
-    private TreeSet<String> doOperation(String operator) {
+    private Index getIndex(String term) {
+        return indexes.get(term);
+    }
+    
+    private TreeSet<String> doBooleanOperation(String operator) {
         TreeSet<String> result = new TreeSet<>();
         position += 1;
         switch (operator) {
@@ -116,8 +120,7 @@ public class Search extends UserInteraction{
         }
         return result;
     }
-
-
+    
     private void printResults() {
         if(searchResult.isEmpty()) {
             System.out.println(SysStrings.SEARCH_NORESULTS);
@@ -128,7 +131,4 @@ public class Search extends UserInteraction{
             System.out.println(" - " + title);
         }
     }
-
-    @Override
-    public void doOperation() {}
 }

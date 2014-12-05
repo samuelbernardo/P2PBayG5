@@ -1,8 +1,6 @@
 package p2pbay.core;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Item extends DHTObject implements Serializable {
     private static final long serialVersionUID = 6128016096756071380L;
