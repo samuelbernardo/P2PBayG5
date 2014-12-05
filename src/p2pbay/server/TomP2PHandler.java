@@ -10,13 +10,13 @@ import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.rpc.ObjectDataReply;
 import net.tomp2p.storage.Data;
 import net.tomp2p.storage.StorageMemory;
+import p2pbay.core.listeners.BidsListener;
 import p2pbay.core.Bid;
 import p2pbay.core.DHTObject;
 import p2pbay.core.DHTObjectType;
 
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -51,7 +51,7 @@ public class TomP2PHandler {
     public boolean store(Bid bid) {
         // Find the most recent and the Highest Bid
         // Which is the bid with the highest position
-        List<Bid> bids = get(bid.getTitle());
+        List<Bid> bids = get(bid.getTitle()); //TODO comment this line to test the project.. it will be fixed soon
         Bid mostRecent = null;
         Bid highest = null;
         for (Bid aBid : bids) {
@@ -169,21 +169,9 @@ public class TomP2PHandler {
      * @param key Bid Key
      * @return The Bids or empty List if not found
      */
-    public List<Bid> get(String key) {
+    public void get(String key, BidsListener listener) {
         Number160 hKey = Number160.createHash(key);
-        FutureDHT futureDHT = peer.get(hKey).setAll().start().awaitUninterruptibly();
-        ArrayList<Bid> bids = new ArrayList<>();
-        if (futureDHT.isSuccess()) {
-            try {
-                for (Data map : futureDHT.getDataMap().values()) {
-                    if (map.getObject() instanceof  Bid)
-                        bids.add((Bid) map.getObject());
-                }
-            } catch (ClassNotFoundException | IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return bids;
+        FutureDHT futureDHT = peer.get(hKey).setAll().start().addListener(listener);
     }
 
     public void close() {
