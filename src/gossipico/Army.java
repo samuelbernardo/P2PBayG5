@@ -1,6 +1,7 @@
 package gossipico;
 
 import net.tomp2p.peers.PeerAddress;
+import p2pbay.server.TomP2PHandler;
 
 /**
  * Classe che rappresenta un esercito, utilizzata dal modulo BEACON per il calcolo del combattimento fra gli esericiti.
@@ -20,6 +21,8 @@ public class Army {
 	public int distance;
 	/** Immunita' verso un esercito */
 	public PeerAddress immunity;
+
+	public TomP2PHandler node;
 	
 	/**
 	 * Costruttore che crea un nuovo esercito a partire dal nodo che lo deve possedere.
@@ -27,11 +30,11 @@ public class Army {
 	 * 
 	 * @param node
 	 */
-	public Army(CountBeaconModule node){
+	public Army(TomP2PHandler node){
 		
-		strength = (int) (Math.random() * Network.size());
-		beacon = node;
-		nexthop = node;
+		strength = (int) (Math.random() * node.getNeighbors().size());
+		beacon = node.getPeer().getPeerAddress();
+		nexthop = node.getPeer().getPeerAddress();
 		distance = 0;
 		immunity = null;
 		
@@ -57,10 +60,10 @@ public class Army {
 	public static void updateShortest(CountBeaconModule i, CountBeaconModule j) {
 
 		if (i.army.distance < j.army.distance + 1){
-			j.army.nexthop = i;
+			j.army.nexthop = i.getNode().getPeer().getPeerAddress();
 			j.army.distance = i.army.distance + 1;
 		} else if (j.army.distance < i.army.distance + 1){
-			i.army.nexthop = j;
+			i.army.nexthop = j.getNode().getPeer().getPeerAddress();
 			i.army.distance = j.army.distance + 1;
 		}
 
@@ -105,7 +108,7 @@ public class Army {
 		j.army.strength = i.army.strength;
 		j.army.immunity = i.army.immunity;
 		j.army.distance = i.army.distance + 1;
-		j.army.nexthop = i;
+		j.army.nexthop = i.getNode().getPeer().getPeerAddress();
 		j.resetCount();
 	}
 	
@@ -117,9 +120,9 @@ public class Army {
 	public void revive(CountBeaconModule i){
 		
 		immunity = beacon;
-		strength = (int) (Math.random() * Network.size());
-		beacon = i;
-		nexthop = i;
+		strength = (int) (Math.random() * node.getNeighbors().size());
+		beacon = i.getNode().getPeer().getPeerAddress();
+		nexthop = i.getNode().getPeer().getPeerAddress();
 		distance = 0;
 	}
 	
@@ -129,9 +132,9 @@ public class Army {
 	@Override
 	public String toString(){
 		if (immunity != null)
-			return ("{ B: " + beacon.getIndex() + " S:" + strength + " I: " + immunity.getIndex() + " D: " + distance + " Next: " + nexthop.getIndex() + " }");
+			return ("{ B: " + beacon + " S:" + strength + " I: " + immunity + " D: " + distance + " Next: " + nexthop + " }");
 		else 
-			return ("{ B: " + beacon.getIndex() + " S:" + strength + " I: null D: " + distance + " Next: " + nexthop.getIndex() + " }");
+			return ("{ B: " + beacon + " S:" + strength + " I: null D: " + distance + " Next: " + nexthop + " }");
 	}
 
 }

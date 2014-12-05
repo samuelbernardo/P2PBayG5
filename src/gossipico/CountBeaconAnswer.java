@@ -16,11 +16,4 @@ public class CountBeaconAnswer extends CountBeaconModule implements Serializable
         super(myself.node, myself.army, myself.waiting, myself.received, myself.state_value, myself.state_freshness, myself.init_value, myself.disconnected);
     }
 
-    /**
-     *
-     * @param node
-     */
-    public CountBeaconAnswer(TomP2PHandler node) {
-        super(node);
-    }
 }

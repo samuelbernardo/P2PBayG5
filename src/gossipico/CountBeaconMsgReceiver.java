@@ -15,6 +15,15 @@ public class CountBeaconMsgReceiver {
         this.receivedCount = request;
         CountBeaconModule countLocal = node.getCountBeaconModule();
 
+        /*Army army = node.getCountBeaconModule().army;
+        Message waiting = node.getCountBeaconModule().waiting;
+        Message received = node.getCountBeaconModule().received;
+        int state_value = node.getCountBeaconModule().state_value;
+        int state_freshness = node.getCountBeaconModule().state_freshness;
+        int init_value = node.getCountBeaconModule().init_value;
+        List<PeerAddress> disconnected = node.getCountBeaconModule().disconnected;*/
+        CountBeaconAnswer countAns = new CountBeaconAnswer(countLocal);
+
         // Eseguo la schermaglia oppure aggiorno il percorso
         if (countLocal.army.isSameArmy(this.receivedCount.army)){
             Army.updateShortest(countLocal, this.receivedCount);
@@ -22,6 +31,6 @@ public class CountBeaconMsgReceiver {
             Army.skirmish(countLocal, this.receivedCount);
         }
 
-        node.sendCountBeaconModuleAnswer((CountBeaconAnswer)countLocal, sender);
+        node.sendCountBeaconModuleAnswer(countAns, sender);
     }
 }

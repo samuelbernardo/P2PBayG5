@@ -35,8 +35,10 @@ public class CountBeaconModule extends CountModule implements Serializable {
 	 */
 	public CountBeaconModule(TomP2PHandler node) {
 		super(node);
-		army = new Army(this);
+		army = new Army(node);
 		disconnected = new ArrayList<>();
+
+		node.setCountBeaconModule(this);
 	}
 
 	public CountBeaconModule(TomP2PHandler node, Army army, Message waiting, Message received, int state_value, int state_freshness, int init_value, List<PeerAddress> disconnected) {
