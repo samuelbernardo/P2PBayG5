@@ -1,9 +1,15 @@
-package p2pbay.client;
+package p2pbay.client.user.commands;
 
+import p2pbay.client.Client;
+import p2pbay.client.SysStrings;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
 import p2pbay.core.Item;
+import p2pbay.core.listeners.GetListener;
 
+/**
+ * Comando para registar um item para venda
+ */
 public class ItemForSale extends UserInteraction implements Runnable {
     private String title;
     private String description;
@@ -15,15 +21,13 @@ public class ItemForSale extends UserInteraction implements Runnable {
 
     @Override
     public void getInfo() {
-        System.out.print("\nTitulo:");
-        this.title = getInput();
-        System.out.print("Descricao:");
-        this.description = getInput();
-        this.baseBid = getPositiveNumber("Base de licitacao:");
+        this.title = readInput(SysStrings.INPUT_TITLE);
+        this.description = readInput(SysStrings.INPUT_DESCRIPTION);
+        this.baseBid = getPositiveNumber(SysStrings.AUCTION_BASE);
     }
 
     @Override
-    public void storeObjects() {
+    public void doOperation() {
         Item item = new Item(getClient().getUser().getUsername(), title, description, baseBid);
         if(getClient().store(item))
             System.out.println("O item foi publicado com sucesso!");
@@ -39,11 +43,12 @@ public class ItemForSale extends UserInteraction implements Runnable {
     }
 
     public void indexTerm(String term) {
-        String key = term;
-        Index index = getClient().getIndex(key);
+        GetListener getListener = new GetListener(term);
+        getClient().getIndex(getListener);
+        Index index = (Index) getListener.getObject();
 
         if (index == null)
-            index = new Index(key, title);
+            index = new Index(getListener.getKey(), title);
         else
             index.addTitle(title);
 

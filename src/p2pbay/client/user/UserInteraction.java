@@ -2,8 +2,10 @@ package p2pbay.client.user;
 
 import p2pbay.client.Client;
 import p2pbay.client.SysStrings;
-import java.io.Console;
 
+/**
+ * Classe com metodos necessarios para receber inputs do utilizador
+ */
 public abstract class UserInteraction implements Runnable {
 
     private Client client;
@@ -19,66 +21,56 @@ public abstract class UserInteraction implements Runnable {
     public String getUsername() {
         String username = null;
         try {
-            // creates a console object
-            Console cnsl = System.console();
-            // if console is not null
-            if (cnsl != null) {
-                username = cnsl.readLine(SysStrings.INPUT_USERNAME);
-            }
+            username = readInput(SysStrings.INPUT_USERNAME);
         } catch(Exception e){
-            // if any error occurs
             e.printStackTrace();
-        } finally {
-            return username;
         }
+        return username;
     }
 
     public String getPassword() {
         String password = null;
         try {
-            // creates a console object
-            Console cnsl = System.console();
-            // if console is not null
-            if (cnsl != null) {
-                password = new String(cnsl.readPassword(SysStrings.INPUT_PASSWORD));
-            }
+            password = getClient().readInputPassword();
         } catch(Exception e){
-            // if any error occurs
             e.printStackTrace();
-        } finally {
-            return password;
         }
+        return password;
     }
 
-    public String getInput() {
-        return client.getInput();
+    public String readInput() {
+        return client.readInput();
     }
 
-    public float getFloat() {
-        return client.getNumberInput();
+    public String readInput(String message) {
+        System.out.print(message);
+        return client.readInput();
+    }
+
+    public float readNumberInput(String message) {
+        return Float.parseFloat(readInput(message));
     }
 
     public float getPositiveNumber(String message) {
         while (true) {
-            System.out.print(message);
             try {
-                float value = client.getNumberInput();
+                float value = readNumberInput(message);
 
                 if (value > 0)
                     return value;
-            } catch (NumberFormatException ignored) {}
-
-            System.out.println(SysStrings.INVALID_VALUE);
+            } catch (NumberFormatException ignored) {
+                System.out.println(SysStrings.INVALID_VALUE);
+            }
         }
     }
 
     public abstract void getInfo();
 
-    public abstract void storeObjects();
+    public abstract void doOperation();
 
     @Override
     public void run() {
         getInfo();
-        storeObjects();
+        doOperation();
     }
 }
