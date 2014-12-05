@@ -7,32 +7,12 @@ public class Bid extends DHTObject implements Serializable, Comparable<Object>{
     private String title;
     private float value;
     private String owner;
-    private int position;
-    private boolean invalid;
-    
-    public Bid(String title, User owner, float value) {
+
+    public Bid(String title, String owner, float value) {
         super(title, DHTObjectType.BID);
         this.title = title;
-        this.owner = owner.getUsername();
+        this.owner = owner;
         this.value = value;
-        this.position = 0;
-        this.invalid = false;
-    }
-
-    public void setInvalid(boolean invalid) {
-        this.invalid = invalid;
-    }
-
-    public boolean isInvalid() {
-        return invalid;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
-    }
-
-    public int getPosition() {
-        return position;
     }
 
     public String getTitle() {
@@ -53,13 +33,18 @@ public class Bid extends DHTObject implements Serializable, Comparable<Object>{
 
     @Override
     public String toString() {
-        return super.toString() + owner + ":" + value + ":" + position;
+        return super.toString() + owner + ":" + value;
     }
 
     @Override
     public int compareTo(Object o) {
         if (o instanceof Bid) {
-            return this.getPosition() - ((Bid)o).getPosition();
+            float compareValue = this.getValue() - ((Bid)o).getValue();
+            if (compareValue < 0)
+                return -1;
+            else if (compareValue > 0)
+                return 1;
+            else return 0;
         }
         return 0;
     }

@@ -10,7 +10,6 @@ import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.rpc.ObjectDataReply;
 import net.tomp2p.storage.Data;
 import net.tomp2p.storage.StorageMemory;
-import p2pbay.core.listeners.BidsListener;
 import p2pbay.core.Bid;
 import p2pbay.core.DHTObject;
 import p2pbay.core.DHTObjectType;
@@ -18,7 +17,9 @@ import p2pbay.core.listeners.GetListener;
 
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class TomP2PHandler {
     private Peer peer;
@@ -51,32 +52,19 @@ public class TomP2PHandler {
     public boolean store(Bid bid) {
         // Find the most recent and the Highest Bid
         // Which is the bid with the highest position
-        //TODO tirar position
         List<Bid> bids = get(bid.getTitle());
-        Bid mostRecent = null;
         Bid highest = null;
         for (Bid aBid : bids) {
-            if (mostRecent == null) {
-                mostRecent = aBid;
+            if (highest == null) {
                 highest = aBid;
                 continue;
             }
-            if (mostRecent.getPosition() < aBid.getPosition())
-                mostRecent = aBid;
             if (highest.getValue() < aBid.getValue())
                 highest = aBid;
         }
 
         if (highest != null && highest.getValue() >= bid.getValue())
             return false;
-
-        // Position generator
-        // A random number that can go up 20 positions
-        //from the previous highest position
-        int position = new Random().nextInt(20);
-        if (mostRecent != null)
-            position += 1 + mostRecent.getPosition();
-        bid.setPosition(position);
 
         // Store the bid in the DHT
         try {
@@ -133,7 +121,6 @@ public class TomP2PHandler {
 //        peer = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress())).setPorts(port).makeAndListen();
         System.out.println("peer = " + peer.getPeerAddress());
 
-        // ** Testing lambdas ** //
         // Executed when receiving a direct message.
         peer.setObjectDataReply(new ObjectDataReply() {
             @Override

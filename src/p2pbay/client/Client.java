@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Client {
-    public User LOGGED = null;
+    public String LOGGED = null;
     public boolean devMode = false;
 
     private Scanner input = new Scanner(System.in);
@@ -41,7 +41,7 @@ public class Client {
         return (User) connectionHandler.get(username, DHTObjectType.USER);
     }
 
-    public void setUser(User user) {
+    public void setUser(String user) {
         LOGGED = user;
     }
 
@@ -83,7 +83,7 @@ public class Client {
     }
 
     public User getUser() {
-        return LOGGED;
+        return getUser(LOGGED);
     }
 
     public void start() throws IOException, ClassNotFoundException {
@@ -136,8 +136,8 @@ public class Client {
     }
 
     /**
-     * Gets an Index from the DHT
-     * @param term term of the Index
+     * Gets an Index Entry from the DHT
+     * @param listener will get the term from the FUTURE
      * @return Index or null of not found
      */
     public void getIndex(GetListener listener) {
@@ -189,5 +189,9 @@ public class Client {
 
     public boolean isDevMode() {
         return devMode;
+    }
+
+    public String getLogged() {
+        return LOGGED;
     }
 }

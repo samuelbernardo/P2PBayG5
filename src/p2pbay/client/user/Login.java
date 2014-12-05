@@ -27,7 +27,7 @@ public class Login extends UserInteraction implements Runnable {
         User user = getClient().getUser(username);
         if (user != null)
             if (user.getPassword().equals(password)) {
-                getClient().setUser(user);
+                getClient().setUser(user.getUsername());
                 System.out.println(SysStrings.LOGIN_SUCCESS);
 
                 Menu menu = new Menu(getClient());

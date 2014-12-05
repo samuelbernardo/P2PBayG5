@@ -28,8 +28,9 @@ public class DetailsOfItem extends UserInteraction {
             System.out.println(SysStrings.INPUT_TITLE + item.getTitle());
             System.out.println(SysStrings.INPUT_DESCRIPTION + item.getDescription());
             bids = getClient().getBids(item.getTitle());
+            Collections.sort(bids);
             System.out.print(SysStrings.VALUE);
-            printHighestBid();
+            System.out.println(bids.get(bids.size()-1).getValue()); // bids.get(bids.size()-1 = Highest Bid
             System.out.println(SysStrings.BIDS);
             printBids();
         }
@@ -54,7 +55,6 @@ public class DetailsOfItem extends UserInteraction {
     }
 
     private void printBids() {
-        Collections.sort(bids);
         for (Bid bid : bids) {
             System.out.println(SysStrings.INPUT_USERNAME + bid.getOwner() + " " + SysStrings.VALUE + bid.getValue());
         }

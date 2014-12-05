@@ -24,11 +24,11 @@ public class HistoryCheck extends UserInteraction{
         System.out.println(SysStrings.ITEMS_BIDDED);
         System.out.println(SysStrings.HISTORY);
         for(Bid b : user.getBids()) {
-            System.out.println(b.getTitle() + "\t\t" + b.getValue());
+            System.out.println(b.getTitle() + "\t\t" + b.getValueToString());
         }
         System.out.println(SysStrings.ITEMS_BOUGHT);
         System.out.println(SysStrings.HISTORY);
         for(Item i : user.getBoughtItems())
-            System.out.println(i.getTitle() + "\t\t" + i.getValue());
+            System.out.println(i.getTitle() + "\t\t" + i.getValueToString());
     }
 }

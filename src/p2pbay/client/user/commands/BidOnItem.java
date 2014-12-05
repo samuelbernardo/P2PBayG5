@@ -5,6 +5,7 @@ import p2pbay.client.SysStrings;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Bid;
 import p2pbay.core.Item;
+import p2pbay.core.User;
 
 public class BidOnItem  extends UserInteraction{
     private String title;
@@ -26,10 +27,11 @@ public class BidOnItem  extends UserInteraction{
     @Override
     public void doOperation() {
         if (isValid(item)) {
-            Bid newBid = new Bid(title, getClient().getUser(), proposedValue);
+            Bid newBid = new Bid(title, getClient().getLogged(), proposedValue);
             if (getClient().storeBid(newBid)) {
-                getClient().getUser().addBid(newBid);
-                getClient().store(getClient().getUser());
+                User user = getClient().getUser();
+                user.addBid(newBid);
+                getClient().store(user);
                 System.out.println(SysStrings.BID_ACCEPTED);
             } else {
                 System.err.println(SysStrings.BID_REJECTED);
