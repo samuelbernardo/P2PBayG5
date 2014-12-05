@@ -8,26 +8,17 @@ import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
 
 public class Search extends UserInteraction{
-    TreeSet<String> previousResult;
-    String word;
-    TreeSet<String> titlesWithTerm1;
-    TreeSet<String> titlesWithTerm2;
-    TreeSet<String> NOTtitles;
-    String search;
-    String[] splitSearch;
-    int nWords;
-    int position = 0;
-
+    private String word;
+    private int position;
     private HashMap<String, Index> indexes;
+    private String search;
+    private String[] splitSearch;
     private TreeSet<String> searchResult;
 
     public Search(Client client) {
         super(client);
-        previousResult = new TreeSet<>();
         word = null;
-        titlesWithTerm1 = new TreeSet<>();
-        titlesWithTerm2 = new TreeSet<>();
-        NOTtitles = new TreeSet<>();
+        position = 0;
         indexes = new HashMap<>();
     }
 
@@ -36,7 +27,6 @@ public class Search extends UserInteraction{
         System.out.print(SysStrings.SEARCH);
         search = getClient().readInput();
         splitSearch = search.split(" ");
-        nWords = splitSearch.length;
         getAllIndex();
     }
     
