@@ -1,5 +1,6 @@
 package p2pbay.server;
 
+import gossipico.*;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.futures.FutureDiscover;
@@ -32,8 +33,10 @@ public class TomP2PHandler {
     private StorageMemory storage;
     private P2PBayBootstrap bootstrap;
     private SystemInfoMessage infoMessage;
+    private CountModule countMessage;
 
     private ServerMonitor monitor;
+    private CountModule countModule;
 
     public TomP2PHandler(P2PBayBootstrap bootstrap) {
         this.bootstrap = bootstrap;
@@ -82,8 +85,11 @@ public class TomP2PHandler {
                 PeerAddress peerAddress = fb.getBootstrapTo().iterator().next();
                 peer.discover().setPeerAddress(peerAddress).start().awaitUninterruptibly();
 
+                // Troca de mensagens no TomP2P
                 this.infoMessage = new SystemInfoMessage(peer.getPeerID());
-                peer.setObjectDataReply(new MessageReceiver(infoMessage));
+                peer.setObjectDataReply(new MessageReceiver(this.infoMessage, this));
+
+                // Criar Thread para o peer
                 new InfoThread(this).start();
 
                 return true;
@@ -207,5 +213,51 @@ public class TomP2PHandler {
 
     public SystemInfoMessage getSystemInfo() {
         return infoMessage;
+    }
+
+    /**
+     *
+     * @param countModule
+     */
+    public void setCountModule(CountModule countModule) {
+        this.countModule = countModule;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public CountModule getCountModule() {
+        return this.countModule;
+    }
+
+    /**
+     *
+     * @param message
+     * @param peer
+     */
+    public void sendCountModule(gossipico.CountModule message, PeerAddress peer) {
+        this.peer.sendDirect(peer).setObject(message).start();
+    }
+
+    /**
+     *
+     * @param message
+     * @param peer
+     */
+    public void sendStateCount(StateMessage message, PeerAddress peer) {
+        this.peer.sendDirect(peer).setObject(message).start();
+    }
+
+    public Peer getPeer() {
+        return peer;
+    }
+
+    public void setPeer(Peer peer) {
+        this.peer = peer;
+    }
+
+    public void sendArmyStrenght(ArmyStrengthMessage message, PeerAddress peer) {
+        this.peer.sendDirect(peer).setObject(message).start();
     }
 }

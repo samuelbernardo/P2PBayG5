@@ -1,5 +1,11 @@
 package gossipico;
 
+import net.tomp2p.peers.PeerAddress;
+import p2pbay.server.TomP2PHandler;
+import p2pbay.server.peer.Node;
+
+import java.io.Serializable;
+
 /**
  * Classe che rappresenta il modulo che implementa l'algoritmo COUNT,
  * la classe implementa CDProtocol e puo' essere usata all'interno del simulatore Peersim.
@@ -9,12 +15,7 @@ package gossipico;
  * 
  * @author Nicola Corti
  */
-public class CountModule {
-
-	/** Stringa per ottenere il valore iniziale */
-	protected static final String param_value = "value";
-	/** Stringa per ottenere la funzione di aggregazione da usare */
-	protected static final String param_aggreg = "func";
+public class CountModule implements Serializable {
 	
 	/** Messaggio in attesa di essere inviato */
 	protected Message waiting;
@@ -25,29 +26,31 @@ public class CountModule {
 	protected int state_value;
 	/** Variabile di stato: freschezza attuale */
 	protected int state_freshness;
-	
-	/** ID dell'istanza del protocollo */
-	protected int ID = -1;
 		
 	/** Valore iniziale del calcolo */
 	private int init_value;
-	/** Funzione di aggregazione usata */
-	private String func;
-	
-	
-    /**
-     * Costruttore Base invocato dal simulatore
-     * @param prefix prefisso indicato nel file di configurazione
-     */
-	public CountModule(String prefix) {
+
+	/** Node em que se baseia */
+	private TomP2PHandler node;
+
+
+	/**
+	 *
+	 * @param node
+	 */
+	public CountModule(TomP2PHandler node) {
+
+		this.node = node;
+		node.setCountModule(this);
 	
 		init_value = 1;
 		state_value = init_value;
 		state_freshness = 1;
-	
-		func = Configuration.getString(prefix + "." + param_aggreg);
+
+		waiting = new Message();
+		received = new Message();
 		
-		if (func.contentEquals("count") || func.contentEquals("sum")){
+		/*if (func.contentEquals("count") || func.contentEquals("sum")){
 			waiting = new Message();
 			received = new Message();
 		} else if (func.contentEquals("min")){
@@ -56,14 +59,13 @@ public class CountModule {
 		} else if (func.contentEquals("max")){
 			waiting = new MaxMessage(init_value);
 			received = new MaxMessage(init_value);
-		} 
+		} */
 	}
 
 	/* (non-Javadoc)
 	 * @see peersim.cdsim.CDProtocol#nextCycle(peersim.core.Node, int)
 	 */
-	@Override
-	public void nextCycle(Node node, int protocolID) {
+	public void nextCycle(TomP2PHandler node) {
 		
 		/* Funzione invocata ad ogni ciclo della simulazione
 		 * 1) Contatta un nodo vicino
@@ -72,13 +74,10 @@ public class CountModule {
 		 * 4) Genera un messaggio di IS partendo dallo stato
 		 */
 		
-		CountModule next = this.getNeighboor(node, protocolID);
+		PeerAddress next = this.getNeighbor(node);
 		if (next == null) return;
-		
-		next.received.update(this.waiting);
-		
-		if (next.updateMessage(this))
-			waiting.generateISMessage(state_value, state_freshness);
+
+		node.sendCountModule(this, next);
 	}
 	
 	/**
@@ -118,25 +117,22 @@ public class CountModule {
 		this.waiting.value = val;
 		this.init_value = val;
 	}
-	
+
 	/**
-	 * Funzione che ritorna un nodo vicino scelto in modo casuale
-	 * 
-	 * @param node Nodo di cui si cerca un vicino
-	 * @param protocolID Id del protocollo Linkable che rappresenta la rete
-	 * @return Un'istanza di CountModule, null se non ci sono vicini.
+	 *
+	 * @param node
+	 * @return
 	 */
-	protected CountModule getNeighboor(Node node, int protocolID){
-		int linkableID = FastConfig.getLinkable(protocolID);
-		Linkable link = (Linkable) node.getProtocol(linkableID);
+	protected PeerAddress getNeighbor(TomP2PHandler node){
 		
-		CountModule next = null;
-		
-		int index = (int) (Math.random() * link.degree());
-		if (link.degree() == 0)
+		PeerAddress next = null;
+		int numberNeighbors = node.getNeighbors().size();
+
+		if (numberNeighbors == 0)
 			return null;
+		int index = (int) (Math.random() * numberNeighbors);
 		
-		next = (CountModule) link.getNeighbor(index).getProtocol(protocolID);
+		next = node.getNeighbors().get(index);
 				
 		return next;
 	}
@@ -150,52 +146,14 @@ public class CountModule {
 		this.waiting.update(init_value, 1, 1);
 	}
 	
-	/**
-	 * Ritorna l'ID dell'istanza protocollo/nodo (NB: e non del nodo), necessario per le stampe di debug
-	 * realizzate dalla classe Debugger 
-	 * 
-	 * @return L'ID del protocollo
-	 */
-	public int getIndex(){
-		return this.ID;
-	}
-	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public String toString() { return ("Node " + this.getIndex() + " \t Count: r = " + this.received + " w = " + this.waiting + " \t state v = " + state_value + " f = " + state_freshness + " \t"); }
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 * 
-	 * Il metodo e' particolarmente importante in quanto Peersim usa il metodo clone per effettuare
-	 * la generazione di nuove istanze del protocollo.
-	 */
-	@Override
-	public Object clone(){
-		CountModule node = null;
-		
-		try { node=(CountModule)super.clone();
-		
-		if (func.contentEquals("count") || func.contentEquals("sum")){
-			node.waiting = new Message();
-			node.received = new Message();
-		} else if (func.contentEquals("min")){
-			node.waiting = new MinMessage(init_value);
-			node.received = new MinMessage(init_value);
-		} else if (func.contentEquals("max")){
-			node.waiting = new MaxMessage(init_value);
-			node.received = new MaxMessage(init_value);
-		}
-		
-		node.received.update(this.received);
-		node.waiting.update(this.waiting);
-		node.state_value = this.state_value;
-		node.state_freshness = this.state_freshness;
-		node.init_value = this.init_value;
-		
-		} catch (CloneNotSupportedException e) { e.printStackTrace(); }
-		return node;
+	public String toString() { return ("Node " + this.getPeerID() + " \t Count: r = " + this.received + " w = " + this.waiting + " \t state v = " + state_value + " f = " + state_freshness + " \t"); }
+
+	private String getPeerID() {
+		return String.valueOf(node.getPeer().getPeerID());
 	}
+
 }

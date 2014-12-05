@@ -4,11 +4,14 @@ package gossipico;
  * @author nicola
  *
  */
+
+import java.io.Serializable;
+
 /**
  * @author nicola
  *
  */
-public class Message {
+public class Message implements Serializable {
 		
 	protected int value;
 	protected int freshness;

@@ -3,6 +3,7 @@ package gossipico;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import net.tomp2p.peers.PeerAddress;
 import p2pbay.server.TomP2PHandler;
@@ -25,6 +26,8 @@ public class CountBeaconInitializer extends Thread {
     /** Lista di interi distinti per assegnare i valori di forza */
     private List<Integer> ints;
 
+    private Random random;
+
 
     /**
      *
@@ -35,23 +38,26 @@ public class CountBeaconInitializer extends Thread {
         for (int j = 0; j < handler.getNetworkSize(); j++){
         	ints.add(j);
         }
+
+        this.random = new Random();
     }
 
     @Override
     public void run() {
-        /*try {
+        try {
             Thread.sleep(10000 + random.nextInt(20000));
-        } catch (InterruptedException ignore) {}*/
+        } catch (InterruptedException ignore) {}
 
         while (handler.isRunning()) {
-            for (Node node : handler.getNodes()) {
-                CountBeaconModule cbm = (CountBeaconModule) prot;
+            for (PeerAddress node : handler.getNeighbors()) {
                 int j = (int) (Math.random() * ints.size());
                 if (j >= 0 && j < ints.size()){
-                    cbm.army.strenght = ints.get(j);
+                    // node.army.strenght
+                    handler.sendArmyStrenght(new ArmyStrengthMessage(ints.get(j)), node);
                     ints.remove(j);
                 } else {
-                    cbm.army.strenght = ints.get(0);
+                    // node.army.strenght
+                    handler.sendArmyStrenght(new ArmyStrengthMessage(ints.get(0)), node);
                     ints.remove(0);
                 }
             }

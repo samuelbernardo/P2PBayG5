@@ -1,5 +1,8 @@
 package gossipico;
 
+import net.tomp2p.peers.PeerAddress;
+import p2pbay.server.TomP2PHandler;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,15 +23,15 @@ public class CountBeaconModule extends CountModule {
 	/** Lista dei nodi che si sono disconnessi 
 	 *  Utile per non notificare due volte la disconessione
 	 */
-	private List<Node> disconnected;
-	
-	
-    /**
-     * Costruttore Base invocato dal simulatore
-     * @param prefix prefisso indicato nel file di configurazione
-     */
-	public CountBeaconModule(String prefix) {
-		super(prefix);
+	private List<PeerAddress> disconnected;
+
+
+	/**
+	 *
+	 * @param node
+	 */
+	public CountBeaconModule(TomP2PHandler node) {
+		super(node);
 		army = new Army(this);
 		disconnected = new ArrayList<>();
 	}
@@ -39,12 +42,8 @@ public class CountBeaconModule extends CountModule {
 	 * 	nextCycle(peersim.core.Node, int)
 	 */
 	@Override
-	public void nextCycle(Node node, int protocolID) {
-		super.nextCycle(node, protocolID);
-		
-		int linkableID = FastConfig.getLinkable(protocolID);
-		Linkable link = (Linkable) node.getProtocol(linkableID);
-			
+	public void nextCycle(TomP2PHandler node) {
+		super.nextCycle(node);
 		
 		// Se uno dei vicini e' morto, resuscito l'esercito
 		if (!checkNeighboor(link)){
@@ -54,15 +53,15 @@ public class CountBeaconModule extends CountModule {
 				
 		// Con probabilita' p = 0.50 faccio una computazione BEACON fra due nodi 
 		if (Math.random() > 0.50){
-						
-			CountBeaconModule next = null;
-			int count = link.degree();
+
+			PeerAddress next = null;
+			int count = node.getNeighbors().size();
 			
 			// Itero fin quando non trovo un nodo up
 			while (next == null && count != 0){
-				int index = (int) (Math.random()* link.degree());
-				Node d = link.getNeighbor(index);
-				if (d.isUp()) next = (CountBeaconModule)d.getProtocol(protocolID);
+				int index = (int) (Math.random()* node.getNeighbors().size());
+				PeerAddress d = node.getNeighbors().get(index);
+				next = node.getNeighbors().get(index);
 				count--;
 			}
 			
