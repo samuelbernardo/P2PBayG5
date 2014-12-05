@@ -18,7 +18,7 @@ public abstract class UserInteraction implements Runnable {
     public String getUsername() {
         String username = null;
         try {
-            username = getClient().readInput(SysStrings.INPUT_USERNAME);
+            username = readInput(SysStrings.INPUT_USERNAME);
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -35,23 +35,23 @@ public abstract class UserInteraction implements Runnable {
         return password;
     }
 
-    public String getInput() {
+    public String readInput() {
         return client.readInput();
     }
 
-    public String getInput(String message) {
-        return client.readInput(message);
+    public String readInput(String message) {
+        System.out.print(message);
+        return client.readInput();
     }
 
-    public float getFloat() {
-        return client.readNumberInput();
+    public float readNumberInput(String message) {
+        return Float.parseFloat(readInput(message));
     }
 
     public float getPositiveNumber(String message) {
         while (true) {
-            System.out.print(message);
             try {
-                float value = client.readNumberInput();
+                float value = readNumberInput(message);
 
                 if (value > 0)
                     return value;

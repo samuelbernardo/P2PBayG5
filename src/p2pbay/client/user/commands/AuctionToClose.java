@@ -22,7 +22,7 @@ public class AuctionToClose extends UserInteraction{
     @Override
     public void getInfo() {
         System.out.print("\n" + SysStrings.INPUT_TITLE);
-        title = getInput();
+        title = readInput();
     }
     
     @Override

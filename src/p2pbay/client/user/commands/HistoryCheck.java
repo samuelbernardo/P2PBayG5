@@ -16,7 +16,7 @@ public class HistoryCheck extends UserInteraction{
 
     @Override
     public void getInfo() {
-        user = getClient().findUser(getClient().getUser().getUsername());
+        user = getClient().getUser();
     }
 
     @Override

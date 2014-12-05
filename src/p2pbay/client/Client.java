@@ -32,13 +32,8 @@ public class Client {
         devMode = isDevMode;
     }
 
-
     public boolean isLogged() {
         return LOGGED != null;
-    }
-
-    public User findUser(String username) {
-        return (User) connectionHandler.get(username, DHTObjectType.USER);
     }
 
     public void setUser(String user) {
@@ -60,26 +55,12 @@ public class Client {
         return console.readLine();
     }
 
-    public String readInput(String message) {
-        if (isDevMode()) {
-            System.out.print(message);
-            return input.nextLine();
-        }
-        return console.readLine(message);
-    }
-
     public String readInputPassword() {
         if (isDevMode()) {
             System.out.print(SysStrings.INPUT_PASSWORD);
             return input.nextLine();
         }
         return new String(console.readPassword(SysStrings.INPUT_PASSWORD));
-    }
-
-    public float readNumberInput() {
-        if (isDevMode())
-            return Float.parseFloat(input.nextLine());
-        return Float.parseFloat(console.readLine());
     }
 
     public User getUser() {

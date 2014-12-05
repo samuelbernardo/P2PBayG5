@@ -19,7 +19,7 @@ public class BidOnItem  extends UserInteraction{
     @Override
     public void getInfo() {
         System.out.print("Titulo do item:");
-        title = getInput();
+        title = readInput();
         proposedValue = getPositiveNumber(SysStrings.VALUE);
         item = getClient().getItem(title);
     }

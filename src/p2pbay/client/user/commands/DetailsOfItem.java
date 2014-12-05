@@ -19,7 +19,7 @@ public class DetailsOfItem extends UserInteraction {
 
     @Override
     public void getInfo() {
-        item = getClient().getItem(getInput(SysStrings.INPUT_TITLE));
+        item = getClient().getItem(readInput(SysStrings.INPUT_TITLE));
     }
 
     @Override
@@ -30,7 +30,7 @@ public class DetailsOfItem extends UserInteraction {
             bids = getClient().getBids(item.getTitle());
             Collections.sort(bids);
             System.out.print(SysStrings.VALUE);
-            System.out.println(bids.get(bids.size()-1).getValue()); // bids.get(bids.size()-1 = Highest Bid
+            System.out.println(bids.get(bids.size() - 1).getValue()); // bids.get(bids.size()-1) = Latest and Highest Bid
             System.out.println(SysStrings.BIDS);
             printBids();
         }

@@ -25,8 +25,7 @@ public class Search extends UserInteraction{
 
     @Override
     public void getInfo() {
-        System.out.print(SysStrings.SEARCH);
-        search = getClient().readInput();
+        search = readInput(SysStrings.SEARCH);
         splitSearch = search.split(" ");
         getAllIndex();
     }

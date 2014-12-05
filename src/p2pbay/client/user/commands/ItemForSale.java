@@ -18,9 +18,9 @@ public class ItemForSale extends UserInteraction implements Runnable {
     @Override
     public void getInfo() {
         System.out.print("\nTitulo:");
-        this.title = getInput();
+        this.title = readInput();
         System.out.print("Descricao:");
-        this.description = getInput();
+        this.description = readInput();
         this.baseBid = getPositiveNumber("Base de licitacao:");
     }
 

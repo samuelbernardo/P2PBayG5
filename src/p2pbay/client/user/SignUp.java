@@ -21,7 +21,7 @@ public class SignUp extends UserInteraction implements Runnable {
         password = getPassword();
 
         //Check if user exists
-        user = getClient().findUser(username);
+        user = getClient().getUser(username);
     }
 
     @Override
