@@ -6,6 +6,7 @@ import p2pbay.client.Client;
 import p2pbay.client.SysStrings;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
+import p2pbay.core.listeners.GetListener;
 
 public class Search extends UserInteraction{
     private String word;
@@ -39,22 +40,31 @@ public class Search extends UserInteraction{
             else throw new UnsupportedOperationException(SysStrings.SEARCH_FAILED);
         } catch (UnsupportedOperationException e) {
             System.out.println(e.getMessage());
+        } catch (ArrayIndexOutOfBoundsException searchComplete) {
+            printResults();
         }
     }
     
     private void getAllIndex() {
         HashSet<String> terms = new HashSet<>();
+        List<GetListener> listeners = new ArrayList<>();
 
         //Verificar quais os termos que sao para procurar
         for (String searchTerm : splitSearch) {
             if (!isOperator(searchTerm)) {
-                terms.add(searchTerm);
+                if (terms.add(searchTerm)) { // Se o termo for adicionado ao Set inicia a pesquisa do termo
+                    GetListener getListener = new GetListener(searchTerm);
+                    listeners.add(getListener);
+                    getClient().getIndex(getListener);
+                    System.out.println("Searching for " + getListener.getKey());
+                }
             }
         }
 
-        //Iniciar a pesquisa na dht
-        for (String term : terms) {
-            indexes.put(term, getClient().getIndex(term));
+        // Obtem resultados das pesquisas
+        for (GetListener listener : listeners) {
+            indexes.put(listener.getKey(), (Index) listener.getObject());
+            System.out.println("Got results for " + listener.getKey());
         }
         //Wait;;
     }

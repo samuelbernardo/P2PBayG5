@@ -4,6 +4,7 @@ import p2pbay.client.Client;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
 import p2pbay.core.Item;
+import p2pbay.core.listeners.GetListener;
 
 public class ItemForSale extends UserInteraction implements Runnable {
     private String title;
@@ -40,11 +41,12 @@ public class ItemForSale extends UserInteraction implements Runnable {
     }
 
     public void indexTerm(String term) {
-        String key = term;
-        Index index = getClient().getIndex(key);
+        GetListener getListener = new GetListener(term);
+        getClient().getIndex(getListener);
+        Index index = (Index) getListener.getObject();
 
         if (index == null)
-            index = new Index(key, title);
+            index = new Index(getListener.getKey(), title);
         else
             index.addTitle(title);
 

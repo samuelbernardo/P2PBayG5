@@ -14,11 +14,11 @@ import p2pbay.core.listeners.BidsListener;
 import p2pbay.core.Bid;
 import p2pbay.core.DHTObject;
 import p2pbay.core.DHTObjectType;
+import p2pbay.core.listeners.GetListener;
 
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class TomP2PHandler {
     private Peer peer;
@@ -51,7 +51,8 @@ public class TomP2PHandler {
     public boolean store(Bid bid) {
         // Find the most recent and the Highest Bid
         // Which is the bid with the highest position
-        List<Bid> bids = get(bid.getTitle()); //TODO comment this line to test the project.. it will be fixed soon
+        //TODO tirar position
+        List<Bid> bids = get(bid.getTitle());
         Bid mostRecent = null;
         Bid highest = null;
         for (Bid aBid : bids) {
@@ -105,6 +106,17 @@ public class TomP2PHandler {
             }
         }
         return null;
+    }
+
+    /**
+     * Gets an object from the DHT
+     * @param listener Object Key
+     */
+    public void get(GetListener listener, DHTObjectType type) {
+        Number160 hKey = Number160.createHash(listener.getKey());
+        FutureDHT futureDHT = peer.get(hKey).setContentKey(type.getContentKey()).start();
+        listener.setFutureDHT(futureDHT);
+        futureDHT.addListener(listener);
     }
 
     public int connect() throws IOException{
@@ -169,9 +181,21 @@ public class TomP2PHandler {
      * @param key Bid Key
      * @return The Bids or empty List if not found
      */
-    public void get(String key, BidsListener listener) {
+    public List<Bid> get(String key) {
+        List<Bid> bidList = new ArrayList<>();
         Number160 hKey = Number160.createHash(key);
-        FutureDHT futureDHT = peer.get(hKey).setAll().start().addListener(listener);
+        FutureDHT futureDHT = peer.get(hKey).setAll().start().awaitUninterruptibly();
+        if (futureDHT.isSuccess()) {
+            try {
+                for (Data map : futureDHT.getDataMap().values()) {
+                    if (map.getObject() instanceof  Bid)
+                        bidList.add((Bid) map.getObject());
+                }
+            } catch (ClassNotFoundException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return bidList;
     }
 
     public void close() {
@@ -186,10 +210,5 @@ public class TomP2PHandler {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void remove(DHTObject object) {
-        Number160 hKey = object.getKey();
-        peer.remove(hKey).setContentKey(object.getContentKey()).start().awaitUninterruptibly();
     }
 }

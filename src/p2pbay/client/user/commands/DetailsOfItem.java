@@ -24,6 +24,7 @@ public class DetailsOfItem extends UserInteraction {
 
     @Override
     public void doOperation() {
+        System.out.println("im here");
         if(isValid()){
             System.out.println(SysStrings.INPUT_TITLE + item.getTitle());
             System.out.println(SysStrings.INPUT_DESCRIPTION + item.getDescription());
@@ -38,10 +39,10 @@ public class DetailsOfItem extends UserInteraction {
     private boolean isValid() {
         if(item == null) {
             System.out.println(SysStrings.ITEM_NOT_EXIST);
-            return true;
+            return false;
         }
         else
-            return false;
+            return true;
     }
 
     private void printHighestBid() {

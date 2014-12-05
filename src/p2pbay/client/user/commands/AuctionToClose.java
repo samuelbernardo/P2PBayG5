@@ -6,6 +6,7 @@ import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Bid;
 import p2pbay.core.Index;
 import p2pbay.core.Item;
+import p2pbay.core.listeners.GetListener;
 
 import java.util.List;
 
@@ -35,9 +36,8 @@ public class AuctionToClose extends UserInteraction{
                 System.out.print(SysStrings.AUCTION_CLOSED + value);
                 System.out.println(SysStrings.AUCTION_WINNER + owner);
                 item.setValue(highestBid.getValue());
-                getClient().getUser().addItem(item);
+                getClient().getUser(owner).addItem(item);
                 removeTitle();
-                removeItem();
             }
             else {
                 System.out.println(SysStrings.ITEM_ERROR);
@@ -70,14 +70,13 @@ public class AuctionToClose extends UserInteraction{
     }
     
     private void removeIndex(String term) {
-        Index index = getClient().getIndex(term);
+        GetListener getListener = new GetListener(term);
+        getClient().getIndex(getListener);
+        Index index = (Index) getListener.getObject();
         if (index != null) {
             index.removeTitle(this.title);
             getClient().store(index);
         }
     }
-    
-    private void removeItem() {
-        getClient().remove(item);
-    }
+
 }

@@ -4,6 +4,8 @@ import p2pbay.P2PBay;
 import p2pbay.client.user.Login;
 import p2pbay.client.user.SignUp;
 import p2pbay.core.*;
+import p2pbay.core.listeners.BidsListener;
+import p2pbay.core.listeners.GetListener;
 import p2pbay.server.TomP2PHandler;
 
 import java.io.Console;
@@ -138,12 +140,8 @@ public class Client {
      * @param term term of the Index
      * @return Index or null of not found
      */
-    public Index getIndex(String term) {
-        Object index = connectionHandler.get(term, DHTObjectType.INDEX);
-        if(index != null && index instanceof Index) {
-            return (Index)index;
-        }
-        return null;
+    public void getIndex(GetListener listener) {
+        connectionHandler.get(listener, DHTObjectType.INDEX);
     }
 
     /**
@@ -191,10 +189,5 @@ public class Client {
 
     public boolean isDevMode() {
         return devMode;
-    }
-
-
-    public void remove(DHTObject object) {
-        connectionHandler.remove(object);
     }
 }

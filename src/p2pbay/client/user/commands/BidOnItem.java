@@ -27,8 +27,9 @@ public class BidOnItem  extends UserInteraction{
     public void doOperation() {
         if (isValid(item)) {
             Bid newBid = new Bid(title, getClient().getUser(), proposedValue);
-            getClient().store(getClient().getUser());
             if (getClient().storeBid(newBid)) {
+                getClient().getUser().addBid(newBid);
+                getClient().store(getClient().getUser());
                 System.out.println(SysStrings.BID_ACCEPTED);
             } else {
                 System.err.println(SysStrings.BID_REJECTED);

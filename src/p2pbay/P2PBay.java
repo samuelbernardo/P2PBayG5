@@ -49,7 +49,7 @@ public class P2PBay {
             nodes.add(handler);
         }
 
-        AutoTest.storeItems();
+//        AutoTest.storeItems();
 
         client.start();
     }
