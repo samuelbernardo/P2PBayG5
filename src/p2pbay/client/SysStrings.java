@@ -36,5 +36,5 @@ public class SysStrings {
     public static final String INPUT_DESCRIPTION = "Description";
     public static final String HISTORY = "Titulo:\t\tValor:";
     public static final String ITEMS_BIDDED = "Bidded on items: ";
-    public static final String ITEMS_BOUGHT = "Bought items: ";
+    public static final String ITEMS_BOUGHT = "\nBought items: ";
 }

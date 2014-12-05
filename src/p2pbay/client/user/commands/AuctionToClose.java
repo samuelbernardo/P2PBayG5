@@ -34,13 +34,15 @@ public class AuctionToClose extends UserInteraction{
             if(getClient().store(item)) {
                 System.out.print(SysStrings.AUCTION_CLOSED + value);
                 System.out.println(SysStrings.AUCTION_WINNER + owner);
+                item.setValue(highestBid.getValue());
+                getClient().getUser().addItem(item);
+                removeTitle();
+                removeItem();
             }
             else {
                 System.out.println(SysStrings.ITEM_ERROR);
             }
         }
-        removeTitle();
-        removeItem();
     }
     
     private boolean isValid() {

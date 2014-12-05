@@ -9,19 +9,14 @@ public class User extends DHTObject implements Serializable {
     private String username;
     private String password;
     private List<Bid> bids;
+    private List<Item> boughtItems;
 
     public User(String username, String password) {
         super(username, DHTObjectType.USER);
         this.username = username;
         this.password = password;
-        this.bids = new ArrayList<>();
-    }
-    
-    public User(String username, String password, List<Bid> bids) {
-        super(username, DHTObjectType.USER);
-        this.username = username;
-        this.password = password;
-        this.bids = bids;
+        bids = new ArrayList<>();
+        boughtItems = new ArrayList<>();
     }
     
     public String getUsername() {
@@ -29,17 +24,25 @@ public class User extends DHTObject implements Serializable {
     }
     
     public String getPassword() {
-        return this.password;
+        return password;
     }
     
     public List<Bid> getBids() {
-        return this.bids;
+        return bids;
+    }
+    
+    public List<Item> getBoughtItems() {
+        return boughtItems;
     }
     
     public void addBid(Bid bid) {
         this.bids.add(bid);
     }
 
+    public void addItem(Item item) {
+        this.boughtItems.add(item);
+    }
+    
     @Override
     public String toString() {
         return super.toString() + username + ":" + password;
