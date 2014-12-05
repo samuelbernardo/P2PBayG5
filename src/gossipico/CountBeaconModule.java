@@ -2,9 +2,6 @@ package gossipico;
 
 import net.tomp2p.peers.PeerAddress;
 import p2pbay.server.TomP2PHandler;
-import peersim.core.Linkable;
-import peersim.core.Node;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

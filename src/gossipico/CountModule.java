@@ -16,7 +16,7 @@ import java.io.Serializable;
  * @author Nicola Corti
  */
 public class CountModule implements Serializable {
-	
+
 	/** Messaggio in attesa di essere inviato */
 	protected Message waiting;
 	/** Messaggio appena ricevuto */
@@ -39,6 +39,14 @@ public class CountModule implements Serializable {
 
 	public void setNode(TomP2PHandler node) {
 		this.node = node;
+	}
+
+	public Message getWaiting() {
+		return waiting;
+	}
+
+	public void setWaiting(Message waiting) {
+		this.waiting = waiting;
 	}
 
 

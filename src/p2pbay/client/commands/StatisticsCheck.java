@@ -1,5 +1,6 @@
 package p2pbay.client.commands;
 
+import gossipico.CountBeaconModule;
 import p2pbay.client.Client;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Bid;
@@ -13,11 +14,10 @@ public class StatisticsCheck extends UserInteraction{
 
     @Override
     public void getInfo() {
-        User user = getClient().getUser(getClient().getUser().getUsername());
-        System.out.println("Titulo:\t\tValor:");
-        for(Bid b : user.getBids()) {
-            System.out.println(b.getTitle() + "\t\t" + b.getValue());
-        }
+        CountBeaconModule beaconModule = getClient().getCountBeacon();
+        System.out.println("Number of nodes: " + beaconModule.getWaiting().getValue());
+        System.out.println("Number of users: ");
+        System.out.println("Number of items on sale: ");
     }
 
     @Override

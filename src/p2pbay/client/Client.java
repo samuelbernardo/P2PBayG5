@@ -1,5 +1,6 @@
 package p2pbay.client;
 
+import gossipico.CountBeaconModule;
 import p2pbay.client.commands.Menu;
 import p2pbay.client.user.Login;
 import p2pbay.client.user.SignUp;
@@ -119,6 +120,18 @@ public class Client {
         Object item = connectionHandler.get(username, DHTObjectType.USER);
         if(item != null && item instanceof User) {
             return (User)item;
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public CountBeaconModule getCountBeacon() {
+        Object item = connectionHandler.getCountBeaconModule();
+        if(item != null && item instanceof CountBeaconModule) {
+            return (CountBeaconModule)item;
         }
         return null;
     }
