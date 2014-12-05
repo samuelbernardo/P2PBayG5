@@ -194,7 +194,7 @@ public class Client {
     }
 
 
-    public void removeBid(Bid bid) {
-        connectionHandler.remove(bid);
+    public void remove(DHTObject object) {
+        connectionHandler.remove(object);
     }
 }

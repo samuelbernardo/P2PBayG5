@@ -201,5 +201,7 @@ public class TomP2PHandler {
     }
 
     public void remove(DHTObject object) {
+        Number160 hKey = object.getKey();
+        peer.remove(hKey).setContentKey(object.getContentKey()).start().awaitUninterruptibly();
     }
 }

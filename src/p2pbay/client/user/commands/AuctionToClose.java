@@ -12,6 +12,7 @@ import java.util.List;
 public class AuctionToClose extends UserInteraction{
     private String title;
     private List<Bid> bids;
+    private Item item;
 
     public AuctionToClose(Client client) {
         super(client);
@@ -23,7 +24,27 @@ public class AuctionToClose extends UserInteraction{
         title = getInput();
     }
     
-    private boolean isValid(Item item) {
+    @Override
+    public void doOperation() {
+        if(isValid()) {
+            item.setAuctionClosed(true);
+            Bid highestBid = getClient().getHighestBid(bids);
+            String value = highestBid.getValueToString();
+            String owner = highestBid.getOwner();
+            if(getClient().store(item)) {
+                System.out.print(SysStrings.AUCTION_CLOSED + value);
+                System.out.println(SysStrings.AUCTION_WINNER + owner);
+            }
+            else {
+                System.out.println(SysStrings.ITEM_ERROR);
+            }
+        }
+        removeTitle();
+        removeItem();
+    }
+    
+    private boolean isValid() {
+        item = getClient().getItem(title);
         if (item == null) {
             System.err.println(SysStrings.ITEM_NOT_EXIST);
             return false;
@@ -40,48 +61,21 @@ public class AuctionToClose extends UserInteraction{
         return true;
     }
     
-    @Override
-    public void doOperation() {
-        Item item = getClient().getItem(title);
-
-        
-        if(isValid(item)) {
-            item.setAuctionClosed(true);
-            Bid highestBid = getClient().getHighestBid(bids);
-            String value = highestBid.getValueToString();
-            String owner = highestBid.getOwner();
-            if(getClient().store(item)) {
-                System.out.print(SysStrings.AUCTION_CLOSED + value);
-                System.out.println(SysStrings.AUCTION_WINNER + owner);
-            }
-            else {
-                System.out.println(SysStrings.ITEM_ERROR);
-            }
-        }
-
-        removeTitle();
-    }
-    
     private void removeTitle() {
         for(String term : this.title.split(" ")) {
             removeIndex(term);
         }
     }
     
-    public void removeIndex(String term) {
+    private void removeIndex(String term) {
         Index index = getClient().getIndex(term);
         if (index != null) {
             index.removeTitle(this.title);
-            getClient().store(index);//TODO not checked
+            getClient().store(index);
         }
     }
     
-    public void printIndex() {
-        for(String term : this.title.split(" ")) {
-            Index index = getClient().getIndex(term);
-            if (index != null)
-                System.out.println(SysStrings.TERM + ": " + index.getTerm() +
-                                   SysStrings.TITLE + ": " + index.getTitles());
-        }
+    private void removeItem() {
+        getClient().remove(item);
     }
 }
