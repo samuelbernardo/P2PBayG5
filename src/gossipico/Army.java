@@ -9,7 +9,7 @@ package gossipico;
 public class Army { 
 	
 	/** Valore che rappresenta la forza dell'esercito */
-	public int strenght;
+	public int strength;
 	/** Riferimento al nodo che adesso svolge il ruolo di beacon */
 	public CountBeaconModule beacon;
 	/** Riferimento al prossimo nodo verso il beacon */
@@ -27,7 +27,7 @@ public class Army {
 	 */
 	public Army(CountBeaconModule node){
 		
-		strenght = (int) (Math.random() * Network.size());
+		strength = (int) (Math.random() * Network.size());
 		beacon = node;
 		nexthop = node;
 		distance = 0;
@@ -84,7 +84,7 @@ public class Army {
 			updateShortest(i, j);
 			return;
 		}
-		if (i.army.strenght > j.army.strenght){
+		if (i.army.strength > j.army.strength){
 			computeWinner(i, j);
 		} else {
 			computeWinner(j, i);
@@ -100,7 +100,7 @@ public class Army {
 	private static void computeWinner(CountBeaconModule i, CountBeaconModule j){
 
 		j.army.beacon = i.army.beacon;
-		j.army.strenght = i.army.strenght;
+		j.army.strength = i.army.strength;
 		j.army.immunity = i.army.immunity;
 		j.army.distance = i.army.distance + 1;
 		j.army.nexthop = i;
@@ -115,7 +115,7 @@ public class Army {
 	public void revive(CountBeaconModule i){
 		
 		immunity = beacon;
-		strenght = (int) (Math.random() * Network.size());
+		strength = (int) (Math.random() * Network.size());
 		beacon = i;
 		nexthop = i;
 		distance = 0;
@@ -127,9 +127,9 @@ public class Army {
 	@Override
 	public String toString(){
 		if (immunity != null)
-			return ("{ B: " + beacon.getIndex() + " S:" + strenght + " I: " + immunity.getIndex() + " D: " + distance + " Next: " + nexthop.getIndex() + " }");
+			return ("{ B: " + beacon.getIndex() + " S:" + strength + " I: " + immunity.getIndex() + " D: " + distance + " Next: " + nexthop.getIndex() + " }");
 		else 
-			return ("{ B: " + beacon.getIndex() + " S:" + strenght + " I: null D: " + distance + " Next: " + nexthop.getIndex() + " }");
+			return ("{ B: " + beacon.getIndex() + " S:" + strength + " I: null D: " + distance + " Next: " + nexthop.getIndex() + " }");
 	}
 
 }

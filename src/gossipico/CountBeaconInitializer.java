@@ -52,12 +52,12 @@ public class CountBeaconInitializer extends Thread {
             for (PeerAddress node : handler.getNeighbors()) {
                 int j = (int) (Math.random() * ints.size());
                 if (j >= 0 && j < ints.size()){
-                    // node.army.strenght
-                    handler.sendArmyStrenght(new ArmyStrengthMessage(ints.get(j)), node);
+                    // node.army.strength
+                    handler.sendArmyStrength(new ArmyStrengthMessage(ints.get(j)), node);
                     ints.remove(j);
                 } else {
-                    // node.army.strenght
-                    handler.sendArmyStrenght(new ArmyStrengthMessage(ints.get(0)), node);
+                    // node.army.strength
+                    handler.sendArmyStrength(new ArmyStrengthMessage(ints.get(0)), node);
                     ints.remove(0);
                 }
             }

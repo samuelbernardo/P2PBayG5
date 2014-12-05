@@ -46,10 +46,10 @@ public class CountBeaconModule extends CountModule {
 		super.nextCycle(node);
 		
 		// Se uno dei vicini e' morto, resuscito l'esercito
-		if (!checkNeighboor(link)){
+		/*if (!checkNeighboor(link)){
 			this.army.revive(this);
 			this.resetCount();
-		}
+		}*/
 				
 		// Con probabilita' p = 0.50 faccio una computazione BEACON fra due nodi 
 		if (Math.random() > 0.50){

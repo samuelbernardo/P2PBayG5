@@ -37,6 +37,7 @@ public class TomP2PHandler {
 
     private ServerMonitor monitor;
     private CountModule countModule;
+    //private CountBeaconModule countBeaconModule;
 
     public TomP2PHandler(P2PBayBootstrap bootstrap) {
         this.bootstrap = bootstrap;
@@ -227,6 +228,22 @@ public class TomP2PHandler {
      *
      * @return
      */
+    public CountBeaconModule getCountBeaconModule() {
+        return (CountBeaconModule)this.countModule;
+    }
+
+    /**
+     *
+     * @param countBeaconModule
+     */
+    public void setCountBeaconModule(CountBeaconModule countBeaconModule) {
+        this.countModule = countBeaconModule;
+    }
+
+    /**
+     *
+     * @return
+     */
     public CountModule getCountModule() {
         return this.countModule;
     }
@@ -257,7 +274,8 @@ public class TomP2PHandler {
         this.peer = peer;
     }
 
-    public void sendArmyStrenght(ArmyStrengthMessage message, PeerAddress peer) {
+    public void sendArmyStrength(ArmyStrengthMessage message, PeerAddress peer) {
         this.peer.sendDirect(peer).setObject(message).start();
     }
+
 }
