@@ -10,6 +10,9 @@ import p2pbay.core.listeners.GetListener;
 
 import java.util.List;
 
+/**
+ * Comando para fechar um leilao
+ */
 public class AuctionToClose extends UserInteraction{
     private String title;
     private List<Bid> bids;

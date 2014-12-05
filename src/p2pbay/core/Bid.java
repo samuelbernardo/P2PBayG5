@@ -2,6 +2,9 @@ package p2pbay.core;
 
 import java.io.Serializable;
 
+/**
+ * Objecto criado
+ */
 public class Bid extends DHTObject implements Serializable, Comparable<Object>{
     private static final long serialVersionUID = 6128016096756071380L;
     private String title;

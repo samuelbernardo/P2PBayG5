@@ -4,7 +4,6 @@ import p2pbay.P2PBay;
 import p2pbay.client.user.Login;
 import p2pbay.client.user.SignUp;
 import p2pbay.core.*;
-import p2pbay.core.listeners.BidsListener;
 import p2pbay.core.listeners.GetListener;
 import p2pbay.server.TomP2PHandler;
 
@@ -13,6 +12,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Este objecto contem metodos compreensivos para a fazer ponde aos metodos do servidor
+ * Ler e Escrever objectos.
+ *
+ * Ao fazer Start o utilizador pode realizar as operacoes de login signup e exit
+ */
 public class Client {
     public String LOGGED = null;
     public boolean devMode = false;
@@ -82,6 +87,9 @@ public class Client {
                     break;
                 case "3":
                     getDistributed();
+                    break;
+                case "4":
+                    connectionHandler.shutdowmNetwork();
                     break;
                 case "exit":
                     close();

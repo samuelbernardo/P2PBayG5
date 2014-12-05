@@ -5,6 +5,9 @@ package p2pbay.client;
 
 import p2pbay.client.user.commands.*;
 
+/**
+ * Apresenta ao utilizador opcoes para executar comandos
+ */
 public class Menu {
     private Client client;
 

@@ -5,6 +5,9 @@ import p2pbay.client.Menu;
 import p2pbay.client.SysStrings;
 import p2pbay.core.User;
 
+/**
+ * Comando para efectuar o Login do utilizador
+ */
 public class Login extends UserInteraction implements Runnable {
     private String username;
     private String password;

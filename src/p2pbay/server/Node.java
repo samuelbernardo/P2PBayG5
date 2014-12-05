@@ -16,7 +16,7 @@ public class Node {
 
     public Node(String hostname) {
         this.hostname = hostname;
-        this.port = 4001;
+        this.port = 1234;
     }
 
     public InetAddress getAddress() throws UnknownHostException {

@@ -3,6 +3,9 @@ package p2pbay.client.user;
 import p2pbay.client.Client;
 import p2pbay.client.SysStrings;
 
+/**
+ * Classe com metodos necessarios para receber inputs do utilizador
+ */
 public abstract class UserInteraction implements Runnable {
 
     private Client client;

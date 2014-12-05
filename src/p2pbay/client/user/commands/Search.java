@@ -8,6 +8,9 @@ import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
 import p2pbay.core.listeners.GetListener;
 
+/**
+ * Comando para efectuar uma pesquisa sobre os items presentes na DHT e registados no indice invertido
+ */
 public class Search extends UserInteraction{
     private String word;
     private int position;

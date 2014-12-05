@@ -1,11 +1,15 @@
 package p2pbay.client.user.commands;
 
 import p2pbay.client.Client;
+import p2pbay.client.SysStrings;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
 import p2pbay.core.Item;
 import p2pbay.core.listeners.GetListener;
 
+/**
+ * Comando para registar um item para venda
+ */
 public class ItemForSale extends UserInteraction implements Runnable {
     private String title;
     private String description;
@@ -17,11 +21,9 @@ public class ItemForSale extends UserInteraction implements Runnable {
 
     @Override
     public void getInfo() {
-        System.out.print("\nTitulo:");
-        this.title = readInput();
-        System.out.print("Descricao:");
-        this.description = readInput();
-        this.baseBid = getPositiveNumber("Base de licitacao:");
+        this.title = readInput(SysStrings.INPUT_TITLE);
+        this.description = readInput(SysStrings.INPUT_DESCRIPTION);
+        this.baseBid = getPositiveNumber(SysStrings.AUCTION_BASE);
     }
 
     @Override

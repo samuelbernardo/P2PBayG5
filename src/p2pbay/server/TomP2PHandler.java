@@ -7,13 +7,15 @@ import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerMaker;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
-import net.tomp2p.rpc.ObjectDataReply;
 import net.tomp2p.storage.Data;
 import net.tomp2p.storage.StorageMemory;
 import p2pbay.core.Bid;
 import p2pbay.core.DHTObject;
 import p2pbay.core.DHTObjectType;
 import p2pbay.core.listeners.GetListener;
+import p2pbay.server.messages.Message;
+import p2pbay.server.messages.Receiver;
+import p2pbay.server.messages.Sender;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -24,6 +26,7 @@ import java.util.Random;
 public class TomP2PHandler {
     private Peer peer;
     private StorageMemory storage;
+    private int port = 1234;
 
     public TomP2PHandler() {
         storage = new BayStorage();
@@ -36,6 +39,18 @@ public class TomP2PHandler {
     public boolean store(DHTObject object) {
         try {
             peer.put(object.getKey()).setKeyObject(object.getContentKey(), object).start().awaitUninterruptibly();
+            return true;
+        } catch (IOException e) {
+            System.err.println("Nao foi possivel guardar o objecto:");
+            System.err.println(object);
+            System.err.println("Expecao " + e);
+            return false;
+        }
+    }
+
+    public boolean nonBlockstore(DHTObject object) {
+        try {
+            peer.put(object.getKey()).setKeyObject(object.getContentKey(), object).start();
             return true;
         } catch (IOException e) {
             System.err.println("Nao foi possivel guardar o objecto:");
@@ -96,6 +111,15 @@ public class TomP2PHandler {
         return null;
     }
 
+    public Number160 getPeerId(String key, DHTObjectType type) {
+        Number160 hKey = Number160.createHash(key);
+        FutureDHT futureDHT = peer.get(hKey).setContentKey(type.getContentKey()).start().awaitUninterruptibly();
+        if (futureDHT.isSuccess()) {
+            return futureDHT.getData().getPeerId();
+        }
+        return null;
+    }
+
     /**
      * Gets an object from the DHT
      * @param listener Object Key
@@ -107,14 +131,14 @@ public class TomP2PHandler {
         futureDHT.addListener(listener);
     }
 
-    public int connect() throws IOException{
-        int port = new Random().nextInt(5000) + 1000;
+    public int connect(boolean randomPort) throws IOException{
+        if (randomPort)
+            port = new Random().nextInt(20000) + 1234;
         //** CREATE A NEW PEER **//
         PeerMaker peerMaker = new PeerMaker(Number160.createHash(Inet4Address.getLocalHost().getHostAddress() + port));
         peerMaker.setStorage(storage);
         peerMaker.setPorts(port);
         peerMaker.setEnableIndirectReplication(true);
-        System.out.println(peerMaker.isEnableIndirectReplication());
         peer = peerMaker.makeAndListen();
 
         /* Creation of a peer. */
@@ -122,26 +146,12 @@ public class TomP2PHandler {
         System.out.println("peer = " + peer.getPeerAddress());
 
         // Executed when receiving a direct message.
-        peer.setObjectDataReply(new ObjectDataReply() {
-            @Override
-            public Object reply(PeerAddress sender, Object request) throws Exception {
-                if (request instanceof MessageType) {
-                    switch ((MessageType) request) {
-                        case TEST:
-                            System.out.println("Received " + request.getClass());
-                            break;
-                    }
-                }
-                System.out.println("sender = " + sender);
-                System.out.println("request = " + request);
-                return "ok";
-            }
-        });
-        return port;
+        peer.setObjectDataReply(new Receiver());
+        return peerMaker.getTcpPort();
     }
 
-    public void connect(P2PBayBootstrap bootstrap) throws IOException {
-        connect();
+    public int connect(P2PBayBootstrap bootstrap, boolean randomPort) throws IOException {
+        int port = connect(randomPort);
 
         /* Connects THIS to an existing peer. */
         System.out.println("Connecting...");
@@ -160,6 +170,7 @@ public class TomP2PHandler {
                 break;
             }
         }
+        return port;
     }
 
 
@@ -186,6 +197,7 @@ public class TomP2PHandler {
     }
 
     public void close() {
+        System.out.println("Cya");
         peer.shutdown();
     }
 
@@ -197,5 +209,15 @@ public class TomP2PHandler {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void shutdowmNetwork() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new Sender(peer, Message.SHUTDOWM).broadcast();
+                close();
+            }
+        }).start();
     }
 }

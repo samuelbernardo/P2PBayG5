@@ -9,6 +9,9 @@ import p2pbay.core.Item;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Comando para verificar os detalhes de um item
+ */
 public class DetailsOfItem extends UserInteraction {
     private Item item;
     private List<Bid> bids;

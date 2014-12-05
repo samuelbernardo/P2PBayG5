@@ -7,6 +7,9 @@ import p2pbay.core.Bid;
 import p2pbay.core.Item;
 import p2pbay.core.User;
 
+/**
+ * Comando para ver o historico do utilizador logado no sistema
+ */
 public class HistoryCheck extends UserInteraction{
     private User user;
     

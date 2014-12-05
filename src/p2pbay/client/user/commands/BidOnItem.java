@@ -7,6 +7,9 @@ import p2pbay.core.Bid;
 import p2pbay.core.Item;
 import p2pbay.core.User;
 
+/**
+ * Comando para registar uma licitacao
+ */
 public class BidOnItem  extends UserInteraction{
     private String title;
     private Float proposedValue;
@@ -18,8 +21,7 @@ public class BidOnItem  extends UserInteraction{
 
     @Override
     public void getInfo() {
-        System.out.print("Titulo do item:");
-        title = readInput();
+        title = readInput(SysStrings.INPUT_TITLE);
         proposedValue = getPositiveNumber(SysStrings.VALUE);
         item = getClient().getItem(title);
     }
