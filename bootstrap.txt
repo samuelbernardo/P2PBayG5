@@ -1,4 +1,2 @@
 127.0.0.1
 planetlab-um10.di.uminho.pt
-planetlab-2.tagus.ist.utl.pt
-planetlab-1.tagus.ist.utl.pt

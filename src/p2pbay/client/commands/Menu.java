@@ -1,12 +1,15 @@
-package p2pbay.client.commands;
-
-import java.util.Scanner;
+package p2pbay.client;
 
 //import p2pbay.core.Item;
-import p2pbay.client.Client;
 import p2pbay.core.User;
 import p2pbay.server.TomP2PHandler;
 
+
+import p2pbay.client.user.commands.*;
+
+/**
+ * Apresenta ao utilizador opcoes para executar comandos
+ */
 public class Menu {
     private Client client;
 
@@ -20,7 +23,7 @@ public class Menu {
                 + "1 - Login\n"
                 + "2 - Sign up\n\n"
                 + "'exit' para sair\n");
-        String option = client.getInput();
+        String option = client.readInput();
         return option;
     }
 
@@ -36,7 +39,7 @@ public class Menu {
                 + "7 - Estatisticas\n"
                 + "8 - Logout\n\n"
                 + "'exit' para sair\n");
-        String option = client.getInput();
+        String option = client.readInput();
         return option;
     }
 

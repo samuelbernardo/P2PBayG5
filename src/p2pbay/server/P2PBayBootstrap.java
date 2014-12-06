@@ -1,13 +1,10 @@
 package p2pbay.server;
 
-import p2pbay.server.peer.Node;
-
-import java.io.*;
-import java.net.Inet4Address;
-import java.net.InetAddress;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner;
 
 /**
  * Classe para ligacao a rede p2pbay
@@ -54,23 +51,8 @@ public class P2PBayBootstrap {
         return nodes;
     }
 
-    public boolean loadLocalPort() {
-        Scanner in = new Scanner(System.in);
-        int port = 0;
-        try {
-            System.out.print("port:");
-            port = Integer.parseInt(in.nextLine());
-            nodes.add(new Node("localhost", port));
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        if(port < 1000)
-            return false;
-        return true;
-    }
-
-    public boolean addLocalPort(int port) {
-        return nodes.add(new Node("localhost", port));
+    public void addLocal(int port) {
+        nodes.add(new Node("localhost", port));
     }
 }
 
