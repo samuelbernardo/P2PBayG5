@@ -6,7 +6,7 @@ import p2pbay.client.Client;
 import p2pbay.client.SysStrings;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
-import p2pbay.core.listeners.GetListener;
+import p2pbay.core.listener.GetListener;
 
 /**
  * Comando para efectuar uma pesquisa sobre os items presentes na DHT e registados no indice invertido

@@ -4,7 +4,7 @@ import p2pbay.P2PBay;
 import p2pbay.client.user.Login;
 import p2pbay.client.user.SignUp;
 import p2pbay.core.*;
-import p2pbay.core.listeners.GetListener;
+import p2pbay.core.listener.GetListener;
 import p2pbay.server.TomP2PHandler;
 
 import java.io.Console;
