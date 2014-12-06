@@ -9,7 +9,6 @@ public class DHTObject implements Serializable{
     private String key;
     private Number160 keyHash;
     private DHTObjectType type;
-    private String key;
     
     public DHTObject(String key, DHTObjectType type) {
         this.keyHash = Number160.createHash(key);

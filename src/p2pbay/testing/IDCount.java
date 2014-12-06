@@ -14,7 +14,7 @@ public class IDCount {
     public void add(Number160 id) {
         synchronized (this) {
             if (hashMap.containsKey(id))
-                hashMap.replace(id, hashMap.get(id) + 1);
+                hashMap.put(id, hashMap.get(id) + 1);
             else
                 hashMap.put(id, 1);
         }

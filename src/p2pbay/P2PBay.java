@@ -69,7 +69,7 @@ public class P2PBay {
 //        }
         
         // Gossipico start
-        new CountBeaconInitializer(P2PBAY);
+        new CountBeaconInitializer(P2PBAY).start();
 
         client.start();
     }

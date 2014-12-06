@@ -90,7 +90,7 @@ public class Client {
                     getDistributed();
                     break;
                 case "4":
-                    connectionHandler.shutdowmNetwork();
+                    connectionHandler.shutdownNetwork();
                     break;
                 case "exit":
                     close();

@@ -7,41 +7,15 @@ import net.tomp2p.rpc.ObjectDataReply;
 import p2pbay.server.TomP2PHandler;
 
 public class MessageReceiver implements ObjectDataReply {
-    private SystemInfoMessage infoMessage;
     private TomP2PHandler node;
 
-    public MessageReceiver(SystemInfoMessage infoMessage, TomP2PHandler node) {
-        this.infoMessage = infoMessage;
+    public MessageReceiver(TomP2PHandler node) {
         this.node = node;
-    }
-
-    private void scanInfo(SystemInfoMessage message) {
-        for (Number160 id : message.getItems()) {
-            infoMessage.addItem(id);
-        }
-        for (Number160 id : message.getUsers()) {
-            infoMessage.addUser(id);
-        }
-        for (Number160 id : message.getNodes()) {
-            infoMessage.addNode(id);
-        }
-        System.out.println(infoMessage);
     }
 
     @Override
     public Object reply(PeerAddress sender, Object request) throws Exception {
-        if (request instanceof Message) {
-            switch (((Message) request).getType()) {
-                case TEST:
-                    System.out.println("Received " + request.getClass());
-                    break;
-                case INFO:
-//                    System.out.println("Received" + request);
-                    scanInfo((SystemInfoMessage) request);
-                    break;
-            }
-        }
-        else if(request instanceof CountModule) {
+        if(request instanceof CountModule) {
             CountModule receivedCount = (CountModule)request;
             CountModuleMsgReceiver reply = new CountModuleMsgReceiver(node);
             reply.process(sender, receivedCount);

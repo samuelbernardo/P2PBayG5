@@ -12,9 +12,9 @@ public class Receiver implements ObjectDataReply {
                 case TEST:
                     System.out.println("Received " + request.getClass());
                     break;
-                case SHUTDOWM:
+                case SHUTDOWN:
                     System.out.println("Got message from " + sender);
-                    P2PBay.P2PBAY.shutdowmNetwork();
+                    P2PBay.P2PBAY.shutdownNetwork();
                     break;
             }
         }

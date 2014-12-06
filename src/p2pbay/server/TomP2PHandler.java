@@ -28,6 +28,8 @@ public class TomP2PHandler {
     private Peer peer;
     private StorageMemory storage;
     private int port = 1234;
+    private P2PBayBootstrap bootstrap;
+    private CountModule countModule;
 
     public TomP2PHandler() {
         storage = new BayStorage();
@@ -154,6 +156,8 @@ public class TomP2PHandler {
     public int connect(P2PBayBootstrap bootstrap, boolean randomPort) throws IOException {
         int port = connect(randomPort);
 
+        this.bootstrap = bootstrap;
+
         /* Connects THIS to an existing peer. */
         System.out.println("Connecting...");
 
@@ -212,45 +216,33 @@ public class TomP2PHandler {
         }
     }
 
-    public void shutdowmNetwork() {
+    /**
+     *
+     */
+    public void shutdownNetwork() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                new Sender(peer, Message.SHUTDOWM).broadcast();
+                new Sender(peer, Message.SHUTDOWN).broadcast();
                 close();
             }
         }).start();
     }
 
-    public List<PeerAddress> getNeighbors() {
-        return peer.getPeerBean().getPeerMap().getAll();
-    }
-
+    /**
+     *
+     * @return
+     */
     public boolean isRunning() {
         return peer.isRunning();
     }
 
-    public void sendInfo(PeerAddress address) {
-        peer.sendDirect(address).setObject(infoMessage).start();
-    }
-
-    public void send(Message message, PeerAddress peer) {
-        this.peer.sendDirect(peer).setObject(message).start();
-    }
-
-    public void addInfo(DHTObject object) {
-        switch (object.getType()) {
-            case ITEM:
-                infoMessage.addItem(object.getKey());
-                break;
-            case USER:
-                infoMessage.addUser(object.getKey());
-                break;
-        }
-    }
-
-    public int getPort() {
-        return peer.getPeerAddress().portTCP();
+    /**
+     *
+     * @return
+     */
+    public List<PeerAddress> getNeighbors() {
+        return peer.getPeerBean().getPeerMap().getAll();
     }
 
     /**
@@ -269,10 +261,6 @@ public class TomP2PHandler {
         return bootstrap.getNodes();
     }
 
-
-    public SystemInfoMessage getSystemInfo() {
-        return infoMessage;
-    }
 
     /**
      *
