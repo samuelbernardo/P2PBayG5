@@ -40,6 +40,8 @@ public class CountBeaconInitializer extends Thread {
         }
 
         this.random = new Random();
+        this.handler = handler;
+        this.handler.setCountBeaconModule(new CountBeaconModule(handler));
     }
 
     @Override

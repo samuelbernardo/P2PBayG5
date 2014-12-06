@@ -68,6 +68,7 @@ public class Menu {
                     break;
                 case "7":
                     new StatisticsCheck(client).run();
+                    break;
                 case "8":
                     client.logout();
                     return;

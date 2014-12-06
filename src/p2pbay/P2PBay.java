@@ -67,9 +67,6 @@ public class P2PBay {
 //        for (int i = 0; i < 20; i++) {
 //            new UserAccess(100, 10*20, countThread, nodes.get(r.nextInt(nodes.size()))).start();
 //        }
-        
-        // Gossipico start
-        new CountBeaconInitializer(P2PBAY).start();
 
         client.start();
     }

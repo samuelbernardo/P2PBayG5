@@ -175,6 +175,11 @@ public class TomP2PHandler {
                 break;
             }
         }
+
+        // Gossipico start
+        CountBeaconInitializer gossipicoHandler = new CountBeaconInitializer(this);
+        gossipicoHandler.start();
+
         return port;
     }
 
