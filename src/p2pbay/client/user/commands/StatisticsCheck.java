@@ -15,9 +15,14 @@ public class StatisticsCheck extends UserInteraction {
 
     @Override
     public void doOperation() {
-        System.out.println("Number of nodes: " + beaconModule.getWaiting().getValue());
-        System.out.println("Number of users: ");
-        System.out.println("Number of items on sale: ");
+        if(this.beaconModule != null) {
+            System.out.println("Number of nodes: " + this.beaconModule.getWaiting().getValue());
+        }
+        else {
+            System.out.println("Number of nodes: null");
+        }
+        System.out.println("Number of users: null");
+        System.out.println("Number of items on sale: null");
     }
 
     @Override
