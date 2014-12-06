@@ -13,7 +13,7 @@ import net.tomp2p.storage.StorageMemory;
 import p2pbay.core.Bid;
 import p2pbay.core.DHTObject;
 import p2pbay.core.DHTObjectType;
-import p2pbay.core.listeners.GetListener;
+import p2pbay.core.listener.GetListener;
 import p2pbay.server.messages.Message;
 import p2pbay.server.messages.Receiver;
 import p2pbay.server.messages.Sender;

@@ -5,7 +5,7 @@ import p2pbay.client.SysStrings;
 import p2pbay.client.user.UserInteraction;
 import p2pbay.core.Index;
 import p2pbay.core.Item;
-import p2pbay.core.listeners.GetListener;
+import p2pbay.core.listener.GetListener;
 
 /**
  * Comando para registar um item para venda
