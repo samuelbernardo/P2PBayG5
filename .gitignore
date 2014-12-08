@@ -140,3 +140,10 @@ Jar-Manifest-*
 # Samuel
 libs/
 libs
+
+#planetlab
+multicopy
+multiquery
+codeploy
+filecheck
+
