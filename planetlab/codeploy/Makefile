@@ -44,7 +44,7 @@ filecheck: $(FC_OBJS)
 
 clean:
 	rm -f $(OBJS)  *~ *.core .depend
-	/bin/touch -t 197001010000 .depend 
+	#/bin/touch -t 197001010000 .depend 
 
 cleanall: clean
 	rm -r $(APPS)
