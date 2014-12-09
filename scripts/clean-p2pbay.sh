@@ -17,4 +17,5 @@ export MQ_SLICE='istple_seprs5'
 export PATH="$CODEPLOY_HOME:$PATH"
 
 multiquery 'rm -r $HOME/*'
+#multiquery 'rm -r $HOME/.ssh'
 
