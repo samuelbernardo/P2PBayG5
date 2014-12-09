@@ -149,4 +149,5 @@ multiquery
 codeploy
 filecheck
 *.o
+.depend
 

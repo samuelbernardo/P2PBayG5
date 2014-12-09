@@ -20,9 +20,9 @@ SLICE_USER="istple_seprs5"
 
 export MQ_NODES="./nodes.txt"
 export MQ_SLICE='istple_seprs5'
-export PATH="./${JAVA_DIR}/bin:${CODEPLOY_HOME}:${PATH}"
+export PATH="./${JAVA_DIR}/bin:${CODEPLOY_EXTRACT}:${PATH}"
 export JAVA_HOME=./${JAVA_DIR}
-export LD_LIBRARY_PATH="./${JAVA_DIR}/lib/amd64:/lib:./lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="./${JAVA_DIR}/lib/i386:/lib:./lib:$LD_LIBRARY_PATH"
 
 multiquery 'java -jar $P2PBAY_JAR_NAME server'
 java -jar $P2PBAY_JAR_NAME
