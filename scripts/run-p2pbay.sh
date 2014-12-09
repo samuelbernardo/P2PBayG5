@@ -24,5 +24,5 @@ export PATH="./${JAVA_DIR}/bin:${CODEPLOY_EXTRACT}:${PATH}"
 export JAVA_HOME=./${JAVA_DIR}
 export LD_LIBRARY_PATH="./${JAVA_DIR}/lib/i386:/lib:./lib:$LD_LIBRARY_PATH"
 
-java -jar $P2PBAY_JAR_NAME
+java -jar $P2PBAY_JAR_NAME $1
 

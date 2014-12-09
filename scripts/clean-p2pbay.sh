@@ -18,4 +18,5 @@ export PATH="$CODEPLOY_HOME:$PATH"
 
 multiquery 'rm -r $HOME/*'
 #multiquery 'rm -r $HOME/.ssh'
+multiquery 'killall java'
 
