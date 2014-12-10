@@ -47,6 +47,12 @@ public class Client {
     }
 
     public boolean store(DHTObject object) {
+				if(object instanceof User) {
+					getCountBeacon().addUser();
+				}
+				else if(object instanceof Item) {
+					getCountBeacon().addItem();
+				}
         return connectionHandler.store(object);
     }
 

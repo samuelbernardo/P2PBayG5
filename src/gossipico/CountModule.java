@@ -36,6 +36,22 @@ public class CountModule implements Serializable {
 	protected int user_state_value;
 	protected int item_state_value;
 
+	public void addUser() {
+		user_state_value++;
+	}
+
+	public void addItem() {
+		item_state_value++;
+	}
+
+	public int getUser_value() {
+		return user_state_value;
+	}
+
+	public int getItem_value() {
+		return item_state_value;
+	}
+
 	/** Node em que se baseia */
 	protected TomP2PHandler node;
 
@@ -140,6 +156,14 @@ public class CountModule implements Serializable {
 		if (waiting.isFresherThen(state_freshness)){
 			state_freshness = waiting.getFreshness();
 			state_value = waiting.getValue();
+			if (user_state_value > user_init_value) {
+				user_state_value = (user_state_value - user_init_value) + waiting.getUser_value();
+				user_init_value = user_state_value;
+			}
+			if (item_state_value > item_init_value) {
+				item_state_value = (item_state_value - item_init_value) + waiting.getItem_value();
+				item_init_value = item_state_value;
+			}
 		}
 		return true;
 	}
@@ -153,6 +177,10 @@ public class CountModule implements Serializable {
 	protected void initValue(int val){
 		this.waiting.value = val;
 		this.init_value = val;
+	}
+
+	public int getValue() {
+		return this.state_value;
 	}
 
 	/**
