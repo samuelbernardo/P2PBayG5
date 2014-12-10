@@ -14,6 +14,8 @@ import java.io.Serializable;
 public class Message implements Serializable {
 		
 	protected int value;
+	protected int user_value;
+	protected int item_value;
 	protected int freshness;
 	protected int type;
 		
@@ -56,7 +58,23 @@ public class Message implements Serializable {
 	 * @return Valore dei freschezza del messaggio
 	 */
 	public int getFreshness() { return freshness; }
-	
+
+	public int getUser_value() {
+		return user_value;
+	}
+
+	public void setUser_value(int user_value) {
+		this.user_value = user_value;
+	}
+
+	public int getItem_value() {
+		return item_value;
+	}
+
+	public void setItem_value(int item_value) {
+		this.item_value = item_value;
+	}
+
 	/**Metodo per controllare se il messaggio e' di tipo IC
 	 * @return true se il messaggio e' di tipo IC, false altrimenti
 	 */
@@ -94,6 +112,8 @@ public class Message implements Serializable {
 	 */
 	public void update(Message m){
 		this.value = m.value;
+		this.user_value = m.user_value;
+		this.item_value = m.item_value;
 		this.freshness = m.freshness;
 		this.type = m.type;
 	}
@@ -110,6 +130,8 @@ public class Message implements Serializable {
 	 */
 	public void merge(Message m){
 		this.value += m.value;
+		this.user_value += m.user_value;
+		this.item_value += m.item_value;
 		this.freshness += m.freshness;
 		this.type = 1;
 	}

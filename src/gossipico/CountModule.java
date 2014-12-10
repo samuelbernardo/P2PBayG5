@@ -30,6 +30,12 @@ public class CountModule implements Serializable {
 	/** Valore iniziale del calcolo */
 	protected int init_value;
 
+	/** Valores para calculo de parametros */
+	protected int user_init_value;
+	protected int item_init_value;
+	protected int user_state_value;
+	protected int item_state_value;
+
 	/** Node em que se baseia */
 	protected TomP2PHandler node;
 
@@ -60,6 +66,8 @@ public class CountModule implements Serializable {
 		node.setCountModule(this);
 	
 		init_value = 1;
+		user_init_value = item_init_value = 0;
+		user_state_value = item_state_value = 0;
 		state_value = init_value;
 		state_freshness = 1;
 
@@ -78,13 +86,17 @@ public class CountModule implements Serializable {
 		} */
 	}
 
-	public CountModule(TomP2PHandler node, Message waiting, Message received, int state_value, int state_freshness, int init_value) {
+	public CountModule(TomP2PHandler node, Message waiting, Message received, int state_value, int user_state_value, int item_state_value, int state_freshness, int init_value, int user_init_value, int item_init_value) {
 		this.node = node;
 		this.waiting = waiting;
 		this.received = received;
 		this.state_value = state_value;
+		this.user_state_value = user_state_value;
+		this.item_state_value = item_state_value;
 		this.state_freshness = state_freshness;
 		this.init_value = init_value;
+		this.user_init_value = user_init_value;
+		this.item_init_value = item_init_value;
 	}
 
 	/* (non-Javadoc)

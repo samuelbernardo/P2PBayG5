@@ -13,7 +13,7 @@ public class CountBeaconAnswer extends CountBeaconModule implements Serializable
      * @param myself
      */
     public CountBeaconAnswer(CountBeaconModule myself) {
-        super(myself.node, myself.army, myself.waiting, myself.received, myself.state_value, myself.state_freshness, myself.init_value, myself.disconnected);
+        super(myself.node, myself.army, myself.waiting, myself.received, myself.state_value, myself.user_state_value, myself.item_state_value, myself.state_freshness, myself.init_value, myself.user_init_value, myself.item_init_value, myself.disconnected);
     }
 
 }

@@ -38,14 +38,14 @@ public class CountBeaconModule extends CountModule implements Serializable {
 		node.setCountBeaconModule(this);
 	}
 
-	public CountBeaconModule(TomP2PHandler node, Army army, Message waiting, Message received, int state_value, int state_freshness, int init_value, List<PeerAddress> disconnected) {
-		super(node, waiting, received, state_value, state_freshness, init_value);
+	public CountBeaconModule(TomP2PHandler node, Army army, Message waiting, Message received, int state_value, int user_state_value, int item_state_value, int state_freshness, int init_value, int user_init_value, int item_init_value, List<PeerAddress> disconnected) {
+		super(node, waiting, received, state_value, user_state_value, item_state_value, state_freshness, init_value, user_init_value, item_init_value);
 
 		this.army = army;
 		this.disconnected = disconnected;
 	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see it.ncorti.p2p.CountModule#
 	 * 	nextCycle(peersim.core.Node, int)

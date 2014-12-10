@@ -19,7 +19,9 @@ public class CountModuleMsgReceiver {
         if (node.getCountModule().updateMessage(this.receivedCount)) {
             int state_value = node.getCountModule().state_value;
             int state_freshness = node.getCountModule().state_freshness;
-            StateMessage message = new StateMessage(state_value, state_freshness);
+            int user_state_value = node.getCountModule().user_state_value;
+            int item_state_value = node.getCountModule().item_state_value;
+            StateMessage message = new StateMessage(state_value, state_freshness, user_state_value, item_state_value);
 
             node.sendStateCount(message, sender);
         }
