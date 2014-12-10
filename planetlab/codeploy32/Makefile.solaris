@@ -8,7 +8,7 @@
 #  be provided or otherwise made available to any other person.  No title to
 #  or ownership of the software is hereby transferred.
 # 
-#  $Id: Makefile,v 1.10 2004/03/30 19:10:12 vivek Exp $
+#  $Id: Makefile.solaris,v 1.2 2004/03/30 19:10:12 vivek Exp $
 #
 
 # OSSPECCFLAGS ?= -mpreferred-stack-boundary=2 -march=i686
@@ -16,16 +16,16 @@
 CFLAGS	=  -DNON_API_ONLY -Wall -Wshadow -Wunused -g -O -I/usr/local/include $(OSSPECCFLAGS)
 CC = gcc
 
-MQ_OBJS = multiquery.o applib.o gettimeofdayex.o
-NS_OBJS = nodesumm.o parsequery.o applib.o gettimeofdayex.o
-FC_OBJS = filecheck.o parsequery.o applib.o gettimeofdayex.o
+MQ_OBJS = multiquery.o applib.o
+NS_OBJS = parsequery.o applib.o
+FC_OBJS = filecheck.o parsequery.o applib.o
 OBJS = $(MQ_OBJS) $(NS_OBJS) $(FC_OBJS)
 
-LIBS = -lm
+LIBS = -lm -lnsl -lsocket
 
-CODE =  applib.c filecheck.c gettimeofdayex.c multiquery.c parsequery.c
+CODE =  applib.c filecheck.c multiquery.c parsequery.c
 
-HDRS =  applib.h debug.h gettimeofdayex.h parsequery.h
+HDRS =  applib.h debug.h parsequery.h
 
 SRCS = $(CODE) $(HDRS)
 
@@ -44,7 +44,7 @@ filecheck: $(FC_OBJS)
 
 clean:
 	rm -f $(OBJS)  *~ *.core .depend
-	#/bin/touch -t 197001010000 .depend 
+	/bin/touch -t 197001010000 .depend 
 
 cleanall: clean
 	rm -r $(APPS)

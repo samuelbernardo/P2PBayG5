@@ -1,7 +1,6 @@
 planetlab-2.tagus.ist.utl.pt
 planet1.servers.ua.pt
 planetlab1.upc.es
-planetlab-2.di.fc.ul.pt
 planetlab-1.tagus.ist.utl.pt
 planetlab1.eurecom.fr
 planet2.servers.ua.pt
@@ -12,9 +11,7 @@ planetlab2.upc.es
 onelab10.pl.sophia.inria.fr
 ple4.ipv6.lip6.fr
 planetlab-um00.di.uminho.pt
-pl1.tailab.eu
 host3-plb.loria.fr
-planetlab-1.di.fc.ul.pt
 planetlab1.utt.fr
 plewifi.ipv6.lip6.fr
 sybaris.ipv6.lip6.fr

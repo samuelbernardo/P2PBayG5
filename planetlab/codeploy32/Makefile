@@ -13,7 +13,7 @@
 
 # OSSPECCFLAGS ?= -mpreferred-stack-boundary=2 -march=i686
 
-CFLAGS	=  -DNON_API_ONLY -Wall -Wshadow -Wunused -g -O -I/usr/local/include $(OSSPECCFLAGS)
+CFLAGS	=  -m32 -DNON_API_ONLY -Wall -Wshadow -Wunused -g -O -I/usr/local/include $(OSSPECCFLAGS)
 CC = gcc
 
 MQ_OBJS = multiquery.o applib.o gettimeofdayex.o

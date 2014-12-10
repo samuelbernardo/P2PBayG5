@@ -129,6 +129,7 @@ local.properties
 # jar
 *.bak
 *.tar.gz
+*.gz
 *.tmp
 *~
 blib*
@@ -140,10 +141,13 @@ Jar-Manifest-*
 # Samuel
 libs/
 libs
+dist/
 
 # planetlab
 multicopy
 multiquery
 codeploy
 filecheck
-
+*.o
+.depend
+.ssh
